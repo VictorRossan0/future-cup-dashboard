@@ -100,20 +100,28 @@ export interface AISimulation {
   ai: AIName;
   champion: string;
   runnerUp: string;
-  topScorer: string;
+  semifinalists: string[];
+  topFive: string[];
   surprise: string;
   disappointment: string;
-  topFive: string[];
+  topScorer: string;
+  bestPlayer: string;
+  bestYoungPlayer: string;
+  groupOfDeath: string;
+  darkHorses: string[];
+  riskFactors: string[];
   rationale: string;
   confidence: number;
 }
 
 export interface AIConsensus {
   mostCitedChampion: string;
-  mostCitedPlayer: string;
-  toughestGroup: string;
-  potentialUnderdog: string;
+  mostCitedRunnerUp: string;
+  commonFavorites: string[];
+  mainDivergence: string;
+  overallSummary: string;
 }
+
 
 export interface Tiebreaker {
   title: string;
