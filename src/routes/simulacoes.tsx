@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
+import { PageHeader } from "@/components/PageHeader";
+import { AISimulationCard } from "@/components/AISimulationCard";
 import { aiSimulations, aiConsensus } from "@/data/aiSimulations";
 import { Brain, Trophy, Target, AlertTriangle, Sparkles } from "lucide-react";
 
@@ -13,59 +15,33 @@ export const Route = createFileRoute("/simulacoes")({
   component: SimulacoesPage,
 });
 
-const aiColors: Record<string, string> = {
-  ChatGPT: "from-primary/30 to-primary/5 border-primary/40",
-  Claude: "from-gold/30 to-gold/5 border-gold/40",
-  Gemini: "from-info/30 to-info/5 border-info/40",
-};
+const comparisonRows: Array<{ label: string; key: keyof typeof aiSimulations[number] }> = [
+  { label: "Campeã", key: "champion" },
+  { label: "Vice", key: "runnerUp" },
+  { label: "Artilheiro", key: "topScorer" },
+  { label: "Surpresa", key: "surprise" },
+  { label: "Decepção", key: "disappointment" },
+  { label: "Confiança", key: "confidence" },
+];
 
 function SimulacoesPage() {
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
-        <header>
-          <div className="text-[10px] uppercase tracking-widest text-gold">Previsões fictícias</div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold mt-1 flex items-center gap-2">
-            <Brain className="size-8 text-primary" /> Simulações de IA
-          </h1>
-          <p className="text-muted-foreground mt-2 max-w-2xl">
-            Comparativo entre ChatGPT, Claude e Gemini com previsões simuladas. Estrutura preparada para consumir dados reais de um backend no futuro.
-          </p>
-        </header>
+        <PageHeader
+          kicker="Previsões fictícias"
+          title={
+            <span className="flex items-center gap-2">
+              <Brain className="size-8 text-primary" /> Simulações de IA
+            </span>
+          }
+          description="Comparativo entre ChatGPT, Claude e Gemini com previsões simuladas. Estrutura preparada para consumir dados reais de um backend no futuro."
+        />
 
-        {/* AI Cards */}
         <section className="grid lg:grid-cols-3 gap-4">
-          {aiSimulations.map((s) => (
-            <div key={s.id} className={`rounded-2xl border bg-gradient-to-br ${aiColors[s.ai]} p-5 backdrop-blur`}>
-              <div className="flex items-center justify-between">
-                <h3 className="font-display text-xl font-bold">{s.ai}</h3>
-                <span className="text-[10px] uppercase tracking-widest bg-card/60 px-2 py-1 rounded-full">
-                  Confiança {s.confidence}%
-                </span>
-              </div>
-              <div className="mt-4 space-y-2 text-sm">
-                <Row label="Campeã" value={s.champion} accent="gold" />
-                <Row label="Vice" value={s.runnerUp} />
-                <Row label="Artilheiro" value={s.topScorer} />
-                <Row label="Surpresa" value={s.surprise} accent="info" />
-                <Row label="Decepção" value={s.disappointment} />
-              </div>
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Top 5</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {s.topFive.map((t, i) => (
-                    <span key={t} className="text-xs bg-card border border-border rounded-full px-2 py-0.5">
-                      {i + 1}. {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <p className="mt-4 text-xs text-muted-foreground leading-relaxed italic">"{s.rationale}"</p>
-            </div>
-          ))}
+          {aiSimulations.map((s) => <AISimulationCard key={s.id} simulation={s} />)}
         </section>
 
-        {/* Comparison table */}
         <section>
           <h2 className="font-display text-xl font-bold mb-4">Tabela comparativa</h2>
           <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -80,19 +56,12 @@ function SimulacoesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    ["Campeã", "champion"],
-                    ["Vice", "runnerUp"],
-                    ["Artilheiro", "topScorer"],
-                    ["Surpresa", "surprise"],
-                    ["Decepção", "disappointment"],
-                    ["Confiança", "confidence"],
-                  ].map(([label, key]) => (
-                    <tr key={key} className="border-t border-border">
-                      <td className="px-4 py-3 text-muted-foreground">{label}</td>
+                  {comparisonRows.map((row) => (
+                    <tr key={row.key} className="border-t border-border">
+                      <td className="px-4 py-3 text-muted-foreground">{row.label}</td>
                       {aiSimulations.map((s) => (
                         <td key={s.id} className="px-4 py-3">
-                          {key === "confidence" ? `${s.confidence}%` : (s as unknown as Record<string, string>)[key]}
+                          {row.key === "confidence" ? `${s.confidence}%` : String(s[row.key])}
                         </td>
                       ))}
                     </tr>
@@ -103,7 +72,6 @@ function SimulacoesPage() {
           </div>
         </section>
 
-        {/* Consensus */}
         <section>
           <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
             <Sparkles className="size-5 text-gold" /> Consenso das IAs
@@ -121,16 +89,6 @@ function SimulacoesPage() {
         </p>
       </div>
     </AppLayout>
-  );
-}
-
-function Row({ label, value, accent }: { label: string; value: string; accent?: "gold" | "info" }) {
-  const cls = accent === "gold" ? "text-gold font-semibold" : accent === "info" ? "text-info font-semibold" : "";
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground text-xs">{label}</span>
-      <span className={cls}>{value}</span>
-    </div>
   );
 }
 

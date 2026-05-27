@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { Team } from "@/data/teams";
+import type { Team } from "@/types";
 
 export function TeamCard({ team }: { team: Team }) {
   return (

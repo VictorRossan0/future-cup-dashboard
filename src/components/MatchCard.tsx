@@ -1,4 +1,4 @@
-import type { Match } from "@/data/matches";
+import type { Match } from "@/types";
 import { getTeam } from "@/data/teams";
 import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";

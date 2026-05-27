@@ -1,80 +1,15 @@
-export type Confederation = "CONMEBOL" | "UEFA" | "CONCACAF" | "AFC" | "CAF" | "OFC";
+import type { Team } from "@/types";
+import { makePlayers } from "./players";
 
-export interface Player {
-  id: string;
-  name: string;
-  number: number;
-  position: "Goleiro" | "Defensor" | "Meio-campista" | "Atacante";
-  age: number;
-  height: number;
-  weight: number;
-  club: string;
-  league: string;
-  clubCountry: string;
-  captain?: boolean;
-  status: "Titular provável" | "Reserva" | "Dúvida";
-}
-
-export interface Team {
-  id: string;
-  name: string;
-  code: string;
-  group: string;
-  confederation: Confederation;
-  coach: string;
-  ranking: number;
-  formation?: string;
-  players?: Player[];
-  flag?: string; // emoji
-}
-
-const positions: Player["position"][] = [
-  "Goleiro", "Goleiro", "Goleiro",
-  "Defensor", "Defensor", "Defensor", "Defensor", "Defensor", "Defensor", "Defensor",
-  "Meio-campista", "Meio-campista", "Meio-campista", "Meio-campista", "Meio-campista", "Meio-campista", "Meio-campista",
-  "Atacante", "Atacante", "Atacante", "Atacante", "Atacante", "Atacante",
-];
-
-const sampleClubs = [
-  { club: "FC Atlas", league: "La Liga", country: "Espanha" },
-  { club: "Northside United", league: "Premier League", country: "Inglaterra" },
-  { club: "Bayern Mitte", league: "Bundesliga", country: "Alemanha" },
-  { club: "Olympique Sud", league: "Ligue 1", country: "França" },
-  { club: "Internazionale Roma", league: "Serie A", country: "Itália" },
-  { club: "Rio Atlético", league: "Brasileirão", country: "Brasil" },
-  { club: "Buenos Stars", league: "Liga Profesional", country: "Argentina" },
-  { club: "Lisboa SC", league: "Primeira Liga", country: "Portugal" },
-];
-
-function makePlayers(teamId: string, teamName: string): Player[] {
-  return positions.map((pos, i) => {
-    const club = sampleClubs[i % sampleClubs.length];
-    return {
-      id: `${teamId}-${String(i + 1).padStart(2, "0")}`,
-      name: `${teamName.split(" ")[0]} Player ${i + 1}`,
-      number: i + 1,
-      position: pos,
-      age: 20 + ((i * 3) % 16),
-      height: 1.7 + ((i % 20) / 100),
-      weight: 68 + ((i * 2) % 18),
-      club: club.club,
-      league: club.league,
-      clubCountry: club.country,
-      captain: i === 9,
-      status: i < 11 ? "Titular provável" : i < 18 ? "Reserva" : (i % 4 === 0 ? "Dúvida" : "Reserva"),
-    };
-  });
-}
-
-const fullRoster = [
-  { id: "bra", name: "Brasil", code: "BRA", group: "A", confederation: "CONMEBOL" as const, coach: "Dorival Júnior (fic.)", ranking: 5, formation: "4-2-3-1", flag: "🇧🇷" },
-  { id: "arg", name: "Argentina", code: "ARG", group: "B", confederation: "CONMEBOL" as const, coach: "Lionel Scaloni (fic.)", ranking: 1, formation: "4-3-3", flag: "🇦🇷" },
-  { id: "fra", name: "França", code: "FRA", group: "C", confederation: "UEFA" as const, coach: "Didier Deschamps (fic.)", ranking: 2, formation: "4-2-3-1", flag: "🇫🇷" },
-  { id: "esp", name: "Espanha", code: "ESP", group: "D", confederation: "UEFA" as const, coach: "Luis de la Fuente (fic.)", ranking: 3, formation: "4-3-3", flag: "🇪🇸" },
-  { id: "eng", name: "Inglaterra", code: "ENG", group: "E", confederation: "UEFA" as const, coach: "Thomas Tuchel (fic.)", ranking: 4, formation: "4-2-3-1", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { id: "ger", name: "Alemanha", code: "GER", group: "F", confederation: "UEFA" as const, coach: "Julian Nagelsmann (fic.)", ranking: 6, formation: "4-3-3", flag: "🇩🇪" },
-  { id: "por", name: "Portugal", code: "POR", group: "G", confederation: "UEFA" as const, coach: "Roberto Martínez (fic.)", ranking: 7, formation: "4-3-3", flag: "🇵🇹" },
-  { id: "ned", name: "Países Baixos", code: "NED", group: "H", confederation: "UEFA" as const, coach: "Ronald Koeman (fic.)", ranking: 8, formation: "4-3-3", flag: "🇳🇱" },
+const fullRoster: Omit<Team, "players">[] = [
+  { id: "bra", name: "Brasil", code: "BRA", group: "A", confederation: "CONMEBOL", coach: "Dorival Júnior (fic.)", ranking: 5, formation: "4-2-3-1", flag: "🇧🇷" },
+  { id: "arg", name: "Argentina", code: "ARG", group: "B", confederation: "CONMEBOL", coach: "Lionel Scaloni (fic.)", ranking: 1, formation: "4-3-3", flag: "🇦🇷" },
+  { id: "fra", name: "França", code: "FRA", group: "C", confederation: "UEFA", coach: "Didier Deschamps (fic.)", ranking: 2, formation: "4-2-3-1", flag: "🇫🇷" },
+  { id: "esp", name: "Espanha", code: "ESP", group: "D", confederation: "UEFA", coach: "Luis de la Fuente (fic.)", ranking: 3, formation: "4-3-3", flag: "🇪🇸" },
+  { id: "eng", name: "Inglaterra", code: "ENG", group: "E", confederation: "UEFA", coach: "Thomas Tuchel (fic.)", ranking: 4, formation: "4-2-3-1", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { id: "ger", name: "Alemanha", code: "GER", group: "F", confederation: "UEFA", coach: "Julian Nagelsmann (fic.)", ranking: 6, formation: "4-3-3", flag: "🇩🇪" },
+  { id: "por", name: "Portugal", code: "POR", group: "G", confederation: "UEFA", coach: "Roberto Martínez (fic.)", ranking: 7, formation: "4-3-3", flag: "🇵🇹" },
+  { id: "ned", name: "Países Baixos", code: "NED", group: "H", confederation: "UEFA", coach: "Ronald Koeman (fic.)", ranking: 8, formation: "4-3-3", flag: "🇳🇱" },
 ];
 
 const otherTeams: Omit<Team, "players">[] = [
@@ -124,6 +59,6 @@ export const teams: Team[] = [
   ...otherTeams,
 ];
 
-export function getTeam(id: string) {
+export function getTeam(id: string): Team | undefined {
   return teams.find((t) => t.id === id);
 }

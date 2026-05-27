@@ -1,4 +1,6 @@
-export const copaInfo = {
+import type { Competition, Stadium, Confederation } from "@/types";
+
+export const competition: Competition = {
   name: "Copa do Mundo FIFA 2026",
   startDate: "2026-06-11T17:00:00Z",
   endDate: "2026-07-19T20:00:00Z",
@@ -10,7 +12,7 @@ export const copaInfo = {
   newPhase: "Round of 32 (16 avos)",
 };
 
-export const stadiums = [
+export const stadiums: Stadium[] = [
   { name: "MetLife Stadium", city: "Nova York/Nova Jersey", country: "EUA" },
   { name: "SoFi Stadium", city: "Los Angeles", country: "EUA" },
   { name: "AT&T Stadium", city: "Dallas", country: "EUA" },
@@ -23,4 +25,12 @@ export const stadiums = [
   { name: "Lincoln Financial Field", city: "Filadélfia", country: "EUA" },
   { name: "Hard Rock Stadium", city: "Miami", country: "EUA" },
   { name: "Levi's Stadium", city: "São Francisco", country: "EUA" },
+];
+
+export const groupLetters = [
+  "A","B","C","D","E","F","G","H","I","J","K","L",
+];
+
+export const confederations: Confederation[] = [
+  "CONMEBOL","UEFA","CONCACAF","AFC","CAF","OFC",
 ];
