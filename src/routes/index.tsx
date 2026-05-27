@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { StatCard } from "@/components/StatCard";
 import { Countdown } from "@/components/Countdown";
 import { MatchCard } from "@/components/MatchCard";
-import { copaInfo } from "@/data/copaInfo";
+import { competition } from "@/data/competition";
 import { matches } from "@/data/matches";
 import { aiSimulations } from "@/data/aiSimulations";
 import { Trophy, Users, CalendarDays, Flag, Layers, MapPin, Brain } from "lucide-react";
@@ -23,7 +23,6 @@ function Index() {
 
   return (
     <AppLayout>
-      {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-hero border-b border-border">
         <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, oklch(0.72 0.17 152 / 0.25), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.82 0.14 85 / 0.2), transparent 50%)" }} />
         <div className="relative max-w-6xl mx-auto px-6 py-12 lg:py-20">
@@ -35,30 +34,28 @@ function Index() {
             Copa 2026 <span className="bg-gradient-gold bg-clip-text text-transparent">Data Hub</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base sm:text-lg text-muted-foreground">
-            Dashboard interativo com jogos, grupos, seleções, jogadores, regras e simulações de IA da Copa do Mundo 2026.
+            Dashboard interativo com jogos, grupos, seleções, jogadores, regras e simulações de IA da {competition.name}.
           </p>
 
           <div className="mt-8 max-w-xl">
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
               Contagem regressiva · 11 jun 2026
             </div>
-            <Countdown target={copaInfo.startDate} />
+            <Countdown target={competition.startDate} />
           </div>
         </div>
       </section>
 
-      {/* Stats */}
       <section className="max-w-6xl mx-auto px-6 py-10">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <StatCard icon={Users} label="Seleções" value={48} variant="green" />
-          <StatCard icon={Layers} label="Grupos" value={12} variant="info" />
-          <StatCard icon={CalendarDays} label="Jogos" value={104} />
-          <StatCard icon={Flag} label="Países-sede" value={3} hint="USA · CAN · MEX" />
+          <StatCard icon={Users} label="Seleções" value={competition.teams} variant="green" />
+          <StatCard icon={Layers} label="Grupos" value={competition.groups} variant="info" />
+          <StatCard icon={CalendarDays} label="Jogos" value={competition.matches} />
+          <StatCard icon={Flag} label="Países-sede" value={competition.hosts.length} hint="USA · CAN · MEX" />
           <StatCard icon={Trophy} label="16 avos" value="Novo" variant="gold" hint="Nova fase" />
         </div>
       </section>
 
-      {/* Upcoming */}
       <section className="max-w-6xl mx-auto px-6 pb-12">
         <div className="flex items-end justify-between mb-4">
           <div>
@@ -73,7 +70,6 @@ function Index() {
         </div>
       </section>
 
-      {/* AI Favorites */}
       <section className="max-w-6xl mx-auto px-6 pb-16">
         <div className="flex items-end justify-between mb-4">
           <div>

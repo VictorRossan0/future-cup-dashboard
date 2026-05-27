@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { GroupTable } from "@/components/GroupTable";
+import { PageHeader } from "@/components/PageHeader";
 import { groups } from "@/data/groups";
 import { Info } from "lucide-react";
 
@@ -18,13 +19,15 @@ function GruposPage() {
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-        <header>
-          <div className="text-[10px] uppercase tracking-widest text-gold">Fase de Grupos</div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold mt-1">Grupos e Classificação</h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            12 grupos com 4 seleções cada. Os <span className="text-primary font-medium">dois primeiros</span> avançam direto e os <span className="text-gold font-medium">8 melhores terceiros</span> também se classificam para os 16 avos.
-          </p>
-        </header>
+        <PageHeader
+          kicker="Fase de Grupos"
+          title="Grupos e Classificação"
+          description={
+            <>
+              12 grupos com 4 seleções cada. Os <span className="text-primary font-medium">dois primeiros</span> avançam direto e os <span className="text-gold font-medium">8 melhores terceiros</span> também se classificam para os 16 avos.
+            </>
+          }
+        />
 
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 flex items-start gap-3">
           <Info className="size-4 text-info shrink-0 mt-0.5" />
