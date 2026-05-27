@@ -1,4 +1,4 @@
-import type { GroupStanding } from "@/data/groups";
+import type { Standing } from "@/types";
 import { getTeam } from "@/data/teams";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +9,7 @@ const statusStyles = {
   playing: { dot: "bg-info", label: "Em jogo" },
 };
 
-export function GroupTable({ letter, teams }: { letter: string; teams: GroupStanding[] }) {
+export function GroupTable({ letter, teams }: { letter: string; teams: Standing[] }) {
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
       <div className="px-4 py-3 border-b border-border bg-gradient-hero flex items-center justify-between">
