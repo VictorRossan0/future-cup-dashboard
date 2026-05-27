@@ -1,15 +1,4 @@
-export interface AISimulation {
-  id: string;
-  ai: "ChatGPT" | "Claude" | "Gemini";
-  champion: string;
-  runnerUp: string;
-  topScorer: string;
-  surprise: string;
-  disappointment: string;
-  topFive: string[];
-  rationale: string;
-  confidence: number;
-}
+import type { AISimulation, AIConsensus, AIName } from "@/types";
 
 export const aiSimulations: AISimulation[] = [
   {
@@ -53,9 +42,15 @@ export const aiSimulations: AISimulation[] = [
   },
 ];
 
-export const aiConsensus = {
+export const aiConsensus: AIConsensus = {
   mostCitedChampion: "Argentina / França",
   mostCitedPlayer: "Atacante fictício (ARG)",
   toughestGroup: "Grupo C",
   potentialUnderdog: "Marrocos",
+};
+
+export const aiAccentClasses: Record<AIName, string> = {
+  ChatGPT: "from-primary/30 to-primary/5 border-primary/40",
+  Claude: "from-gold/30 to-gold/5 border-gold/40",
+  Gemini: "from-info/30 to-info/5 border-info/40",
 };

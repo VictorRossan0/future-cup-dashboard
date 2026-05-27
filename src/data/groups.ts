@@ -1,22 +1,8 @@
+import type { Group, Standing } from "@/types";
+import { groupLetters } from "./competition";
 import { teams } from "./teams";
 
-export interface GroupStanding {
-  teamId: string;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDiff: number;
-  points: number;
-  status: "advanced" | "thirdContender" | "eliminated" | "playing";
-}
-
-const groupLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-
-// Generate plausible standings
-function makeStanding(teamId: string, idx: number): GroupStanding {
+function makeStanding(teamId: string, idx: number): Standing {
   const seeds = [
     { p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2 },
     { p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3 },
@@ -39,7 +25,7 @@ function makeStanding(teamId: string, idx: number): GroupStanding {
   };
 }
 
-export const groups = groupLetters.map((letter) => {
+export const groups: Group[] = groupLetters.map((letter) => {
   const groupTeams = teams.filter((t) => t.group === letter).slice(0, 4);
   return {
     letter,

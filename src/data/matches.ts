@@ -1,19 +1,6 @@
-import { stadiums } from "./copaInfo";
+import type { Match } from "@/types";
+import { groupLetters, stadiums } from "./competition";
 import { teams } from "./teams";
-
-export interface Match {
-  id: string;
-  date: string; // ISO
-  homeTeamId: string;
-  awayTeamId: string;
-  group: string;
-  phase: "Fase de Grupos" | "16 avos" | "Oitavas" | "Quartas" | "Semifinal" | "Final";
-  stadium: string;
-  city: string;
-  status: "Agendado" | "Encerrado" | "Ao vivo";
-  homeScore?: number;
-  awayScore?: number;
-}
 
 const baseDate = new Date("2026-06-11T17:00:00Z");
 
@@ -24,11 +11,8 @@ function isoFromOffset(days: number, hour = 17): string {
   return d.toISOString();
 }
 
-const groupLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-
 export const matches: Match[] = [];
 
-// Generate 2 matches per group for first round + a few extras
 groupLetters.forEach((letter, gi) => {
   const t = teams.filter((x) => x.group === letter).slice(0, 4);
   if (t.length < 4) return;
