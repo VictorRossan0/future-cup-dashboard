@@ -44,7 +44,7 @@ function TeamDetail() {
   const [posFilter, setPosFilter] = useState<string>("all");
   const [sort, setSort] = useState<"number" | "age" | "height" | "club">("number");
 
-  const players = team.players ?? [];
+  const players: Player[] = team.players ?? [];
 
   const filtered = useMemo(() => {
     const list = posFilter === "all" ? players : players.filter((p) => p.position === posFilter);
