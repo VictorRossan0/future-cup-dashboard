@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { FormatOverview } from "@/components/FormatOverview";
 import { useRules } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 import { BookOpen } from "lucide-react";
@@ -48,7 +49,10 @@ function RegrasPage() {
         ) : grouped.length === 0 ? (
           <EmptyState title="Sem regras cadastradas" description="Popule v_rules_ordered para visualizar as regras." />
         ) : (
-          grouped.map(([cat, list]) => (
+          <>
+            <FormatOverview rules={rules} />
+
+            {grouped.map(([cat, list]) => (
             <section key={cat}>
               <h2 className="font-display text-xl font-bold mb-3 flex items-center gap-2">
                 <BookOpen className="size-5 text-info" /> {t.ruleCat(cat)}
