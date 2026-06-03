@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { PlayerCardView } from "@/components/PlayerCardView";
 import { FilterBar, filterInputClass } from "@/components/FilterBar";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { Pagination } from "@/components/Pagination";
 import { useTeams, usePlayers } from "@/hooks/useCopa";
 import { ArrowLeft, Search } from "lucide-react";
 import { t } from "@/lib/i18n";
