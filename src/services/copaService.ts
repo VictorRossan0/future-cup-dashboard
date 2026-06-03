@@ -15,7 +15,7 @@ import { groups as mockGroups } from "@/data/groups";
 import { matches as mockMatches } from "@/data/matches";
 
 async function safeFetch<T>(
-  fn: () => Promise<{ data: T[] | null; error: unknown }>,
+  fn: () => PromiseLike<{ data: T[] | null; error: unknown }>,
   fallback: T[],
 ): Promise<{ data: T[]; source: "supabase" | "mock"; error?: string }> {
   if (!isSupabaseConfigured) {
@@ -25,10 +25,9 @@ async function safeFetch<T>(
     const { data, error } = await fn();
     if (error) throw error;
     if (!data || data.length === 0) {
-      // View returned empty — keep source supabase but expose empty array.
       return { data: [], source: "supabase" };
     }
-    return { data, source: "supabase" };
+    return { data: data as T[], source: "supabase" };
   } catch (err) {
     console.error("[copaService] Supabase fetch failed, using mock fallback", err);
     return { data: fallback, source: "mock", error: String(err) };
