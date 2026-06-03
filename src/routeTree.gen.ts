@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SimulacoesRouteImport } from './routes/simulacoes'
 import { Route as RegrasRouteImport } from './routes/regras'
+import { Route as MataMataRouteImport } from './routes/mata-mata'
 import { Route as JogosRouteImport } from './routes/jogos'
 import { Route as GruposRouteImport } from './routes/grupos'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +26,11 @@ const SimulacoesRoute = SimulacoesRouteImport.update({
 const RegrasRoute = RegrasRouteImport.update({
   id: '/regras',
   path: '/regras',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MataMataRoute = MataMataRouteImport.update({
+  id: '/mata-mata',
+  path: '/mata-mata',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JogosRoute = JogosRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
+  '/mata-mata': typeof MataMataRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/selecoes/$id': typeof SelecoesIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
+  '/mata-mata': typeof MataMataRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/selecoes/$id': typeof SelecoesIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
+  '/mata-mata': typeof MataMataRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/selecoes/$id': typeof SelecoesIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/grupos'
     | '/jogos'
+    | '/mata-mata'
     | '/regras'
     | '/simulacoes'
     | '/selecoes/$id'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/grupos'
     | '/jogos'
+    | '/mata-mata'
     | '/regras'
     | '/simulacoes'
     | '/selecoes/$id'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/grupos'
     | '/jogos'
+    | '/mata-mata'
     | '/regras'
     | '/simulacoes'
     | '/selecoes/$id'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GruposRoute: typeof GruposRoute
   JogosRoute: typeof JogosRoute
+  MataMataRoute: typeof MataMataRoute
   RegrasRoute: typeof RegrasRoute
   SimulacoesRoute: typeof SimulacoesRoute
   SelecoesIdRoute: typeof SelecoesIdRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/regras'
       fullPath: '/regras'
       preLoaderRoute: typeof RegrasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mata-mata': {
+      id: '/mata-mata'
+      path: '/mata-mata'
+      fullPath: '/mata-mata'
+      preLoaderRoute: typeof MataMataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jogos': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GruposRoute: GruposRoute,
   JogosRoute: JogosRoute,
+  MataMataRoute: MataMataRoute,
   RegrasRoute: RegrasRoute,
   SimulacoesRoute: SimulacoesRoute,
   SelecoesIdRoute: SelecoesIdRoute,
@@ -187,13 +208,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

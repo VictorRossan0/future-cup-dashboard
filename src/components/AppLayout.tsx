@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Users, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity } from "lucide-react";
+import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Dashboard", icon: Home },
   { to: "/grupos", label: "Grupos", icon: ListOrdered },
   { to: "/jogos", label: "Jogos", icon: CalendarDays },
+  { to: "/mata-mata", label: "Mata-mata", icon: Swords },
   { to: "/selecoes", label: "Seleções", icon: Trophy },
   { to: "/regras", label: "Regras", icon: BookOpen },
   { to: "/simulacoes", label: "Simulações de IA", icon: Brain },
