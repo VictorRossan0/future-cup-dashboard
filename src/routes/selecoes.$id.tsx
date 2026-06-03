@@ -31,6 +31,9 @@ function TeamDetail() {
   const [clubFilter, setClubFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"number" | "age" | "height" | "club">("number");
+  const PAGE_SIZE = 24;
+  const [page, setPage] = useState(1);
+  useEffect(() => { setPage(1); }, [posFilter, clubFilter, search, sort, id]);
 
   const players = playersQ.data?.data ?? [];
 
