@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { TeamCardView } from "@/components/TeamCardView";
 import { PageHeader } from "@/components/PageHeader";
 import { FilterBar, filterInputClass } from "@/components/FilterBar";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { Pagination } from "@/components/Pagination";
 import { useTeams } from "@/hooks/useCopa";
 import { Search } from "lucide-react";
 
@@ -42,6 +43,14 @@ function SelecoesPage() {
     });
   }, [all, search, group, conf]);
 
+  const PAGE_SIZE = 16;
+  const [page, setPage] = useState(1);
+  useEffect(() => { setPage(1); }, [search, group, conf]);
+  const paged = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page],
+  );
+
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-6">
@@ -73,6 +82,8 @@ function SelecoesPage() {
           </select>
         </FilterBar>
 
+        <Pagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPageChange={setPage} />
+
         {q.isLoading ? (
           <LoadingGrid count={8} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />
         ) : q.isError ? (
@@ -81,7 +92,7 @@ function SelecoesPage() {
           <EmptyState title="Nenhuma seleção encontrada" />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((t) => <TeamCardView key={t.team_id} team={t} />)}
+            {paged.map((t) => <TeamCardView key={t.team_id} team={t} />)}
           </div>
         )}
       </div>

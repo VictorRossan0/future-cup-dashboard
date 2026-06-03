@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { PlayerCardView } from "@/components/PlayerCardView";
 import { FilterBar, filterInputClass } from "@/components/FilterBar";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { Pagination } from "@/components/Pagination";
 import { useTeams, usePlayers } from "@/hooks/useCopa";
 import { ArrowLeft, Search } from "lucide-react";
 import { t } from "@/lib/i18n";
@@ -31,6 +32,9 @@ function TeamDetail() {
   const [clubFilter, setClubFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"number" | "age" | "height" | "club">("number");
+  const PAGE_SIZE = 24;
+  const [page, setPage] = useState(1);
+  useEffect(() => { setPage(1); }, [posFilter, clubFilter, search, sort, id]);
 
   const players = playersQ.data?.data ?? [];
 
@@ -120,6 +124,8 @@ function TeamDetail() {
           </select>
         </FilterBar>
 
+        <Pagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPageChange={setPage} />
+
         {playersQ.isLoading ? (
           <LoadingGrid count={9} />
         ) : playersQ.isError ? (
@@ -128,7 +134,9 @@ function TeamDetail() {
           <EmptyState title="Sem jogadores" description="Nenhum jogador cadastrado ou os filtros excluíram todos." />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {filtered.map((p) => <PlayerCardView key={p.player_id} player={p} />)}
+            {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
+              <PlayerCardView key={p.player_id} player={p} />
+            ))}
           </div>
         )}
       </section>
