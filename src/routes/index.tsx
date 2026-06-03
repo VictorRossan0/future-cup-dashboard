@@ -4,6 +4,7 @@ import { StatCard } from "@/components/StatCard";
 import { Countdown } from "@/components/Countdown";
 import { MatchCardView } from "@/components/MatchCardView";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { DataQualityPanel } from "@/components/DataQualityPanel";
 import { useCompetitionDashboard, useMatches } from "@/hooks/useCopa";
 import { Trophy, Users, CalendarDays, Flag, Layers, MapPin } from "lucide-react";
 
@@ -75,7 +76,12 @@ function Index() {
         )}
       </section>
 
+      <section className="max-w-6xl mx-auto px-6 pb-6">
+        <DataQualityPanel />
+      </section>
+
       <section className="max-w-6xl mx-auto px-6 pb-16">
+
         <div className="flex items-end justify-between mb-4">
           <div>
             <h2 className="font-display text-2xl font-bold flex items-center gap-2">
