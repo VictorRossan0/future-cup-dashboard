@@ -66,7 +66,8 @@ function RegrasPage() {
                 ))}
               </div>
             </section>
-          ))
+            ))}
+          </>
         )}
       </div>
     </AppLayout>
