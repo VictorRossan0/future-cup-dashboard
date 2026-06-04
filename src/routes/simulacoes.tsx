@@ -105,7 +105,7 @@ function SimulacoesPage() {
 }
 
 // --- consensus -------------------------------------------------------------
-function ConsensusSection({ consensus }: { consensus: ReturnType<typeof useAiSimulationConsensus>["data"] extends { data: infer D } ? D : null }) {
+function ConsensusSection({ consensus }: { consensus: VAiSimulationConsensus | null }) {
   if (!consensus) return null;
   const blocks: Array<{ title: string; icon: React.ReactNode; items: AiConsensusItem[] | null | undefined; isGroup?: boolean }> = [
     { title: t.ai("most_voted_champion"),       icon: <Trophy className="size-4 text-gold" />,           items: consensus.champion_consensus },
