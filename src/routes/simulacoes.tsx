@@ -18,8 +18,6 @@ import { useAiSimulationsFull, useAiSimulationConsensus } from "@/hooks/useCopa"
 import { t } from "@/lib/i18n";
 import type {
   VAiSimulationsFull, AiConsensusItem, AiRankedTeam, AiGroupStagePrediction,
-import type {
-  VAiSimulationsFull, AiConsensusItem, AiRankedTeam, AiGroupStagePrediction,
   VAiSimulationConsensus,
 } from "@/types/views";
 
