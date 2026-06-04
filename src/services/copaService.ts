@@ -6,6 +6,7 @@ import type {
   VCompetitionDashboard, VGroupsStandings, VMatchesFull,
   VTeamsFull, VPlayersFull, VRulesOrdered,
   VAiSimulationContext, VDataQualitySummary,
+  VAiSimulationsFull, VAiSimulationConsensus,
 } from "@/types/views";
 
 // Mocks (fallback only) -----------------------------------------------------
@@ -205,4 +206,23 @@ export async function getDataQualitySummary() {
     () => supabase.from("v_data_quality_summary").select("*"),
     fallback,
   );
+}
+
+// AI Simulations Full -------------------------------------------------------
+export async function getAiSimulationsFull() {
+  const fallback: VAiSimulationsFull[] = [];
+  return safeFetch<VAiSimulationsFull>(
+    () => supabase.from("v_ai_simulations_full").select("*").order("provider", { ascending: true }),
+    fallback,
+  );
+}
+
+// AI Simulation Consensus ---------------------------------------------------
+export async function getAiSimulationConsensus() {
+  const fallback: VAiSimulationConsensus[] = [];
+  const res = await safeFetch<VAiSimulationConsensus>(
+    () => supabase.from("v_ai_simulation_consensus").select("*").limit(1),
+    fallback,
+  );
+  return { ...res, data: res.data[0] ?? null };
 }

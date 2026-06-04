@@ -123,3 +123,129 @@ export interface VDataQualitySummary {
   entity: string;
   total: number;
 }
+
+// AI Simulations -----------------------------------------------------------
+export interface AiTeamPick {
+  team?: string | null;
+  team_code?: string | null;
+  reason?: string | null;
+  probability_score?: number | null;
+  [k: string]: unknown;
+}
+
+export interface AiRankedTeam {
+  rank?: number | null;
+  team?: string | null;
+  team_code?: string | null;
+  score?: number | null;
+  reason?: string | null;
+  [k: string]: unknown;
+}
+
+export interface AiGroupStagePrediction {
+  group_code?: string | null;
+  group?: string | null;
+  first?: { team?: string | null; team_code?: string | null } | string | null;
+  second?: { team?: string | null; team_code?: string | null } | string | null;
+  third?: { team?: string | null; team_code?: string | null } | string | null;
+  reason?: string | null;
+  [k: string]: unknown;
+}
+
+export interface AiValidationNotes {
+  status?: string | null;
+  notes?: string | null;
+  corrected_fields?: string[] | null;
+  [k: string]: unknown;
+}
+
+export interface VAiSimulationsFull {
+  simulation_id: string;
+  competition_id?: string | null;
+  competition_name?: string | null;
+  provider: string;
+  model?: string | null;
+  generated_at?: string | null;
+  confidence?: number | null;
+
+  champion_prediction?: AiTeamPick | null;
+  champion_team?: string | null;
+  champion_team_code?: string | null;
+  champion_probability_score?: number | null;
+  champion_reason?: string | null;
+
+  runner_up_prediction?: AiTeamPick | null;
+  runner_up_team?: string | null;
+  runner_up_team_code?: string | null;
+  runner_up_probability_score?: number | null;
+  runner_up_reason?: string | null;
+
+  semifinalists?: AiTeamPick[] | null;
+  top_favorites?: AiRankedTeam[] | null;
+
+  surprise_team?: AiTeamPick | null;
+  surprise_team_name?: string | null;
+  surprise_team_code?: string | null;
+
+  disappointment_team?: AiTeamPick | null;
+  disappointment_team_name?: string | null;
+  disappointment_team_code?: string | null;
+
+  top_scorer_prediction?: Record<string, unknown> | null;
+  top_scorer_player?: string | null;
+  top_scorer_team?: string | null;
+  top_scorer_team_code?: string | null;
+
+  best_player_prediction?: Record<string, unknown> | null;
+  best_player_name?: string | null;
+  best_player_team?: string | null;
+  best_player_team_code?: string | null;
+
+  best_young_player_prediction?: Record<string, unknown> | null;
+  best_young_player_name?: string | null;
+  best_young_player_team?: string | null;
+  best_young_player_team_code?: string | null;
+
+  group_of_death?: Record<string, unknown> | null;
+  group_of_death_code?: string | null;
+  group_of_death_reason?: string | null;
+
+  dark_horses?: AiTeamPick[] | null;
+  risk_factors?: Array<string | Record<string, unknown>> | null;
+  group_stage_predictions?: AiGroupStagePrediction[] | null;
+  tactical_notes?: string | Record<string, unknown> | null;
+  analysis_summary?: string | null;
+  validation_notes?: AiValidationNotes | null;
+  created_at?: string | null;
+}
+
+export interface AiConsensusItem {
+  team?: string | null;
+  team_code?: string | null;
+  group_code?: string | null;
+  votes: number;
+  providers: string[];
+  avg_confidence?: number | null;
+}
+
+export interface AiProviderPrediction {
+  provider: string;
+  confidence?: number | null;
+  champion_team?: string | null;
+  champion_team_code?: string | null;
+  runner_up_team?: string | null;
+  runner_up_team_code?: string | null;
+}
+
+export interface VAiSimulationConsensus {
+  competition_id?: string | null;
+  competition_name?: string | null;
+  total_simulations: number;
+  champion_consensus?: AiConsensusItem[] | null;
+  runner_up_consensus?: AiConsensusItem[] | null;
+  surprise_consensus?: AiConsensusItem[] | null;
+  disappointment_consensus?: AiConsensusItem[] | null;
+  group_of_death_consensus?: AiConsensusItem[] | null;
+  provider_predictions?: AiProviderPrediction[] | null;
+  avg_confidence?: number | null;
+}
