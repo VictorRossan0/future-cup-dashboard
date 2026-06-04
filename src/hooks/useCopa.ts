@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getCompetitionDashboard, getGroupsStandings, getMatches,
   getTeams, getPlayers, getRules, getAiSimulationContext,
-  getDataQualitySummary, type PlayersFilter,
+  getDataQualitySummary, getAiSimulationsFull, getAiSimulationConsensus,
+  type PlayersFilter,
 } from "@/services/copaService";
 
 const FIVE_MIN = 5 * 60 * 1000;
