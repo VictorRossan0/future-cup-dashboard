@@ -31,3 +31,9 @@ export const useAiSimulationContext = () =>
 
 export const useDataQualitySummary = () =>
   useQuery({ queryKey: ["v_data_quality_summary"], queryFn: getDataQualitySummary, staleTime: FIVE_MIN });
+
+export const useAiSimulationsFull = () =>
+  useQuery({ queryKey: ["v_ai_simulations_full"], queryFn: getAiSimulationsFull, staleTime: FIVE_MIN });
+
+export const useAiSimulationConsensus = () =>
+  useQuery({ queryKey: ["v_ai_simulation_consensus"], queryFn: getAiSimulationConsensus, staleTime: FIVE_MIN });
