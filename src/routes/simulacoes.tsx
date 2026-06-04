@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { PageHeader } from "@/components/PageHeader";
 import { LoadingGrid, ErrorState, EmptyState, SourceBadge } from "@/components/DataState";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
@@ -13,7 +11,10 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Brain, Sparkles, Trophy, Medal, AlertTriangle, ShieldAlert, ArrowUpDown } from "lucide-react";
+import {
+  Brain, Sparkles, Trophy, Medal, ShieldAlert, ArrowUpDown,
+  BarChart3, Database, Clock, ShieldCheck, Star, TrendingDown, Users,
+} from "lucide-react";
 import { useAiSimulationsFull, useAiSimulationConsensus } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 import type {
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/simulacoes")({
   head: () => ({
     meta: [
       { title: "Simulações com IA · Copa 2026 Data Hub" },
-      { name: "description", content: "Comparativo entre ChatGPT, Gemini, Claude, Meta AI, Manus e Perplexity para a Copa do Mundo FIFA 2026." },
+      { name: "description", content: "Comparativo entre ChatGPT, Gemini, Claude, Meta AI, Manus, Perplexity e Grok para a Copa do Mundo FIFA 2026." },
     ],
   }),
   component: SimulacoesPage,
@@ -41,9 +42,23 @@ const fmtDate = (s?: string | null) => {
   try { return new Date(s).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" }); }
   catch { return s; }
 };
+const fmtDateTime = (s?: string | null) => {
+  if (!s) return "—";
+  try {
+    return new Date(s).toLocaleString("pt-BR", {
+      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+  } catch { return s; }
+};
 const asArray = <T,>(v: T[] | null | undefined): T[] => (Array.isArray(v) ? v : []);
 const codeBadge = (code?: string | null) =>
   code ? <span className="ml-1 text-[10px] text-muted-foreground">({code})</span> : null;
+const latestDate = (sims: VAiSimulationsFull[]) => {
+  const ts = sims
+    .map((s) => s.generated_at ? new Date(s.generated_at).getTime() : 0)
+    .filter((n) => n > 0);
+  return ts.length ? new Date(Math.max(...ts)).toISOString() : null;
+};
 
 // --- page ------------------------------------------------------------------
 function SimulacoesPage() {
@@ -53,45 +68,55 @@ function SimulacoesPage() {
   const sims = simsQ.data?.data ?? [];
   const consensus: VAiSimulationConsensus | null = consQ.data?.data ?? null;
   const source = simsQ.data?.source ?? "supabase";
+  const total = consensus?.total_simulations ?? sims.length;
+  const lastUpdate = latestDate(sims);
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
-        <PageHeader
-          kicker="IA · análise comparativa"
-          title={
-            <span className="inline-flex items-center gap-3">
-              <span className="size-10 rounded-2xl bg-gradient-gold grid place-items-center text-gold-foreground">
-                <Brain className="size-5" />
-              </span>
-              {t.ai("page_title")}
-            </span>
-          }
-          description={t.ai("page_subtitle")}
-          right={<SourceBadge source={source} />}
-        >
-          <div className="flex flex-wrap items-center gap-2 mt-4">
-            <Badge variant="secondary" className="rounded-full">
-              <Sparkles className="size-3 mr-1 text-gold" />
-              {consensus?.total_simulations ?? sims.length} {t.ai("simulations_analyzed")}
-            </Badge>
-            {typeof consensus?.avg_confidence === "number" && (
-              <Badge variant="outline" className="rounded-full">
-                {t.ai("avg_confidence")}: {pct(consensus.avg_confidence)}
-              </Badge>
-            )}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
+        {/* HERO */}
+        <section className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-elegant">
+          <div className="absolute -top-16 -right-16 size-56 rounded-full bg-gradient-gold opacity-20 blur-3xl pointer-events-none" />
+          <div className="relative flex items-start justify-between gap-4 flex-wrap">
+            <div className="max-w-2xl">
+              <div className="text-[10px] uppercase tracking-widest text-gold">IA · análise comparativa</div>
+              <h1 className="font-display text-3xl sm:text-4xl font-bold mt-2 flex items-center gap-3">
+                <span className="size-11 rounded-2xl bg-gradient-gold grid place-items-center text-gold-foreground shadow-elegant">
+                  <Brain className="size-5" />
+                </span>
+                {t.ai("page_title")}
+              </h1>
+              <p className="text-muted-foreground mt-3">
+                Compare previsões de diferentes modelos de IA para a Copa do Mundo FIFA 2026 com base em seleções, elencos, técnicos, grupos e contexto estatístico.
+              </p>
+            </div>
+            <SourceBadge source={source} />
           </div>
-        </PageHeader>
+
+          <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6">
+            <HeroStat icon={<BarChart3 className="size-4" />} label={t.ai("simulations_analyzed")} value={String(total)} />
+            <HeroStat
+              icon={<Sparkles className="size-4 text-gold" />}
+              label={t.ai("avg_confidence")}
+              value={pct(consensus?.avg_confidence)}
+            />
+            <HeroStat icon={<Database className="size-4 text-primary" />} label={t.ai("source")} value="Supabase" />
+            <HeroStat icon={<Clock className="size-4" />} label={t.ai("last_update")} value={fmtDate(lastUpdate)} />
+          </div>
+          <p className="relative text-[11px] text-muted-foreground mt-4 flex items-center gap-1.5">
+            <ShieldCheck className="size-3 text-primary" /> {t.ai("data_from_supabase")}
+          </p>
+        </section>
 
         {(simsQ.isError || consQ.isError) && <ErrorState />}
 
         {simsQ.isLoading ? (
           <LoadingGrid count={6} />
         ) : sims.length === 0 ? (
-          <EmptyState title="Sem simulações" description="Nenhuma simulação encontrada no Supabase." />
+          <EmptyState title={t.ai("no_simulations")} description={t.ai("no_simulations_desc")} />
         ) : (
           <>
-            <ConsensusSection consensus={consensus} />
+            <ConsensusSection consensus={consensus} total={total} />
             <ProviderCards sims={sims} />
             <ComparativeTable sims={sims} />
             <FavoritesByAI sims={sims} />
@@ -104,54 +129,62 @@ function SimulacoesPage() {
   );
 }
 
+function HeroStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card/70 backdrop-blur px-4 py-3">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+        {icon}<span>{label}</span>
+      </div>
+      <div className="mt-1 font-display text-xl sm:text-2xl font-bold truncate">{value}</div>
+    </div>
+  );
+}
+
 // --- consensus -------------------------------------------------------------
-function ConsensusSection({ consensus }: { consensus: VAiSimulationConsensus | null }) {
+function ConsensusSection({ consensus, total }: { consensus: VAiSimulationConsensus | null; total: number }) {
   if (!consensus) return null;
-  const blocks: Array<{ title: string; icon: React.ReactNode; items: AiConsensusItem[] | null | undefined; isGroup?: boolean }> = [
-    { title: t.ai("most_voted_champion"),       icon: <Trophy className="size-4 text-gold" />,           items: consensus.champion_consensus },
-    { title: t.ai("most_voted_runner_up"),      icon: <Medal className="size-4 text-primary" />,         items: consensus.runner_up_consensus },
-    { title: t.ai("biggest_surprise"),          icon: <Sparkles className="size-4 text-gold" />,         items: consensus.surprise_consensus },
-    { title: t.ai("biggest_disappointment"),    icon: <AlertTriangle className="size-4 text-destructive" />, items: consensus.disappointment_consensus },
-    { title: t.ai("most_cited_god"),            icon: <ShieldAlert className="size-4 text-destructive" />,   items: consensus.group_of_death_consensus, isGroup: true },
+  const blocks: Array<{
+    title: string; icon: React.ReactNode; items: AiConsensusItem[] | null | undefined;
+    isGroup?: boolean; tone?: "gold" | "primary" | "destructive" | "warn";
+  }> = [
+    { title: t.ai("most_voted_champion"),    icon: <Trophy className="size-4" />,        items: consensus.champion_consensus, tone: "gold" },
+    { title: t.ai("most_voted_runner_up"),   icon: <Medal className="size-4" />,         items: consensus.runner_up_consensus, tone: "primary" },
+    { title: t.ai("biggest_surprise"),       icon: <Sparkles className="size-4" />,      items: consensus.surprise_consensus, tone: "gold" },
+    { title: t.ai("biggest_disappointment"), icon: <TrendingDown className="size-4" />,  items: consensus.disappointment_consensus, tone: "destructive" },
+    { title: t.ai("most_cited_god"),         icon: <ShieldAlert className="size-4" />,   items: consensus.group_of_death_consensus, isGroup: true, tone: "warn" },
   ];
+
+  const toneClass = (tone?: string) => ({
+    gold: "bg-gradient-gold text-gold-foreground",
+    primary: "bg-gradient-green text-primary-foreground",
+    destructive: "bg-destructive/15 text-destructive",
+    warn: "bg-info/15 text-info",
+  }[tone ?? ""] ?? "bg-secondary text-secondary-foreground");
+
   return (
     <section>
-      <h2 className="font-display text-2xl font-bold mb-4">{t.ai("consensus")}</h2>
+      <div className="flex items-end justify-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h2 className="font-display text-2xl font-bold">{t.ai("consensus")}</h2>
+          <p className="text-sm text-muted-foreground">Visão agregada entre as {total} simulações de IA analisadas.</p>
+        </div>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {blocks.map((b) => (
-          <Card key={b.title}>
+          <Card key={b.title} className="overflow-hidden">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">{b.icon}{b.title}</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                <span className={`size-7 rounded-lg grid place-items-center ${toneClass(b.tone)}`}>{b.icon}</span>
+                {b.title}
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2.5">
               {asArray(b.items).length === 0 ? (
                 <p className="text-sm text-muted-foreground">—</p>
               ) : (
-                asArray(b.items).map((it, i) => {
-                  const label = b.isGroup
-                    ? `Grupo ${it.group_code ?? "?"}`
-                    : (it.team ?? "—");
-                  return (
-                    <div key={i} className="rounded-lg border border-border bg-secondary/30 p-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="font-medium text-sm">
-                          {label}{!b.isGroup && codeBadge(it.team_code)}
-                        </div>
-                        <Badge variant="outline" className="rounded-full text-[10px]">
-                          {it.votes} {it.votes === 1 ? t.ai("vote") : t.ai("votes")}
-                        </Badge>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {t.ai("providers")}: {asArray(it.providers).join(", ") || "—"}
-                      </div>
-                      {typeof it.avg_confidence === "number" && (
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {t.ai("confidence")}: {pct(it.avg_confidence)}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
+                asArray(b.items).map((it, i) => (
+                  <ConsensusRow key={i} item={it} total={total} isGroup={b.isGroup} highlight={i === 0} />
+                ))
               )}
             </CardContent>
           </Card>
@@ -161,15 +194,73 @@ function ConsensusSection({ consensus }: { consensus: VAiSimulationConsensus | n
   );
 }
 
+function ConsensusRow({
+  item, total, isGroup, highlight,
+}: { item: AiConsensusItem; total: number; isGroup?: boolean; highlight?: boolean }) {
+  const label = isGroup ? `${t.ai("group")} ${item.group_code ?? "?"}` : (item.team ?? "—");
+  const share = total > 0 ? Math.round((item.votes / total) * 100) : 0;
+  const providers = asArray(item.providers);
+  return (
+    <div className={`rounded-lg border p-3 transition-colors ${
+      highlight ? "border-gold/40 bg-gold/5" : "border-border bg-secondary/30"
+    }`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="font-medium text-sm flex items-center gap-1.5 min-w-0">
+          {highlight && <Star className="size-3.5 text-gold shrink-0" />}
+          <span className="truncate">{label}</span>
+          {!isGroup && codeBadge(item.team_code)}
+        </div>
+        <Badge variant="outline" className="rounded-full text-[10px] shrink-0">
+          {item.votes}/{total}
+        </Badge>
+      </div>
+      <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div
+          className={`h-full ${highlight ? "bg-gradient-gold" : "bg-primary/60"}`}
+          style={{ width: `${share}%` }}
+        />
+      </div>
+      <div className="text-[11px] text-muted-foreground mt-1.5">
+        {share}% {t.ai("of_total")}
+      </div>
+      {providers.length > 0 && (
+        <div className="text-[11px] text-muted-foreground mt-1">
+          <span className="font-medium text-foreground/80">{t.ai("chosen_by")}:</span>{" "}
+          {providers.join(", ")}
+        </div>
+      )}
+      {typeof item.avg_confidence === "number" && (
+        <div className="text-[11px] text-muted-foreground mt-0.5">
+          {t.ai("confidence")}: {pct(item.avg_confidence)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- per-provider cards ----------------------------------------------------
 function ProviderCards({ sims }: { sims: VAiSimulationsFull[] }) {
   return (
     <section>
-      <h2 className="font-display text-2xl font-bold mb-4">Comparativo por IA</h2>
+      <h2 className="font-display text-2xl font-bold mb-4">{t.ai("comparative_by_ai")}</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {sims.map((s) => <ProviderCard key={s.simulation_id} s={s} />)}
       </div>
     </section>
+  );
+}
+
+function ConfidenceBadge({ value }: { value?: number | null }) {
+  const v = typeof value === "number" ? value : null;
+  const tone =
+    v === null ? "bg-secondary text-secondary-foreground" :
+    v >= 0.75 ? "bg-primary/15 text-primary border-primary/30" :
+    v >= 0.5  ? "bg-gold/15 text-gold border-gold/30" :
+                "bg-destructive/15 text-destructive border-destructive/30";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${tone}`}>
+      {t.ai("confidence")}: {pct(v)}
+    </span>
   );
 }
 
@@ -182,43 +273,42 @@ function ProviderCard({ s }: { s: VAiSimulationsFull }) {
     [t.ai("best_young"),     <span>{dash(s.best_young_player_name)}{s.best_young_player_team ? ` · ${s.best_young_player_team}` : ""}</span>],
     [t.ai("surprise"),       <span>{dash(s.surprise_team_name)}{codeBadge(s.surprise_team_code)}</span>],
     [t.ai("disappointment"), <span>{dash(s.disappointment_team_name)}{codeBadge(s.disappointment_team_code)}</span>],
-    [t.ai("group_of_death"), <span>{s.group_of_death_code ? `Grupo ${s.group_of_death_code}` : "—"}</span>],
+    [t.ai("group_of_death"), <span>{s.group_of_death_code ? `${t.ai("group")} ${s.group_of_death_code}` : "—"}</span>],
   ];
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <CardTitle className="text-lg">{s.provider}</CardTitle>
-            <CardDescription className="text-xs">
-              {dash(s.model)} · {fmtDate(s.generated_at)}
+    <Card className="overflow-hidden hover:border-primary/40 transition-colors">
+      <CardHeader className="pb-3 bg-secondary/20">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <CardTitle className="text-lg truncate">{s.provider}</CardTitle>
+              {s.validation_notes && (
+                <Badge variant="outline" className="rounded-full text-[10px] border-info/40 text-info">
+                  <ShieldCheck className="size-3 mr-1" /> {t.ai("curated")}
+                </Badge>
+              )}
+            </div>
+            <CardDescription className="text-xs mt-0.5">
+              {dash(s.model)} · {fmtDateTime(s.generated_at)}
             </CardDescription>
           </div>
-          <Badge variant="outline" className="rounded-full shrink-0">
-            {t.ai("confidence")}: {pct(s.confidence)}
-          </Badge>
+          <ConfidenceBadge value={s.confidence} />
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 pt-4">
         <dl className="grid grid-cols-1 gap-y-1.5 text-sm">
           {rows.map(([k, v]) => (
-            <div key={k} className="grid grid-cols-[140px_1fr] gap-2">
-              <dt className="text-muted-foreground">{k}</dt>
-              <dd className="font-medium">{v}</dd>
+            <div key={k} className="grid grid-cols-[130px_1fr] gap-2 items-baseline">
+              <dt className="text-xs uppercase tracking-wider text-muted-foreground">{k}</dt>
+              <dd className="font-medium text-sm">{v}</dd>
             </div>
           ))}
         </dl>
-        {s.analysis_summary && (
-          <div>
-            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">{t.ai("summary")}</div>
-            <p className="text-sm text-foreground/90">{s.analysis_summary}</p>
-          </div>
-        )}
 
         <Accordion type="single" collapsible>
           <AccordionItem value="details" className="border-b-0">
-            <AccordionTrigger className="text-sm py-2">{t.ai("show_details")}</AccordionTrigger>
+            <AccordionTrigger className="text-sm py-2">{t.ai("full_analysis")}</AccordionTrigger>
             <AccordionContent>
               <DetailsBlock s={s} />
             </AccordionContent>
@@ -232,21 +322,16 @@ function ProviderCard({ s }: { s: VAiSimulationsFull }) {
 function DetailsBlock({ s }: { s: VAiSimulationsFull }) {
   const sections: Array<{ title: string; node: React.ReactNode }> = [];
 
+  if (s.analysis_summary) sections.push({
+    title: t.ai("summary"),
+    node: <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{s.analysis_summary}</p>,
+  });
   const semis = asArray(s.semifinalists);
-  if (semis.length) sections.push({
-    title: t.ai("semifinalists"),
-    node: <TeamList items={semis} />,
-  });
+  if (semis.length) sections.push({ title: t.ai("semifinalists"), node: <TeamList items={semis} /> });
   const favs = asArray(s.top_favorites);
-  if (favs.length) sections.push({
-    title: t.ai("top_favorites"),
-    node: <RankedList items={favs} />,
-  });
+  if (favs.length) sections.push({ title: t.ai("top_favorites"), node: <RankedList items={favs} /> });
   const dh = asArray(s.dark_horses);
-  if (dh.length) sections.push({
-    title: t.ai("dark_horses"),
-    node: <TeamList items={dh} />,
-  });
+  if (dh.length) sections.push({ title: t.ai("dark_horses"), node: <TeamList items={dh} /> });
   const rf = asArray(s.risk_factors);
   if (rf.length) sections.push({
     title: t.ai("risk_factors"),
@@ -262,13 +347,18 @@ function DetailsBlock({ s }: { s: VAiSimulationsFull }) {
     title: t.ai("tactical_notes"),
     node: <p className="text-sm whitespace-pre-line">{typeof s.tactical_notes === "string" ? s.tactical_notes : JSON.stringify(s.tactical_notes, null, 2)}</p>,
   });
+  const gs = asArray(s.group_stage_predictions);
+  if (gs.length) sections.push({
+    title: t.ai("group_stage_pred"),
+    node: <GroupGrid preds={gs} />,
+  });
 
   if (sections.length === 0) return <p className="text-sm text-muted-foreground">—</p>;
   return (
     <div className="space-y-4">
       {sections.map((sec) => (
         <div key={sec.title}>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1.5">{sec.title}</div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">{sec.title}</div>
           {sec.node}
         </div>
       ))}
@@ -292,15 +382,29 @@ function TeamList({ items }: { items: Array<{ team?: string | null; team_code?: 
 function RankedList({ items }: { items: AiRankedTeam[] }) {
   return (
     <ol className="space-y-1.5">
-      {items.map((it, i) => (
-        <li key={i} className="text-sm flex items-start gap-2">
-          <span className="size-5 rounded-full bg-secondary text-xs grid place-items-center shrink-0">{it.rank ?? i + 1}</span>
-          <div className="min-w-0">
-            <div><span className="font-medium">{dash(it.team)}</span>{codeBadge(it.team_code)}{typeof it.score === "number" && <span className="ml-2 text-xs text-muted-foreground">score {it.score}</span>}</div>
-            {it.reason && <div className="text-xs text-muted-foreground">{it.reason}</div>}
-          </div>
-        </li>
-      ))}
+      {items.map((it, i) => {
+        const rank = it.rank ?? i + 1;
+        const isTop = rank === 1;
+        return (
+          <li key={i} className={`flex items-start gap-2 rounded-lg p-2 ${isTop ? "bg-gold/10 border border-gold/30" : ""}`}>
+            <span className={`size-6 rounded-full text-xs grid place-items-center shrink-0 font-semibold ${
+              isTop ? "bg-gradient-gold text-gold-foreground" : "bg-secondary text-secondary-foreground"
+            }`}>{rank}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="font-medium text-sm">{dash(it.team)}</span>
+                {codeBadge(it.team_code)}
+                {typeof it.score === "number" && (
+                  <span className="text-xs text-muted-foreground ml-auto">
+                    <span className="font-semibold text-foreground">{it.score}</span> / 10
+                  </span>
+                )}
+              </div>
+              {it.reason && <div className="text-xs text-muted-foreground mt-0.5">{it.reason}</div>}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }
@@ -328,7 +432,7 @@ function ComparativeTable({ sims }: { sims: VAiSimulationsFull[] }) {
   };
 
   const Th = ({ k, label }: { k?: SortKey; label: string }) => (
-    <TableHead>
+    <TableHead className="whitespace-nowrap">
       {k ? (
         <button onClick={() => toggle(k)} className="inline-flex items-center gap-1 hover:text-foreground">
           {label} <ArrowUpDown className="size-3" />
@@ -340,7 +444,9 @@ function ComparativeTable({ sims }: { sims: VAiSimulationsFull[] }) {
   return (
     <section>
       <h2 className="font-display text-2xl font-bold mb-4">{t.ai("comparative_summary")}</h2>
-      <div className="rounded-xl border border-border overflow-x-auto">
+
+      {/* Desktop table */}
+      <div className="hidden md:block rounded-xl border border-border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -359,22 +465,55 @@ function ComparativeTable({ sims }: { sims: VAiSimulationsFull[] }) {
           <TableBody>
             {sorted.map((s) => (
               <TableRow key={s.simulation_id}>
-                <TableCell className="font-medium">{s.provider}</TableCell>
-                <TableCell>{dash(s.champion_team)}</TableCell>
-                <TableCell>{dash(s.runner_up_team)}</TableCell>
-                <TableCell>{dash(s.top_scorer_player)}</TableCell>
-                <TableCell>{dash(s.best_player_name)}</TableCell>
-                <TableCell>{dash(s.best_young_player_name)}</TableCell>
-                <TableCell>{dash(s.surprise_team_name)}</TableCell>
-                <TableCell>{dash(s.disappointment_team_name)}</TableCell>
-                <TableCell>{s.group_of_death_code ? `Grupo ${s.group_of_death_code}` : "—"}</TableCell>
-                <TableCell>{pct(s.confidence)}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">{s.provider}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.champion_team)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.runner_up_team)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.top_scorer_player)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.best_player_name)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.best_young_player_name)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.surprise_team_name)}</TableCell>
+                <TableCell className="whitespace-nowrap">{dash(s.disappointment_team_name)}</TableCell>
+                <TableCell className="whitespace-nowrap">{s.group_of_death_code ? `${t.ai("group")} ${s.group_of_death_code}` : "—"}</TableCell>
+                <TableCell className="whitespace-nowrap">{pct(s.confidence)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {sorted.map((s) => (
+          <Card key={s.simulation_id}>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base">{s.provider}</CardTitle>
+                <ConfidenceBadge value={s.confidence} />
+              </div>
+            </CardHeader>
+            <CardContent className="text-sm grid grid-cols-2 gap-x-3 gap-y-1.5">
+              <Cell k={t.ai("champion")} v={s.champion_team} />
+              <Cell k={t.ai("runner_up")} v={s.runner_up_team} />
+              <Cell k={t.ai("top_scorer")} v={s.top_scorer_player} />
+              <Cell k={t.ai("best_player")} v={s.best_player_name} />
+              <Cell k={t.ai("best_young")} v={s.best_young_player_name} />
+              <Cell k={t.ai("surprise")} v={s.surprise_team_name} />
+              <Cell k={t.ai("disappointment")} v={s.disappointment_team_name} />
+              <Cell k={t.ai("group_of_death")} v={s.group_of_death_code ? `${t.ai("group")} ${s.group_of_death_code}` : null} />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </section>
+  );
+}
+
+function Cell({ k, v }: { k: string; v?: string | null }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{k}</div>
+      <div className="font-medium truncate">{dash(v)}</div>
+    </div>
   );
 }
 
@@ -386,7 +525,7 @@ function FavoritesByAI({ sims }: { sims: VAiSimulationsFull[] }) {
     <section>
       <h2 className="font-display text-2xl font-bold mb-4">{t.ai("favorites_by_ai")}</h2>
       <Tabs defaultValue={withFavs[0].provider}>
-        <TabsList className="flex-wrap h-auto">
+        <TabsList className="flex-wrap h-auto bg-secondary/50">
           {withFavs.map((s) => (
             <TabsTrigger key={s.simulation_id} value={s.provider}>{s.provider}</TabsTrigger>
           ))}
@@ -407,57 +546,77 @@ function FavoritesByAI({ sims }: { sims: VAiSimulationsFull[] }) {
 
 // --- group stage -----------------------------------------------------------
 function GroupStageSection({ sims }: { sims: VAiSimulationsFull[] }) {
+  const withGs = sims.filter((s) => asArray(s.group_stage_predictions).length > 0);
+  if (!withGs.length) {
+    return (
+      <section>
+        <h2 className="font-display text-2xl font-bold mb-4">{t.ai("group_predictions")}</h2>
+        <EmptyState title={t.ai("no_group_stage")} />
+      </section>
+    );
+  }
   return (
     <section>
-      <h2 className="font-display text-2xl font-bold mb-4">{t.ai("group_stage_pred")}</h2>
-      <Accordion type="multiple" className="space-y-2">
-        {sims.map((s) => (
-          <AccordionItem key={s.simulation_id} value={s.simulation_id} className="border border-border rounded-xl px-4">
-            <AccordionTrigger className="text-sm">{s.provider}</AccordionTrigger>
-            <AccordionContent>
-              <GroupStageBody preds={s.group_stage_predictions} />
-            </AccordionContent>
-          </AccordionItem>
+      <h2 className="font-display text-2xl font-bold mb-4">{t.ai("group_predictions")}</h2>
+      <Tabs defaultValue={withGs[0].provider}>
+        <TabsList className="flex-wrap h-auto bg-secondary/50">
+          {withGs.map((s) => (
+            <TabsTrigger key={s.simulation_id} value={s.provider}>{s.provider}</TabsTrigger>
+          ))}
+        </TabsList>
+        {withGs.map((s) => (
+          <TabsContent key={s.simulation_id} value={s.provider} className="mt-4">
+            <GroupGrid preds={s.group_stage_predictions ?? []} />
+          </TabsContent>
         ))}
-      </Accordion>
+      </Tabs>
     </section>
   );
 }
 
-function GroupStageBody({ preds }: { preds?: AiGroupStagePrediction[] | null }) {
+function GroupGrid({ preds }: { preds: AiGroupStagePrediction[] }) {
   const items = asArray(preds);
-  if (items.length === 0) return <p className="text-sm text-muted-foreground">{t.ai("no_group_stage")}</p>;
-
+  if (items.length === 0) {
+    return <p className="text-sm text-muted-foreground">{t.ai("no_group_stage")}</p>;
+  }
   const teamStr = (v: AiGroupStagePrediction["first"]) => {
     if (!v) return "—";
     if (typeof v === "string") return v;
     return `${v.team ?? "—"}${v.team_code ? ` (${v.team_code})` : ""}`;
   };
-
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Grupo</TableHead>
-            <TableHead>{t.ai("first_place")}</TableHead>
-            <TableHead>{t.ai("second_place")}</TableHead>
-            <TableHead>{t.ai("third_place")}</TableHead>
-            <TableHead>Justificativa</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((g, i) => (
-            <TableRow key={i}>
-              <TableCell className="font-medium">{g.group_code ?? g.group ?? "—"}</TableCell>
-              <TableCell>{teamStr(g.first)}</TableCell>
-              <TableCell>{teamStr(g.second)}</TableCell>
-              <TableCell>{teamStr(g.third)}</TableCell>
-              <TableCell className="text-xs text-muted-foreground">{g.reason ?? "—"}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((g, i) => (
+        <Card key={i} className="overflow-hidden">
+          <CardHeader className="pb-2 bg-secondary/30">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Users className="size-4 text-primary" />
+              {t.ai("group")} {g.group_code ?? g.group ?? "?"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-3 text-sm space-y-1.5">
+            <Row label={`1º`} value={teamStr(g.first)} accent="gold" />
+            <Row label={`2º`} value={teamStr(g.second)} accent="primary" />
+            <Row label={t.ai("third_place")} value={teamStr(g.third)} />
+            {g.reason && (
+              <div className="pt-2 mt-2 border-t border-border text-[11px] text-muted-foreground">
+                {g.reason}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function Row({ label, value, accent }: { label: string; value: string; accent?: "gold" | "primary" }) {
+  const dot = accent === "gold" ? "bg-gold" : accent === "primary" ? "bg-primary" : "bg-muted-foreground/40";
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`size-1.5 rounded-full ${dot}`} />
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground w-16">{label}</span>
+      <span className="font-medium truncate">{value}</span>
     </div>
   );
 }
@@ -468,23 +627,41 @@ function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
   if (!withNotes.length) return null;
   return (
     <section>
-      <h2 className="font-display text-lg font-semibold mb-2 text-muted-foreground">{t.ai("validation_notes")}</h2>
-      <Accordion type="single" collapsible>
+      <div className="mb-3">
+        <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+          <ShieldCheck className="size-4 text-info" />
+          {t.ai("validation_title")}
+        </h2>
+        <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
+          {t.ai("validation_intro")}
+        </p>
+      </div>
+      <Accordion type="single" collapsible className="rounded-xl border border-border bg-secondary/20 px-3">
         {withNotes.map((s) => {
           const v = s.validation_notes!;
           return (
-            <AccordionItem key={s.simulation_id} value={s.simulation_id}>
-              <AccordionTrigger className="text-sm text-muted-foreground">
-                {s.provider}{v.status ? ` · ${v.status}` : ""}
+            <AccordionItem key={s.simulation_id} value={s.simulation_id} className="border-border">
+              <AccordionTrigger className="text-sm">
+                <span className="flex items-center gap-2">
+                  <span className="font-medium">{s.provider}</span>
+                  {v.status && (
+                    <Badge variant="outline" className="rounded-full text-[10px] border-info/30 text-info">
+                      {v.status}
+                    </Badge>
+                  )}
+                </span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="text-sm space-y-2 text-muted-foreground">
-                  {v.status && <div><span className="font-medium text-foreground">{t.ai("status")}: </span>{v.status}</div>}
                   {v.notes && <div><span className="font-medium text-foreground">{t.ai("notes")}: </span>{v.notes}</div>}
                   {asArray(v.corrected_fields).length > 0 && (
                     <div>
                       <span className="font-medium text-foreground">{t.ai("corrected_fields")}: </span>
-                      {asArray(v.corrected_fields).join(", ")}
+                      <span className="inline-flex flex-wrap gap-1 mt-1">
+                        {asArray(v.corrected_fields).map((f) => (
+                          <Badge key={f} variant="secondary" className="rounded-full text-[10px]">{f}</Badge>
+                        ))}
+                      </span>
                     </div>
                   )}
                 </div>

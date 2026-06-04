@@ -107,7 +107,25 @@ const AI_LABEL: Record<string, Partial<Record<Locale, string>>> = {
   status:                { "pt-BR": "Status" },
   notes:                 { "pt-BR": "Notas" },
   corrected_fields:      { "pt-BR": "Campos corrigidos" },
+  source:                { "pt-BR": "Fonte" },
+  last_update:           { "pt-BR": "Última atualização" },
+  chosen_by:             { "pt-BR": "Escolhida por" },
+  cited_by:              { "pt-BR": "Citado por" },
+  of_total:              { "pt-BR": "das simulações" },
+  full_analysis:         { "pt-BR": "Ver análise completa" },
+  hide_analysis:         { "pt-BR": "Ocultar análise" },
+  validation_title:      { "pt-BR": "Notas de validação e curadoria" },
+  validation_intro:      { "pt-BR": "Esta simulação passou por curadoria para corrigir inconsistências estruturais antes da importação." },
+  data_from_supabase:    { "pt-BR": "Dados carregados do Supabase" },
+  group_predictions:     { "pt-BR": "Previsões da fase de grupos" },
+  comparative_by_ai:     { "pt-BR": "Comparativo por IA" },
+  no_simulations:        { "pt-BR": "Sem simulações" },
+  no_simulations_desc:   { "pt-BR": "Nenhuma simulação encontrada no Supabase." },
+  justification:         { "pt-BR": "Justificativa" },
+  group:                 { "pt-BR": "Grupo" },
+  curated:               { "pt-BR": "Curadoria" },
 };
+
 
 export const t = {
   position:   (k: string, l: Locale = defaultLocale) => pick(POSITION, k, l),
