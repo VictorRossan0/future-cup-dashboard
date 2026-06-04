@@ -6,6 +6,7 @@ import type {
   VCompetitionDashboard, VGroupsStandings, VMatchesFull,
   VTeamsFull, VPlayersFull, VRulesOrdered,
   VAiSimulationContext, VDataQualitySummary,
+  VAiSimulationsFull, VAiSimulationConsensus,
 } from "@/types/views";
 
 // Mocks (fallback only) -----------------------------------------------------
