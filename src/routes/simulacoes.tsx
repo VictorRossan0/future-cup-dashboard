@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Brain, Sparkles, Trophy, Medal, AlertTriangle, ShieldAlert, ArrowUpDown,
+  Brain, Sparkles, Trophy, Medal, ShieldAlert, ArrowUpDown,
   BarChart3, Database, Clock, ShieldCheck, Star, TrendingDown, Users,
 } from "lucide-react";
 import { useAiSimulationsFull, useAiSimulationConsensus } from "@/hooks/useCopa";
