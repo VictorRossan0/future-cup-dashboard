@@ -51,7 +51,7 @@ function SimulacoesPage() {
   const consQ = useAiSimulationConsensus();
 
   const sims = simsQ.data?.data ?? [];
-  const consensus = consQ.data?.data ?? null;
+  const consensus: VAiSimulationConsensus | null = consQ.data?.data ?? null;
   const source = simsQ.data?.source ?? "supabase";
 
   return (
