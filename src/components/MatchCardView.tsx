@@ -6,11 +6,13 @@ import { TeamFlag } from "@/components/TeamFlag";
 
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
+  const isFinished = status === "finished" || status === "completed";
   const statusClass = {
     scheduled: "bg-secondary text-secondary-foreground",
     confirmed: "bg-secondary text-secondary-foreground",
     pending:   "bg-muted text-muted-foreground",
     finished:  "bg-muted text-muted-foreground",
+    completed: "bg-muted text-muted-foreground",
     current:   "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
   }[status] ?? "bg-secondary text-secondary-foreground";
 
