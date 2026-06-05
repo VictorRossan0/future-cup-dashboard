@@ -353,7 +353,7 @@ function DetailsBlock({ s }: { s: VAiSimulationsFull }) {
   });
   if (s.tactical_notes) sections.push({
     title: t.ai("tactical_notes"),
-    node: <p className="text-sm whitespace-pre-line">{typeof s.tactical_notes === "string" ? s.tactical_notes : JSON.stringify(s.tactical_notes, null, 2)}</p>,
+    node: <NotesRenderer value={s.tactical_notes} />,
   });
   const gs = asArray(s.group_stage_predictions);
   if (gs.length) sections.push({
