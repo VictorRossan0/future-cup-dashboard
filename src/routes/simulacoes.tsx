@@ -596,38 +596,71 @@ function GroupStageSection({ sims }: { sims: VAiSimulationsFull[] }) {
   );
 }
 
+function resolveTeam(v: unknown): { team?: string | null; team_code?: string | null; reason?: string | null } | null {
+  if (!v) return null;
+  if (typeof v === "string") return { team: v };
+  if (typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    return {
+      team: (o.team as string) ?? (o.name as string) ?? null,
+      team_code: (o.team_code as string) ?? (o.code as string) ?? null,
+      reason: (o.reason as string) ?? null,
+    };
+  }
+  return null;
+}
+
 function GroupGrid({ preds }: { preds: AiGroupStagePrediction[] }) {
   const items = asArray(preds);
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">{t.ai("no_group_stage")}</p>;
   }
-  const teamStr = (v: AiGroupStagePrediction["first"]) => {
-    if (!v) return "—";
-    if (typeof v === "string") return v;
-    return `${v.team ?? "—"}${v.team_code ? ` (${v.team_code})` : ""}`;
-  };
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((g, i) => (
-        <Card key={i} className="overflow-hidden">
-          <CardHeader className="pb-2 bg-secondary/30">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Users className="size-4 text-primary" />
-              {t.ai("group")} {g.group_code ?? g.group ?? "?"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-3 text-sm space-y-1.5">
-            <Row label={`1º`} value={teamStr(g.first)} accent="gold" />
-            <Row label={`2º`} value={teamStr(g.second)} accent="primary" />
-            <Row label={t.ai("third_place")} value={teamStr(g.third)} />
-            {g.reason && (
-              <div className="pt-2 mt-2 border-t border-border text-[11px] text-muted-foreground">
-                {g.reason}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+      {items.map((g, i) => {
+        const qt = asArray(g.qualified_teams);
+        const firstPick = qt.find((x) => x?.predicted_position === 1) ?? qt[0];
+        const secondPick = qt.find((x) => x?.predicted_position === 2) ?? qt[1];
+        const first = resolveTeam(firstPick) ?? resolveTeam(g.first);
+        const second = resolveTeam(secondPick) ?? resolveTeam(g.second);
+        const third = resolveTeam(g.possible_third_place_candidate) ?? resolveTeam(g.third);
+        const reason = g.possible_third_place_candidate?.reason ?? g.reason ?? null;
+        return (
+          <Card key={i} className="overflow-hidden">
+            <CardHeader className="pb-2 bg-secondary/30">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Users className="size-4 text-primary" />
+                {t.ai("group")} {g.group_code ?? g.group ?? "?"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3 text-sm space-y-1.5">
+              <TeamRow label="1º" team={first} accent="gold" />
+              <TeamRow label="2º" team={second} accent="primary" />
+              <TeamRow label={t.ai("third_place")} team={third} />
+              {reason && (
+                <div className="pt-2 mt-2 border-t border-border text-[11px] text-muted-foreground">
+                  {reason}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function TeamRow({ label, team, accent }: { label: string; team: { team?: string | null; team_code?: string | null } | null; accent?: "gold" | "primary" }) {
+  const dot = accent === "gold" ? "bg-gold" : accent === "primary" ? "bg-primary" : "bg-muted-foreground/40";
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`size-1.5 rounded-full ${dot}`} />
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground w-16">{label}</span>
+      {team?.team_code && <TeamFlag teamCode={team.team_code} teamName={team.team} size={16} />}
+      <span className="font-medium truncate">
+        {team?.team ?? "—"}
+        {team?.team_code && <span className="ml-1 text-[10px] font-mono text-muted-foreground">{team.team_code}</span>}
+      </span>
     </div>
   );
 }
