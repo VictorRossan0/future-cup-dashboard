@@ -665,16 +665,6 @@ function TeamRow({ label, team, accent }: { label: string; team: { team?: string
   );
 }
 
-function Row({ label, value, accent }: { label: string; value: string; accent?: "gold" | "primary" }) {
-  const dot = accent === "gold" ? "bg-gold" : accent === "primary" ? "bg-primary" : "bg-muted-foreground/40";
-  return (
-    <div className="flex items-center gap-2">
-      <span className={`size-1.5 rounded-full ${dot}`} />
-      <span className="text-[10px] uppercase tracking-widest text-muted-foreground w-16">{label}</span>
-      <span className="font-medium truncate">{value}</span>
-    </div>
-  );
-}
 
 // --- validation notes ------------------------------------------------------
 function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
