@@ -718,3 +718,58 @@ function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
     </section>
   );
 }
+
+function NotesRenderer({ value, inline }: { value: unknown; inline?: boolean }) {
+  if (value == null) return null;
+  if (typeof value === "string") {
+    return <span className={inline ? "" : "text-sm whitespace-pre-line block"}>{value}</span>;
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) return null;
+    const allStrings = value.every((v) => typeof v === "string");
+    if (allStrings) {
+      return (
+        <ul className="list-disc pl-5 text-sm space-y-1">
+          {(value as string[]).map((v, i) => <li key={i}>{v}</li>)}
+        </ul>
+      );
+    }
+    return (
+      <ul className="space-y-1.5 text-sm">
+        {value.map((v, i) => {
+          if (typeof v === "string") return <li key={i}>{v}</li>;
+          if (v && typeof v === "object") {
+            const o = v as Record<string, unknown>;
+            const team = (o.team as string) ?? (o.title as string) ?? null;
+            const code = (o.team_code as string) ?? null;
+            const note = (o.note as string) ?? (o.text as string) ?? (o.description as string) ?? null;
+            if (team || note) {
+              return (
+                <li key={i} className="flex items-start gap-1.5">
+                  {code && <TeamFlag teamCode={code} teamName={team} size={14} className="mt-0.5" />}
+                  <span>
+                    {team && <span className="font-medium">{team}</span>}
+                    {code && <span className="ml-1 text-[10px] font-mono text-muted-foreground">{code}</span>}
+                    {team && note && <span className="text-muted-foreground"> — </span>}
+                    {note && <span className="text-muted-foreground">{note}</span>}
+                  </span>
+                </li>
+              );
+            }
+          }
+          return <li key={i} className="text-xs text-muted-foreground italic">—</li>;
+        })}
+      </ul>
+    );
+  }
+  if (typeof value === "object") {
+    // try common shape { summary } or fallback
+    const o = value as Record<string, unknown>;
+    if (typeof o.summary === "string") {
+      return <span className={inline ? "" : "text-sm whitespace-pre-line block"}>{o.summary}</span>;
+    }
+    return <span className="text-xs text-muted-foreground italic">—</span>;
+  }
+  return <span>{String(value)}</span>;
+}
+
