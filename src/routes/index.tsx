@@ -71,7 +71,7 @@ function Index() {
             <StatCard icon={Layers} label="Grupos" value={comp?.total_groups ?? 12} variant="info" />
             <StatCard icon={CalendarDays} label="Jogos" value={comp?.total_matches ?? 104} />
             <StatCard icon={Flag} label="Países-sede" value={hosts.length || 3} hint={hosts.join(" · ") || "USA · CAN · MEX"} />
-            <StatCard icon={Trophy} label="Jogadores" value={comp?.total_players ?? 0} variant="gold" hint="Importados" />
+            <StatCard icon={Trophy} label="Jogadores convocados" value={comp?.total_players ?? 0} variant="gold" hint="26 por seleção" />
           </div>
         )}
       </section>
