@@ -142,13 +142,25 @@ export interface AiRankedTeam {
   [k: string]: unknown;
 }
 
+export interface AiGroupTeamRef {
+  team?: string | null;
+  team_code?: string | null;
+  predicted_position?: number | null;
+  reason?: string | null;
+  [k: string]: unknown;
+}
+
 export interface AiGroupStagePrediction {
   group_code?: string | null;
   group?: string | null;
-  first?: { team?: string | null; team_code?: string | null } | string | null;
-  second?: { team?: string | null; team_code?: string | null } | string | null;
-  third?: { team?: string | null; team_code?: string | null } | string | null;
+  // legacy format
+  first?: AiGroupTeamRef | string | null;
+  second?: AiGroupTeamRef | string | null;
+  third?: AiGroupTeamRef | string | null;
   reason?: string | null;
+  // new format
+  qualified_teams?: AiGroupTeamRef[] | null;
+  possible_third_place_candidate?: AiGroupTeamRef | null;
   [k: string]: unknown;
 }
 
