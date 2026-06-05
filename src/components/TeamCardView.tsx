@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import type { VTeamsFull } from "@/types/views";
+import { TeamFlag } from "@/components/TeamFlag";
 
 export function TeamCardView({ team }: { team: VTeamsFull }) {
   return (
     <div className="group rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-all hover:shadow-glow">
-      <div className="h-20 bg-gradient-hero relative flex items-center justify-center">
+      <div className="h-20 bg-gradient-hero relative flex items-center justify-center gap-3">
+        <TeamFlag teamCode={team.team_code} teamName={team.team_name} size={36} />
         <span className="font-display font-bold text-3xl text-gold">{team.team_code}</span>
         {team.group_code && (
           <span className="absolute top-2 right-2 text-[10px] uppercase tracking-widest bg-background/60 backdrop-blur px-2 py-0.5 rounded-full">
@@ -15,7 +17,10 @@ export function TeamCardView({ team }: { team: VTeamsFull }) {
       <div className="p-4 space-y-3">
         <div>
           <div className="flex items-baseline justify-between gap-2">
-            <h3 className="font-display font-bold text-lg leading-tight truncate">{team.team_name}</h3>
+            <h3 className="font-display font-bold text-lg leading-tight truncate flex items-center gap-2">
+              <TeamFlag teamCode={team.team_code} teamName={team.team_name} size={20} />
+              <span className="truncate">{team.team_name}</span>
+            </h3>
             <span className="text-xs font-mono text-gold shrink-0">{team.team_code}</span>
           </div>
           <div className="text-xs text-muted-foreground mt-0.5">{team.confederation ?? "—"}</div>

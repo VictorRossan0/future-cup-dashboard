@@ -2,6 +2,7 @@ import type { VMatchesFull } from "@/types/views";
 import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { TeamFlag } from "@/components/TeamFlag";
 
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
@@ -32,7 +33,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
         <span className={cn("px-2 py-0.5 rounded-full text-[10px]", statusClass)}>{t.status(status)}</span>
       </div>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex-1 flex flex-col items-center text-center">
+        <div className="flex-1 flex flex-col items-center text-center gap-1">
+          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={32} />
           <span className="font-display font-semibold text-sm">{home}</span>
           {match.home_team_code && <span className="text-[10px] font-mono text-muted-foreground">{match.home_team_code}</span>}
           {homePlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
@@ -47,7 +49,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           )}
           <div className="text-[10px] text-muted-foreground mt-1 tabular-nums">{time}</div>
         </div>
-        <div className="flex-1 flex flex-col items-center text-center">
+        <div className="flex-1 flex flex-col items-center text-center gap-1">
+          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={32} />
           <span className="font-display font-semibold text-sm">{away}</span>
           {match.away_team_code && <span className="text-[10px] font-mono text-muted-foreground">{match.away_team_code}</span>}
           {awayPlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}

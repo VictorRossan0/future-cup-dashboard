@@ -1,6 +1,7 @@
 import type { VGroupsStandings } from "@/types/views";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { TeamFlag } from "@/components/TeamFlag";
 
 const statusStyles: Record<string, { dot: string; label: string }> = {
   advanced:       { dot: "bg-primary", label: "Classificado" },
@@ -47,9 +48,14 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
                     </div>
                   </td>
                   <td className="px-3 py-2.5">
-                    <div className="font-medium">{row.team_name}</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {row.team_code ?? ""} {row.coach_name ? `· ${row.coach_name}` : ""} · {t.qualif(row.qualification_status ?? "playing")}
+                    <div className="flex items-center gap-2">
+                      <TeamFlag teamCode={row.team_code} teamName={row.team_name} size={20} />
+                      <div className="min-w-0">
+                        <div className="font-medium truncate">{row.team_name}</div>
+                        <div className="text-[10px] text-muted-foreground truncate">
+                          {row.team_code ?? ""} {row.coach_name ? `· ${row.coach_name}` : ""} · {t.qualif(row.qualification_status ?? "playing")}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-2 py-2.5 text-center tabular-nums">{row.played ?? 0}</td>

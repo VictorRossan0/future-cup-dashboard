@@ -8,6 +8,7 @@ import { Pagination } from "@/components/Pagination";
 import { useTeams, usePlayers } from "@/hooks/useCopa";
 import { ArrowLeft, Search } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { TeamFlag } from "@/components/TeamFlag";
 
 export const Route = createFileRoute("/selecoes/$id")({
   head: ({ params }) => ({
@@ -75,7 +76,10 @@ function TeamDetail() {
                 <div className="text-[10px] uppercase tracking-widest text-gold">
                   {team.group_code ? `Grupo ${team.group_code} · ` : ""}{team.confederation ?? ""}
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl font-bold mt-1">{team.team_name}</h1>
+                <h1 className="font-display text-3xl sm:text-5xl font-bold mt-1 flex items-center gap-3 flex-wrap">
+                  <TeamFlag teamCode={team.team_code} teamName={team.team_name} size={48} />
+                  <span>{team.team_name}</span>
+                </h1>
                 <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
                   <span><span className="text-muted-foreground">Código:</span> <span className="font-mono text-gold">{team.team_code}</span></span>
                   <span><span className="text-muted-foreground">Técnico:</span> {team.coach_name ?? "—"}</span>
