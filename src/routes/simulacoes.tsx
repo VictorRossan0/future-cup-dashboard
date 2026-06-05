@@ -520,6 +520,16 @@ function ComparativeTable({ sims }: { sims: VAiSimulationsFull[] }) {
   );
 }
 
+function TeamCell({ name, code }: { name?: string | null; code?: string | null }) {
+  if (!name && !code) return <>—</>;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {code && <TeamFlag teamCode={code} teamName={name} size={16} />}
+      <span>{dash(name)}</span>
+    </span>
+  );
+}
+
 function Cell({ k, v }: { k: string; v?: string | null }) {
   return (
     <div className="min-w-0">
