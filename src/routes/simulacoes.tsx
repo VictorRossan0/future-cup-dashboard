@@ -353,7 +353,7 @@ function DetailsBlock({ s }: { s: VAiSimulationsFull }) {
   });
   if (s.tactical_notes) sections.push({
     title: t.ai("tactical_notes"),
-    node: <p className="text-sm whitespace-pre-line">{typeof s.tactical_notes === "string" ? s.tactical_notes : JSON.stringify(s.tactical_notes, null, 2)}</p>,
+    node: <NotesRenderer value={s.tactical_notes} />,
   });
   const gs = asArray(s.group_stage_predictions);
   if (gs.length) sections.push({
@@ -596,52 +596,75 @@ function GroupStageSection({ sims }: { sims: VAiSimulationsFull[] }) {
   );
 }
 
+function resolveTeam(v: unknown): { team?: string | null; team_code?: string | null; reason?: string | null } | null {
+  if (!v) return null;
+  if (typeof v === "string") return { team: v };
+  if (typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    return {
+      team: (o.team as string) ?? (o.name as string) ?? null,
+      team_code: (o.team_code as string) ?? (o.code as string) ?? null,
+      reason: (o.reason as string) ?? null,
+    };
+  }
+  return null;
+}
+
 function GroupGrid({ preds }: { preds: AiGroupStagePrediction[] }) {
   const items = asArray(preds);
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">{t.ai("no_group_stage")}</p>;
   }
-  const teamStr = (v: AiGroupStagePrediction["first"]) => {
-    if (!v) return "—";
-    if (typeof v === "string") return v;
-    return `${v.team ?? "—"}${v.team_code ? ` (${v.team_code})` : ""}`;
-  };
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((g, i) => (
-        <Card key={i} className="overflow-hidden">
-          <CardHeader className="pb-2 bg-secondary/30">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Users className="size-4 text-primary" />
-              {t.ai("group")} {g.group_code ?? g.group ?? "?"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-3 text-sm space-y-1.5">
-            <Row label={`1º`} value={teamStr(g.first)} accent="gold" />
-            <Row label={`2º`} value={teamStr(g.second)} accent="primary" />
-            <Row label={t.ai("third_place")} value={teamStr(g.third)} />
-            {g.reason && (
-              <div className="pt-2 mt-2 border-t border-border text-[11px] text-muted-foreground">
-                {g.reason}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+      {items.map((g, i) => {
+        const qt = asArray(g.qualified_teams);
+        const firstPick = qt.find((x) => x?.predicted_position === 1) ?? qt[0];
+        const secondPick = qt.find((x) => x?.predicted_position === 2) ?? qt[1];
+        const first = resolveTeam(firstPick) ?? resolveTeam(g.first);
+        const second = resolveTeam(secondPick) ?? resolveTeam(g.second);
+        const third = resolveTeam(g.possible_third_place_candidate) ?? resolveTeam(g.third);
+        const reason = g.possible_third_place_candidate?.reason ?? g.reason ?? null;
+        return (
+          <Card key={i} className="overflow-hidden">
+            <CardHeader className="pb-2 bg-secondary/30">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Users className="size-4 text-primary" />
+                {t.ai("group")} {g.group_code ?? g.group ?? "?"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3 text-sm space-y-1.5">
+              <TeamRow label="1º" team={first} accent="gold" />
+              <TeamRow label="2º" team={second} accent="primary" />
+              <TeamRow label={t.ai("third_place")} team={third} />
+              {reason && (
+                <div className="pt-2 mt-2 border-t border-border text-[11px] text-muted-foreground">
+                  {reason}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
 
-function Row({ label, value, accent }: { label: string; value: string; accent?: "gold" | "primary" }) {
+function TeamRow({ label, team, accent }: { label: string; team: { team?: string | null; team_code?: string | null } | null; accent?: "gold" | "primary" }) {
   const dot = accent === "gold" ? "bg-gold" : accent === "primary" ? "bg-primary" : "bg-muted-foreground/40";
   return (
     <div className="flex items-center gap-2">
       <span className={`size-1.5 rounded-full ${dot}`} />
       <span className="text-[10px] uppercase tracking-widest text-muted-foreground w-16">{label}</span>
-      <span className="font-medium truncate">{value}</span>
+      {team?.team_code && <TeamFlag teamCode={team.team_code} teamName={team.team} size={16} />}
+      <span className="font-medium truncate">
+        {team?.team ?? "—"}
+        {team?.team_code && <span className="ml-1 text-[10px] font-mono text-muted-foreground">{team.team_code}</span>}
+      </span>
     </div>
   );
 }
+
 
 // --- validation notes ------------------------------------------------------
 function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
@@ -675,7 +698,7 @@ function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="text-sm space-y-2 text-muted-foreground">
-                  {v.notes && <div><span className="font-medium text-foreground">{t.ai("notes")}: </span>{v.notes}</div>}
+                  {v.notes != null && <div><span className="font-medium text-foreground">{t.ai("notes")}: </span><NotesRenderer value={v.notes} inline /></div>}
                   {asArray(v.corrected_fields).length > 0 && (
                     <div>
                       <span className="font-medium text-foreground">{t.ai("corrected_fields")}: </span>
@@ -695,3 +718,58 @@ function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
     </section>
   );
 }
+
+function NotesRenderer({ value, inline }: { value: unknown; inline?: boolean }) {
+  if (value == null) return null;
+  if (typeof value === "string") {
+    return <span className={inline ? "" : "text-sm whitespace-pre-line block"}>{value}</span>;
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) return null;
+    const allStrings = value.every((v) => typeof v === "string");
+    if (allStrings) {
+      return (
+        <ul className="list-disc pl-5 text-sm space-y-1">
+          {(value as string[]).map((v, i) => <li key={i}>{v}</li>)}
+        </ul>
+      );
+    }
+    return (
+      <ul className="space-y-1.5 text-sm">
+        {value.map((v, i) => {
+          if (typeof v === "string") return <li key={i}>{v}</li>;
+          if (v && typeof v === "object") {
+            const o = v as Record<string, unknown>;
+            const team = (o.team as string) ?? (o.title as string) ?? null;
+            const code = (o.team_code as string) ?? null;
+            const note = (o.note as string) ?? (o.text as string) ?? (o.description as string) ?? null;
+            if (team || note) {
+              return (
+                <li key={i} className="flex items-start gap-1.5">
+                  {code && <TeamFlag teamCode={code} teamName={team} size={14} className="mt-0.5" />}
+                  <span>
+                    {team && <span className="font-medium">{team}</span>}
+                    {code && <span className="ml-1 text-[10px] font-mono text-muted-foreground">{code}</span>}
+                    {team && note && <span className="text-muted-foreground"> — </span>}
+                    {note && <span className="text-muted-foreground">{note}</span>}
+                  </span>
+                </li>
+              );
+            }
+          }
+          return <li key={i} className="text-xs text-muted-foreground italic">—</li>;
+        })}
+      </ul>
+    );
+  }
+  if (typeof value === "object") {
+    // try common shape { summary } or fallback
+    const o = value as Record<string, unknown>;
+    if (typeof o.summary === "string") {
+      return <span className={inline ? "" : "text-sm whitespace-pre-line block"}>{o.summary}</span>;
+    }
+    return <span className="text-xs text-muted-foreground italic">—</span>;
+  }
+  return <span>{String(value)}</span>;
+}
+

@@ -30,6 +30,7 @@ const STATUS: Record<string, Partial<Record<Locale, string>>> = {
   pending:   { "pt-BR": "Pendente", en: "Pending", es: "Pendiente" },
   current:   { "pt-BR": "Ao vivo", en: "Live", es: "En vivo" },
   finished:  { "pt-BR": "Encerrado", en: "Finished", es: "Finalizado" },
+  completed: { "pt-BR": "Encerrado", en: "Completed", es: "Finalizado" },
 };
 
 const RULE_CATEGORY: Record<string, Partial<Record<Locale, string>>> = {

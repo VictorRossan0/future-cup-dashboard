@@ -6,11 +6,13 @@ import { TeamFlag } from "@/components/TeamFlag";
 
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
+  const isFinished = status === "finished" || status === "completed";
   const statusClass = {
     scheduled: "bg-secondary text-secondary-foreground",
     confirmed: "bg-secondary text-secondary-foreground",
     pending:   "bg-muted text-muted-foreground",
     finished:  "bg-muted text-muted-foreground",
+    completed: "bg-muted text-muted-foreground",
     current:   "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
   }[status] ?? "bg-secondary text-secondary-foreground";
 
@@ -40,7 +42,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           {homePlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
         </div>
         <div className="text-center min-w-[60px]">
-          {status === "finished" && match.home_score != null ? (
+          {isFinished && match.home_score != null ? (
             <div className="font-display text-3xl font-bold tabular-nums">
               {match.home_score} <span className="text-muted-foreground">·</span> {match.away_score}
             </div>

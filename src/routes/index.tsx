@@ -30,7 +30,7 @@ function Index() {
       : [];
 
   const upcoming = (matchesQ.data?.data ?? [])
-    .filter((m) => m.status !== "finished")
+    .filter((m) => m.status !== "finished" && m.status !== "completed")
     .slice(0, 6);
 
   return (
