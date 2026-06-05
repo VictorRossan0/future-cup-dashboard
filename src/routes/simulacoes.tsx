@@ -698,7 +698,7 @@ function ValidationSection({ sims }: { sims: VAiSimulationsFull[] }) {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="text-sm space-y-2 text-muted-foreground">
-                  {v.notes && <div><span className="font-medium text-foreground">{t.ai("notes")}: </span>{v.notes}</div>}
+                  {v.notes != null && <div><span className="font-medium text-foreground">{t.ai("notes")}: </span><NotesRenderer value={v.notes} inline /></div>}
                   {asArray(v.corrected_fields).length > 0 && (
                     <div>
                       <span className="font-medium text-foreground">{t.ai("corrected_fields")}: </span>
