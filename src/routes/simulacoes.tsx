@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAiSimulationsFull, useAiSimulationConsensus } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
+import { TeamFlag } from "@/components/TeamFlag";
 import type {
   VAiSimulationsFull, AiConsensusItem, AiRankedTeam, AiGroupStagePrediction,
   VAiSimulationConsensus,
@@ -207,6 +208,7 @@ function ConsensusRow({
       <div className="flex items-center justify-between gap-2">
         <div className="font-medium text-sm flex items-center gap-1.5 min-w-0">
           {highlight && <Star className="size-3.5 text-gold shrink-0" />}
+          {!isGroup && <TeamFlag teamCode={item.team_code} teamName={item.team} size={18} />}
           <span className="truncate">{label}</span>
           {!isGroup && codeBadge(item.team_code)}
         </div>
@@ -265,14 +267,20 @@ function ConfidenceBadge({ value }: { value?: number | null }) {
 }
 
 function ProviderCard({ s }: { s: VAiSimulationsFull }) {
+  const teamCell = (name?: string | null, code?: string | null) => (
+    <span className="inline-flex items-center gap-1.5">
+      {code && <TeamFlag teamCode={code} teamName={name} size={16} />}
+      <span>{dash(name)}</span>{codeBadge(code)}
+    </span>
+  );
   const rows: Array<[string, React.ReactNode]> = [
-    [t.ai("champion"),       <span>{dash(s.champion_team)}{codeBadge(s.champion_team_code)}</span>],
-    [t.ai("runner_up"),      <span>{dash(s.runner_up_team)}{codeBadge(s.runner_up_team_code)}</span>],
+    [t.ai("champion"),       teamCell(s.champion_team, s.champion_team_code)],
+    [t.ai("runner_up"),      teamCell(s.runner_up_team, s.runner_up_team_code)],
     [t.ai("top_scorer"),     <span>{dash(s.top_scorer_player)}{s.top_scorer_team ? ` · ${s.top_scorer_team}` : ""}</span>],
     [t.ai("best_player"),    <span>{dash(s.best_player_name)}{s.best_player_team ? ` · ${s.best_player_team}` : ""}</span>],
     [t.ai("best_young"),     <span>{dash(s.best_young_player_name)}{s.best_young_player_team ? ` · ${s.best_young_player_team}` : ""}</span>],
-    [t.ai("surprise"),       <span>{dash(s.surprise_team_name)}{codeBadge(s.surprise_team_code)}</span>],
-    [t.ai("disappointment"), <span>{dash(s.disappointment_team_name)}{codeBadge(s.disappointment_team_code)}</span>],
+    [t.ai("surprise"),       teamCell(s.surprise_team_name, s.surprise_team_code)],
+    [t.ai("disappointment"), teamCell(s.disappointment_team_name, s.disappointment_team_code)],
     [t.ai("group_of_death"), <span>{s.group_of_death_code ? `${t.ai("group")} ${s.group_of_death_code}` : "—"}</span>],
   ];
 
@@ -371,7 +379,10 @@ function TeamList({ items }: { items: Array<{ team?: string | null; team_code?: 
     <ul className="space-y-1.5">
       {items.map((it, i) => (
         <li key={i} className="text-sm">
-          <span className="font-medium">{dash(it.team)}</span>{codeBadge(it.team_code)}
+          <span className="inline-flex items-center gap-1.5">
+            {it.team_code && <TeamFlag teamCode={it.team_code} teamName={it.team} size={16} />}
+            <span className="font-medium">{dash(it.team)}</span>{codeBadge(it.team_code)}
+          </span>
           {it.reason && <div className="text-xs text-muted-foreground">{it.reason}</div>}
         </li>
       ))}
@@ -392,6 +403,7 @@ function RankedList({ items }: { items: AiRankedTeam[] }) {
             }`}>{rank}</span>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-2 flex-wrap">
+                {it.team_code && <TeamFlag teamCode={it.team_code} teamName={it.team} size={16} className="self-center" />}
                 <span className="font-medium text-sm">{dash(it.team)}</span>
                 {codeBadge(it.team_code)}
                 {typeof it.score === "number" && (
@@ -466,13 +478,13 @@ function ComparativeTable({ sims }: { sims: VAiSimulationsFull[] }) {
             {sorted.map((s) => (
               <TableRow key={s.simulation_id}>
                 <TableCell className="font-medium whitespace-nowrap">{s.provider}</TableCell>
-                <TableCell className="whitespace-nowrap">{dash(s.champion_team)}</TableCell>
-                <TableCell className="whitespace-nowrap">{dash(s.runner_up_team)}</TableCell>
+                <TableCell className="whitespace-nowrap"><TeamCell name={s.champion_team} code={s.champion_team_code} /></TableCell>
+                <TableCell className="whitespace-nowrap"><TeamCell name={s.runner_up_team} code={s.runner_up_team_code} /></TableCell>
                 <TableCell className="whitespace-nowrap">{dash(s.top_scorer_player)}</TableCell>
                 <TableCell className="whitespace-nowrap">{dash(s.best_player_name)}</TableCell>
                 <TableCell className="whitespace-nowrap">{dash(s.best_young_player_name)}</TableCell>
-                <TableCell className="whitespace-nowrap">{dash(s.surprise_team_name)}</TableCell>
-                <TableCell className="whitespace-nowrap">{dash(s.disappointment_team_name)}</TableCell>
+                <TableCell className="whitespace-nowrap"><TeamCell name={s.surprise_team_name} code={s.surprise_team_code} /></TableCell>
+                <TableCell className="whitespace-nowrap"><TeamCell name={s.disappointment_team_name} code={s.disappointment_team_code} /></TableCell>
                 <TableCell className="whitespace-nowrap">{s.group_of_death_code ? `${t.ai("group")} ${s.group_of_death_code}` : "—"}</TableCell>
                 <TableCell className="whitespace-nowrap">{pct(s.confidence)}</TableCell>
               </TableRow>
