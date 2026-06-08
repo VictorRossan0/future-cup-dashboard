@@ -21,7 +21,18 @@ export const Route = createFileRoute("/")({
 function Index() {
   const dash = useCompetitionDashboard();
   const matchesQ = useMatches();
+  const qualityQ = useDataQualitySummary();
   const comp = dash.data?.data;
+
+  const playersRow = (qualityQ.data?.data ?? []).find((r) => r.entity === "players");
+  const playersTotal = Number(playersRow?.total ?? comp?.total_players ?? 0);
+  const playersExpected = 1248;
+  const playersCoverage = Math.min(100, Math.round((playersTotal / playersExpected) * 100));
+  const playersHint = playersTotal >= playersExpected
+    ? "Cobertura completa · 26 por seleção"
+    : playersTotal === 0
+      ? "Sem dados cadastrados"
+      : `${playersCoverage}% · faltam ${playersExpected - playersTotal}`;
 
   const hosts = Array.isArray(comp?.host_countries)
     ? comp!.host_countries as string[]
