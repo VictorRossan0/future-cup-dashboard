@@ -5,7 +5,7 @@ import { Countdown } from "@/components/Countdown";
 import { MatchCardView } from "@/components/MatchCardView";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
 import { DataQualityPanel } from "@/components/DataQualityPanel";
-import { useCompetitionDashboard, useMatches } from "@/hooks/useCopa";
+import { useCompetitionDashboard, useMatches, useDataQualitySummary } from "@/hooks/useCopa";
 import { Trophy, Users, CalendarDays, Flag, Layers, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -21,7 +21,18 @@ export const Route = createFileRoute("/")({
 function Index() {
   const dash = useCompetitionDashboard();
   const matchesQ = useMatches();
+  const qualityQ = useDataQualitySummary();
   const comp = dash.data?.data;
+
+  const playersRow = (qualityQ.data?.data ?? []).find((r) => r.entity === "players");
+  const playersTotal = Number(playersRow?.total ?? comp?.total_players ?? 0);
+  const playersExpected = 1248;
+  const playersCoverage = Math.min(100, Math.round((playersTotal / playersExpected) * 100));
+  const playersHint = playersTotal >= playersExpected
+    ? "Cobertura completa · 26 por seleção"
+    : playersTotal === 0
+      ? "Sem dados cadastrados"
+      : `${playersCoverage}% · faltam ${playersExpected - playersTotal}`;
 
   const hosts = Array.isArray(comp?.host_countries)
     ? comp!.host_countries as string[]
@@ -71,7 +82,13 @@ function Index() {
             <StatCard icon={Layers} label="Grupos" value={comp?.total_groups ?? 12} variant="info" />
             <StatCard icon={CalendarDays} label="Jogos" value={comp?.total_matches ?? 104} />
             <StatCard icon={Flag} label="Países-sede" value={hosts.length || 3} hint={hosts.join(" · ") || "USA · CAN · MEX"} />
-            <StatCard icon={Trophy} label="Jogadores convocados" value={comp?.total_players ?? 0} variant="gold" hint="26 por seleção" />
+            <StatCard
+              icon={Trophy}
+              label="Jogadores convocados"
+              value={`${playersTotal}${playersExpected ? ` / ${playersExpected}` : ""}`}
+              variant="gold"
+              hint={playersHint}
+            />
           </div>
         )}
       </section>
