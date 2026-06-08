@@ -97,6 +97,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           Copa 2026 Data Hub · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
+      <PreviewStatus />
+    </div>
+  );
+}
     </div>
   );
 }
