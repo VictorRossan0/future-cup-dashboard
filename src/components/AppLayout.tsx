@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PreviewStatus } from "@/components/PreviewStatus";
 
 const items = [
   { to: "/", label: "Dashboard", icon: Home },
@@ -96,6 +97,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           Copa 2026 Data Hub · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
+      <PreviewStatus />
     </div>
   );
 }
