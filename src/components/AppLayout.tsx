@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PreviewStatus } from "@/components/PreviewStatus";
 
 const items = [
   { to: "/", label: "Dashboard", icon: Home },
