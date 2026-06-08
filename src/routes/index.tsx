@@ -5,7 +5,7 @@ import { Countdown } from "@/components/Countdown";
 import { MatchCardView } from "@/components/MatchCardView";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
 import { DataQualityPanel } from "@/components/DataQualityPanel";
-import { useCompetitionDashboard, useMatches } from "@/hooks/useCopa";
+import { useCompetitionDashboard, useMatches, useDataQualitySummary } from "@/hooks/useCopa";
 import { Trophy, Users, CalendarDays, Flag, Layers, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/")({
