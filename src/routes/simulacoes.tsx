@@ -117,7 +117,8 @@ function SimulacoesPage() {
           <EmptyState title={t.ai("no_simulations")} description={t.ai("no_simulations_desc")} />
         ) : (
           <>
-            <ConsensusSection consensus={consensus} total={total} />
+            <ConsensusHighlights sims={sims} consensus={consensus} />
+            <ConsensusSection consensus={consensus} total={total} sims={sims} />
             <ProviderCards sims={sims} />
             <ComparativeTable sims={sims} />
             <FavoritesByAI sims={sims} />
@@ -142,14 +143,19 @@ function HeroStat({ icon, label, value }: { icon: React.ReactNode; label: string
 }
 
 // --- consensus -------------------------------------------------------------
-function ConsensusSection({ consensus, total }: { consensus: VAiSimulationConsensus | null; total: number }) {
+function ConsensusSection({ consensus, total, sims }: { consensus: VAiSimulationConsensus | null; total: number; sims: VAiSimulationsFull[] }) {
   if (!consensus) return null;
+  const topScorer = computePlayerConsensus(sims, "top_scorer_player", "top_scorer_team", "top_scorer_team_code");
+  const bestYoung = computePlayerConsensus(sims, "best_young_player_name", "best_young_player_team", "best_young_player_team_code");
+
   const blocks: Array<{
     title: string; icon: React.ReactNode; items: AiConsensusItem[] | null | undefined;
-    isGroup?: boolean; tone?: "gold" | "primary" | "destructive" | "warn";
+    isGroup?: boolean; isPlayer?: boolean; tone?: "gold" | "primary" | "destructive" | "warn";
   }> = [
     { title: t.ai("most_voted_champion"),    icon: <Trophy className="size-4" />,        items: consensus.champion_consensus, tone: "gold" },
     { title: t.ai("most_voted_runner_up"),   icon: <Medal className="size-4" />,         items: consensus.runner_up_consensus, tone: "primary" },
+    { title: "Artilheiro mais votado",       icon: <Star className="size-4" />,          items: topScorer, isPlayer: true, tone: "gold" },
+    { title: "Melhor jovem mais votado",     icon: <Sparkles className="size-4" />,      items: bestYoung, isPlayer: true, tone: "primary" },
     { title: t.ai("biggest_surprise"),       icon: <Sparkles className="size-4" />,      items: consensus.surprise_consensus, tone: "gold" },
     { title: t.ai("biggest_disappointment"), icon: <TrendingDown className="size-4" />,  items: consensus.disappointment_consensus, tone: "destructive" },
     { title: t.ai("most_cited_god"),         icon: <ShieldAlert className="size-4" />,   items: consensus.group_of_death_consensus, isGroup: true, tone: "warn" },
@@ -184,7 +190,7 @@ function ConsensusSection({ consensus, total }: { consensus: VAiSimulationConsen
                 <p className="text-sm text-muted-foreground">—</p>
               ) : (
                 asArray(b.items).map((it, i) => (
-                  <ConsensusRow key={i} item={it} total={total} isGroup={b.isGroup} highlight={i === 0} />
+                  <ConsensusRow key={i} item={it} total={total} isGroup={b.isGroup} isPlayer={b.isPlayer} highlight={i === 0} />
                 ))
               )}
             </CardContent>
@@ -195,12 +201,92 @@ function ConsensusSection({ consensus, total }: { consensus: VAiSimulationConsen
   );
 }
 
+// Compute consensus over a free-text player field across sims.
+function computePlayerConsensus(
+  sims: VAiSimulationsFull[],
+  nameKey: keyof VAiSimulationsFull,
+  teamKey: keyof VAiSimulationsFull,
+  codeKey: keyof VAiSimulationsFull,
+): AiConsensusItem[] {
+  const map = new Map<string, AiConsensusItem>();
+  for (const s of sims) {
+    const name = s[nameKey] as string | null | undefined;
+    if (!name) continue;
+    const key = name.trim().toLowerCase();
+    const existing = map.get(key);
+    if (existing) {
+      existing.votes += 1;
+      if (s.provider && !existing.providers.includes(s.provider)) existing.providers.push(s.provider);
+    } else {
+      map.set(key, {
+        team: name,
+        team_code: (s[teamKey] as string | null) ?? null,
+        // reuse group_code to carry team-code for player rendering hint
+        group_code: (s[codeKey] as string | null) ?? null,
+        votes: 1,
+        providers: s.provider ? [s.provider] : [],
+      });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.votes - a.votes);
+}
+
+// Compact highlights strip — single most-voted of each category.
+function ConsensusHighlights({ sims, consensus }: { sims: VAiSimulationsFull[]; consensus: VAiSimulationConsensus | null }) {
+  const total = consensus?.total_simulations ?? sims.length;
+  const topScorer = computePlayerConsensus(sims, "top_scorer_player", "top_scorer_team", "top_scorer_team_code");
+  const bestYoung = computePlayerConsensus(sims, "best_young_player_name", "best_young_player_team", "best_young_player_team_code");
+
+  const items = [
+    { label: "Campeão mais votado", icon: <Trophy className="size-4" />, tone: "gold" as const, pick: consensus?.champion_consensus?.[0] },
+    { label: "Vice mais votado",    icon: <Medal className="size-4" />,  tone: "primary" as const, pick: consensus?.runner_up_consensus?.[0] },
+    { label: "Artilheiro mais votado", icon: <Star className="size-4" />, tone: "gold" as const, pick: topScorer[0], isPlayer: true },
+    { label: "Melhor jovem mais votado", icon: <Sparkles className="size-4" />, tone: "primary" as const, pick: bestYoung[0], isPlayer: true },
+  ];
+
+  return (
+    <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {items.map((it) => {
+        const share = it.pick && total > 0 ? Math.round((it.pick.votes / total) * 100) : 0;
+        const toneBg = it.tone === "gold" ? "bg-gradient-gold text-gold-foreground" : "bg-gradient-green text-primary-foreground";
+        return (
+          <Card key={it.label} className="overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className={`size-6 rounded-md grid place-items-center ${toneBg}`}>{it.icon}</span>
+                {it.label}
+              </div>
+              {it.pick ? (
+                <>
+                  <div className="mt-2 font-display text-lg font-bold truncate flex items-center gap-1.5">
+                    {!it.isPlayer && it.pick.team_code && <TeamFlag teamCode={it.pick.team_code} teamName={it.pick.team} size={18} />}
+                    <span className="truncate">{it.pick.team ?? "—"}</span>
+                  </div>
+                  <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+                    <div className={`h-full ${it.tone === "gold" ? "bg-gradient-gold" : "bg-primary"}`} style={{ width: `${share}%` }} />
+                  </div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">
+                    {it.pick.votes}/{total} · {share}%
+                  </div>
+                </>
+              ) : (
+                <div className="mt-2 text-sm text-muted-foreground">—</div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </section>
+  );
+}
+
 function ConsensusRow({
-  item, total, isGroup, highlight,
-}: { item: AiConsensusItem; total: number; isGroup?: boolean; highlight?: boolean }) {
+  item, total, isGroup, isPlayer, highlight,
+}: { item: AiConsensusItem; total: number; isGroup?: boolean; isPlayer?: boolean; highlight?: boolean }) {
   const label = isGroup ? `${t.ai("group")} ${item.group_code ?? "?"}` : (item.team ?? "—");
   const share = total > 0 ? Math.round((item.votes / total) * 100) : 0;
   const providers = asArray(item.providers);
+  const showFlag = !isGroup && !isPlayer;
   return (
     <div className={`rounded-lg border p-3 transition-colors ${
       highlight ? "border-gold/40 bg-gold/5" : "border-border bg-secondary/30"
@@ -208,9 +294,10 @@ function ConsensusRow({
       <div className="flex items-center justify-between gap-2">
         <div className="font-medium text-sm flex items-center gap-1.5 min-w-0">
           {highlight && <Star className="size-3.5 text-gold shrink-0" />}
-          {!isGroup && <TeamFlag teamCode={item.team_code} teamName={item.team} size={18} />}
+          {showFlag && <TeamFlag teamCode={item.team_code} teamName={item.team} size={18} />}
           <span className="truncate">{label}</span>
-          {!isGroup && codeBadge(item.team_code)}
+          {!isGroup && !isPlayer && codeBadge(item.team_code)}
+          {isPlayer && item.team_code && <span className="ml-1 text-[10px] text-muted-foreground">· {item.team_code}</span>}
         </div>
         <Badge variant="outline" className="rounded-full text-[10px] shrink-0">
           {item.votes}/{total}

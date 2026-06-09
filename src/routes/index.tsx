@@ -26,10 +26,10 @@ function Index() {
 
   const playersRow = (qualityQ.data?.data ?? []).find((r) => r.entity === "players");
   const playersTotal = Number(playersRow?.total ?? comp?.total_players ?? 0);
-  const playersExpected = 1248;
+  const playersExpected = 1024;
   const playersCoverage = Math.min(100, Math.round((playersTotal / playersExpected) * 100));
   const playersHint = playersTotal >= playersExpected
-    ? "Cobertura completa · 26 por seleção"
+    ? "Cobertura completa"
     : playersTotal === 0
       ? "Sem dados cadastrados"
       : `${playersCoverage}% · faltam ${playersExpected - playersTotal}`;

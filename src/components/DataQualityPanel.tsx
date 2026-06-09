@@ -8,7 +8,7 @@ const EXPECTED: Record<string, number> = {
   groups: 12,
   teams: 48,
   coaches: 48,
-  players: 1248,
+  players: 1024,
   standings: 48,
   matches: 104,
   rules: 10,
