@@ -117,7 +117,8 @@ function SimulacoesPage() {
           <EmptyState title={t.ai("no_simulations")} description={t.ai("no_simulations_desc")} />
         ) : (
           <>
-            <ConsensusSection consensus={consensus} total={total} />
+            <ConsensusHighlights sims={sims} consensus={consensus} />
+            <ConsensusSection consensus={consensus} total={total} sims={sims} />
             <ProviderCards sims={sims} />
             <ComparativeTable sims={sims} />
             <FavoritesByAI sims={sims} />
