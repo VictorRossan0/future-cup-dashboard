@@ -281,11 +281,12 @@ function ConsensusHighlights({ sims, consensus }: { sims: VAiSimulationsFull[]; 
 }
 
 function ConsensusRow({
-  item, total, isGroup, highlight,
-}: { item: AiConsensusItem; total: number; isGroup?: boolean; highlight?: boolean }) {
+  item, total, isGroup, isPlayer, highlight,
+}: { item: AiConsensusItem; total: number; isGroup?: boolean; isPlayer?: boolean; highlight?: boolean }) {
   const label = isGroup ? `${t.ai("group")} ${item.group_code ?? "?"}` : (item.team ?? "—");
   const share = total > 0 ? Math.round((item.votes / total) * 100) : 0;
   const providers = asArray(item.providers);
+  const showFlag = !isGroup && !isPlayer;
   return (
     <div className={`rounded-lg border p-3 transition-colors ${
       highlight ? "border-gold/40 bg-gold/5" : "border-border bg-secondary/30"
@@ -293,9 +294,10 @@ function ConsensusRow({
       <div className="flex items-center justify-between gap-2">
         <div className="font-medium text-sm flex items-center gap-1.5 min-w-0">
           {highlight && <Star className="size-3.5 text-gold shrink-0" />}
-          {!isGroup && <TeamFlag teamCode={item.team_code} teamName={item.team} size={18} />}
+          {showFlag && <TeamFlag teamCode={item.team_code} teamName={item.team} size={18} />}
           <span className="truncate">{label}</span>
-          {!isGroup && codeBadge(item.team_code)}
+          {!isGroup && !isPlayer && codeBadge(item.team_code)}
+          {isPlayer && item.team_code && <span className="ml-1 text-[10px] text-muted-foreground">· {item.team_code}</span>}
         </div>
         <Badge variant="outline" className="rounded-full text-[10px] shrink-0">
           {item.votes}/{total}
