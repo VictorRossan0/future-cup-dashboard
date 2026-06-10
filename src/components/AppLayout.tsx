@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords, BarChart3 } from "lucide-react";
+import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords, BarChart3, Info, FlaskConical, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
 
@@ -12,6 +12,9 @@ const items = [
   { to: "/regras", label: "Regras", icon: BookOpen },
   { to: "/simulacoes", label: "Simulações de IA", icon: Brain },
   { to: "/ranking-ias", label: "Ranking das IAs", icon: BarChart3 },
+  { to: "/hall-da-fama", label: "Hall da Fama", icon: Crown },
+  { to: "/sobre", label: "Sobre", icon: Info },
+  { to: "/metodologia", label: "Metodologia", icon: FlaskConical },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
