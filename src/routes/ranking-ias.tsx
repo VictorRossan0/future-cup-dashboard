@@ -175,12 +175,14 @@ function ConfidencePill({ v }: { v?: number | null }) {
   );
 }
 
-function MobileCard({ s }: { s: VAiSimulationsFull }) {
+function MobileCard({ s, index }: { s: VAiSimulationsFull; index: number }) {
   return (
-    <Card>
+    <Card className={index === 0 ? "border-gold/40 shadow-glow" : ""}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base">{s.provider}</CardTitle>
+          <CardTitle className="text-base inline-flex items-center gap-2">
+            <RankMedal index={index} /> {s.provider}
+          </CardTitle>
           <Badge variant="outline" className="text-[10px]">{pct(s.confidence)}</Badge>
         </div>
         {s.model && <CardDescription className="text-xs">{s.model}</CardDescription>}
