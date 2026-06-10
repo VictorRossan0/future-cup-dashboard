@@ -7,11 +7,24 @@ import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/D
 import { DataQualityPanel } from "@/components/DataQualityPanel";
 import { TeamFlag } from "@/components/TeamFlag";
 import {
-  useCompetitionDashboard, useMatches, useDataQualitySummary,
-  useAiSimulationsFull, useAiSimulationConsensus,
+  useCompetitionDashboard,
+  useMatches,
+  useDataQualitySummary,
+  useAiSimulationsFull,
+  useAiSimulationConsensus,
 } from "@/hooks/useCopa";
 import {
-  Trophy, Users, CalendarDays, Flag, Layers, MapPin, Brain, Sparkles, ArrowRight, Crown, Medal,
+  Trophy,
+  Users,
+  CalendarDays,
+  Flag,
+  Layers,
+  MapPin,
+  Brain,
+  Sparkles,
+  ArrowRight,
+  Crown,
+  Medal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +33,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Copa 2026 Intelligence — Dashboard" },
-      { name: "description", content: "Copa do Mundo FIFA 2026 analisada por Inteligência Artificial: 48 seleções, 1024 jogadores, simulações e consenso entre modelos." },
+      {
+        name: "description",
+        content:
+          "Copa do Mundo FIFA 2026 analisada por Inteligência Artificial: 48 seleções, 1248 jogadores, simulações e consenso entre modelos.",
+      },
       { property: "og:title", content: "Copa 2026 Intelligence" },
       { property: "og:description", content: "Copa do Mundo FIFA 2026 analisada por Inteligência Artificial." },
     ],
@@ -38,16 +55,17 @@ function Index() {
 
   const playersRow = (qualityQ.data?.data ?? []).find((r) => r.entity === "players");
   const playersTotal = Number(playersRow?.total ?? comp?.total_players ?? 0);
-  const playersExpected = 1024;
+  const playersExpected = 1248;
   const playersCoverage = Math.min(100, Math.round((playersTotal / playersExpected) * 100));
-  const playersHint = playersTotal >= playersExpected
-    ? "Cobertura completa"
-    : playersTotal === 0
-      ? "Sem dados cadastrados"
-      : `${playersCoverage}% · faltam ${playersExpected - playersTotal}`;
+  const playersHint =
+    playersTotal >= playersExpected
+      ? "Cobertura completa"
+      : playersTotal === 0
+        ? "Sem dados cadastrados"
+        : `${playersCoverage}% · faltam ${playersExpected - playersTotal}`;
 
   const hosts = Array.isArray(comp?.host_countries)
-    ? comp!.host_countries as string[]
+    ? (comp!.host_countries as string[])
     : typeof comp?.host_countries === "string"
       ? (comp!.host_countries as string).split(",").map((s) => s.trim())
       : [];
@@ -65,7 +83,13 @@ function Index() {
     <AppLayout>
       {/* HERO */}
       <section className="relative overflow-hidden bg-gradient-hero border-b border-border">
-        <div className="absolute inset-0 opacity-40 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 15% 25%, oklch(0.72 0.17 152 / 0.28), transparent 55%), radial-gradient(circle at 85% 75%, oklch(0.82 0.14 85 / 0.22), transparent 55%)" }} />
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 15% 25%, oklch(0.72 0.17 152 / 0.28), transparent 55%), radial-gradient(circle at 85% 75%, oklch(0.82 0.14 85 / 0.22), transparent 55%)",
+          }}
+        />
         <div className="relative max-w-6xl mx-auto px-6 py-14 lg:py-20">
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] uppercase tracking-widest text-gold">
@@ -83,7 +107,7 @@ function Index() {
           {/* Quick indicators */}
           <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl">
             <HeroPill icon={<Users className="size-4" />} label="Seleções" value="48" />
-            <HeroPill icon={<Trophy className="size-4" />} label="Jogadores" value="1024" />
+            <HeroPill icon={<Trophy className="size-4" />} label="Jogadores" value="1248" />
             <HeroPill icon={<Brain className="size-4" />} label="Simulações de IA" value={String(totalSims || 8)} />
             <HeroPill icon={<Sparkles className="size-4 text-gold" />} label="Consenso" value="Inteligente" />
           </div>
@@ -120,9 +144,7 @@ function Index() {
               <h2 className="font-display text-2xl font-bold flex items-center gap-2">
                 <Crown className="size-5 text-gold" /> Favoritos ao Título
               </h2>
-              <p className="text-sm text-muted-foreground">
-                Consenso das IAs analisadas ({totalSims} simulações).
-              </p>
+              <p className="text-sm text-muted-foreground">Consenso das IAs analisadas ({totalSims} simulações).</p>
             </div>
             <Button asChild variant="ghost" size="sm">
               <Link to="/simulacoes" className="gap-1">
@@ -145,10 +167,14 @@ function Index() {
                 <Card key={`${fav.team}-${i}`} className={isLeader ? "border-gold/40 shadow-glow" : ""}>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest ${toneBg}`}>
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest ${toneBg}`}
+                      >
                         <Icon className="size-3" /> {i + 1}º favorito
                       </span>
-                      <span className="text-xs text-muted-foreground">{fav.votes}/{totalSims}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {fav.votes}/{totalSims}
+                      </span>
                     </div>
                     <div className="mt-4 flex items-center gap-3">
                       <TeamFlag teamCode={fav.team_code} teamName={fav.team} size={36} />
@@ -158,7 +184,10 @@ function Index() {
                       </div>
                     </div>
                     <div className="mt-4 h-2 rounded-full bg-secondary overflow-hidden">
-                      <div className={`h-full ${isLeader ? "bg-gradient-gold" : "bg-primary"}`} style={{ width: `${share}%` }} />
+                      <div
+                        className={`h-full ${isLeader ? "bg-gradient-gold" : "bg-primary"}`}
+                        style={{ width: `${share}%` }}
+                      />
                     </div>
                     <div className="mt-1.5 text-xs text-muted-foreground">{share}% das previsões</div>
                   </CardContent>
@@ -180,7 +209,12 @@ function Index() {
             <StatCard icon={Users} label="Seleções" value={comp?.total_teams ?? 48} variant="green" />
             <StatCard icon={Layers} label="Grupos" value={comp?.total_groups ?? 12} variant="info" />
             <StatCard icon={CalendarDays} label="Jogos" value={comp?.total_matches ?? 104} />
-            <StatCard icon={Flag} label="Países-sede" value={hosts.length || 3} hint={hosts.join(" · ") || "USA · CAN · MEX"} />
+            <StatCard
+              icon={Flag}
+              label="Países-sede"
+              value={hosts.length || 3}
+              hint={hosts.join(" · ") || "USA · CAN · MEX"}
+            />
             <StatCard
               icon={Trophy}
               label="Jogadores convocados"
@@ -209,10 +243,15 @@ function Index() {
         {matchesQ.isLoading ? (
           <LoadingGrid count={6} />
         ) : upcoming.length === 0 ? (
-          <EmptyState title="Nenhum jogo disponível" description="Os jogos aparecerão aqui assim que a base for populada." />
+          <EmptyState
+            title="Nenhum jogo disponível"
+            description="Os jogos aparecerão aqui assim que a base for populada."
+          />
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcoming.map((m) => <MatchCardView key={`${m.match_number}-${m.match_id ?? m.stage}`} match={m} />)}
+            {upcoming.map((m) => (
+              <MatchCardView key={`${m.match_number}-${m.match_id ?? m.stage}`} match={m} />
+            ))}
           </div>
         )}
       </section>
