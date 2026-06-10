@@ -28,7 +28,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <div className="font-display font-bold text-sidebar-foreground leading-tight">Copa 2026</div>
-              <div className="text-[10px] uppercase tracking-widest text-gold">Data Hub</div>
+              <div className="text-[10px] uppercase tracking-widest text-gold">Intelligence</div>
             </div>
           </Link>
         </div>
@@ -70,7 +70,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
               <span className="font-display font-bold">Copa 2026</span>
             </Link>
-            <span className="text-[10px] uppercase tracking-widest text-gold">Data Hub</span>
+            <span className="text-[10px] uppercase tracking-widest text-gold">Intelligence</span>
           </div>
           <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none">
             {items.map((it) => {
