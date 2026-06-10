@@ -99,10 +99,20 @@ function RankingIAsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sorted.map((s) => (
-                    <TableRow key={s.simulation_id}>
-                      <TableCell className="font-medium whitespace-nowrap">{s.provider}</TableCell>
-                      <TableCell className="whitespace-nowrap"><TeamCell name={s.champion_team} code={s.champion_team_code} /></TableCell>
+                  {sorted.map((s, i) => (
+                    <TableRow key={s.simulation_id} className={i === 0 ? "bg-gold/5" : ""}>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        <span className="inline-flex items-center gap-2">
+                          <RankMedal index={i} />
+                          {s.provider}
+                        </span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1.5">
+                          <TeamCell name={s.champion_team} code={s.champion_team_code} />
+                          {i === 0 && <Badge className="bg-gradient-gold text-gold-foreground text-[10px]">Top pick</Badge>}
+                        </span>
+                      </TableCell>
                       <TableCell className="whitespace-nowrap"><TeamCell name={s.runner_up_team} code={s.runner_up_team_code} /></TableCell>
                       <TableCell className="whitespace-nowrap">
                         {dash(s.top_scorer_player)}
@@ -121,13 +131,20 @@ function RankingIAsPage() {
 
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
-              {sorted.map((s) => <MobileCard key={s.simulation_id} s={s} />)}
+              {sorted.map((s, i) => <MobileCard key={s.simulation_id} s={s} index={i} />)}
             </div>
           </>
         )}
       </div>
     </AppLayout>
   );
+}
+
+function RankMedal({ index }: { index: number }) {
+  if (index === 0) return <span title="1º" className="inline-grid place-items-center size-6 rounded-full bg-gradient-gold text-gold-foreground text-[11px] font-bold">1</span>;
+  if (index === 1) return <span title="2º" className="inline-grid place-items-center size-6 rounded-full bg-secondary text-secondary-foreground text-[11px] font-bold">2</span>;
+  if (index === 2) return <span title="3º" className="inline-grid place-items-center size-6 rounded-full bg-secondary/60 text-secondary-foreground text-[11px] font-bold">3</span>;
+  return <span className="inline-grid place-items-center size-6 rounded-full bg-secondary/40 text-muted-foreground text-[11px]">{index + 1}</span>;
 }
 
 function TeamCell({ name, code }: { name?: string | null; code?: string | null }) {
