@@ -8,7 +8,7 @@ const EXPECTED: Record<string, number> = {
   groups: 12,
   teams: 48,
   coaches: 48,
-  players: 1024,
+  players: 1248,
   standings: 48,
   matches: 104,
   rules: 10,
@@ -61,9 +61,7 @@ export function DataQualityPanel() {
           <h2 className="font-display text-lg font-bold flex items-center gap-2">
             <Database className="size-5 text-info" /> Qualidade dos dados
           </h2>
-          <p className="text-xs text-muted-foreground">
-            Cobertura atual das entidades importadas no banco.
-          </p>
+          <p className="text-xs text-muted-foreground">Cobertura atual das entidades importadas no banco.</p>
         </div>
         {q.data && <SourceBadge source={q.data.source} />}
       </div>
@@ -93,9 +91,7 @@ export function DataQualityPanel() {
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-2xl font-bold tabular-nums">{s.total}</span>
-                  {s.expected > 0 && (
-                    <span className="text-xs text-muted-foreground">/ {s.expected}</span>
-                  )}
+                  {s.expected > 0 && <span className="text-xs text-muted-foreground">/ {s.expected}</span>}
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-muted/40 overflow-hidden">
                   <div
@@ -103,9 +99,7 @@ export function DataQualityPanel() {
                     style={{ width: `${s.coverage}%` }}
                   />
                 </div>
-                {s.warning && (
-                  <p className="text-[10px] text-warning leading-tight">{s.warning}</p>
-                )}
+                {s.warning && <p className="text-[10px] text-warning leading-tight">{s.warning}</p>}
               </div>
             );
           })}
