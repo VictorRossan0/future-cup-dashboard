@@ -12,7 +12,7 @@ const KNOCKOUT_STAGES = ["round_of_32", "round_of_16", "quarter_final", "semi_fi
 export const Route = createFileRoute("/mata-mata")({
   head: () => ({
     meta: [
-      { title: "Mata-mata · Copa 2026 Data Hub" },
+      { title: "Mata-mata · Copa 2026 Intelligence" },
       { name: "description", content: "Chaveamento e jogos do mata-mata da Copa 2026: 32 avos, oitavas, quartas, semifinais e final." },
     ],
   }),

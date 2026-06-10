@@ -9,16 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SimulacoesRouteImport } from './routes/simulacoes'
 import { Route as RegrasRouteImport } from './routes/regras'
 import { Route as RankingIasRouteImport } from './routes/ranking-ias'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MataMataRouteImport } from './routes/mata-mata'
 import { Route as JogosRouteImport } from './routes/jogos'
+import { Route as HallDaFamaRouteImport } from './routes/hall-da-fama'
 import { Route as GruposRouteImport } from './routes/grupos'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
 import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
 
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulacoesRoute = SimulacoesRouteImport.update({
   id: '/simulacoes',
   path: '/simulacoes',
@@ -34,6 +42,11 @@ const RankingIasRoute = RankingIasRouteImport.update({
   path: '/ranking-ias',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MataMataRoute = MataMataRouteImport.update({
   id: '/mata-mata',
   path: '/mata-mata',
@@ -42,6 +55,11 @@ const MataMataRoute = MataMataRouteImport.update({
 const JogosRoute = JogosRouteImport.update({
   id: '/jogos',
   path: '/jogos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HallDaFamaRoute = HallDaFamaRouteImport.update({
+  id: '/hall-da-fama',
+  path: '/hall-da-fama',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GruposRoute = GruposRouteImport.update({
@@ -68,22 +86,28 @@ const SelecoesIdRoute = SelecoesIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
+  '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
+  '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes': typeof SelecoesIndexRoute
 }
@@ -91,11 +115,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/grupos': typeof GruposRoute
+  '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
@@ -104,33 +131,42 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/grupos'
+    | '/hall-da-fama'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/grupos'
+    | '/hall-da-fama'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes'
   id:
     | '__root__'
     | '/'
     | '/grupos'
+    | '/hall-da-fama'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesById: FileRoutesById
@@ -138,17 +174,27 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GruposRoute: typeof GruposRoute
+  HallDaFamaRoute: typeof HallDaFamaRoute
   JogosRoute: typeof JogosRoute
   MataMataRoute: typeof MataMataRoute
+  MetodologiaRoute: typeof MetodologiaRoute
   RankingIasRoute: typeof RankingIasRoute
   RegrasRoute: typeof RegrasRoute
   SimulacoesRoute: typeof SimulacoesRoute
+  SobreRoute: typeof SobreRoute
   SelecoesIdRoute: typeof SelecoesIdRoute
   SelecoesIndexRoute: typeof SelecoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulacoes': {
       id: '/simulacoes'
       path: '/simulacoes'
@@ -170,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankingIasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mata-mata': {
       id: '/mata-mata'
       path: '/mata-mata'
@@ -182,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/jogos'
       fullPath: '/jogos'
       preLoaderRoute: typeof JogosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hall-da-fama': {
+      id: '/hall-da-fama'
+      path: '/hall-da-fama'
+      fullPath: '/hall-da-fama'
+      preLoaderRoute: typeof HallDaFamaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/grupos': {
@@ -218,11 +278,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GruposRoute: GruposRoute,
+  HallDaFamaRoute: HallDaFamaRoute,
   JogosRoute: JogosRoute,
   MataMataRoute: MataMataRoute,
+  MetodologiaRoute: MetodologiaRoute,
   RankingIasRoute: RankingIasRoute,
   RegrasRoute: RegrasRoute,
   SimulacoesRoute: SimulacoesRoute,
+  SobreRoute: SobreRoute,
   SelecoesIdRoute: SelecoesIdRoute,
   SelecoesIndexRoute: SelecoesIndexRoute,
 }

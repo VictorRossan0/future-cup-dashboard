@@ -12,7 +12,7 @@ import { Search } from "lucide-react";
 export const Route = createFileRoute("/selecoes/")({
   head: () => ({
     meta: [
-      { title: "Seleções · Copa 2026 Data Hub" },
+      { title: "Seleções · Copa 2026 Intelligence" },
       { name: "description", content: "As 48 seleções da Copa do Mundo 2026 com técnico, grupo, confederação e status do elenco." },
     ],
   }),

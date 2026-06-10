@@ -11,7 +11,7 @@ import { BookOpen } from "lucide-react";
 export const Route = createFileRoute("/regras")({
   head: () => ({
     meta: [
-      { title: "Regras e Formato · Copa 2026 Data Hub" },
+      { title: "Regras e Formato · Copa 2026 Intelligence" },
       { name: "description", content: "Formato da competição, fase de grupos, critérios de classificação, mata-mata, arbitragem, VAR e regras anti-cera." },
     ],
   }),

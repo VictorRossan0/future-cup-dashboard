@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords, BarChart3 } from "lucide-react";
+import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords, BarChart3, Info, FlaskConical, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
 
@@ -12,6 +12,9 @@ const items = [
   { to: "/regras", label: "Regras", icon: BookOpen },
   { to: "/simulacoes", label: "Simulações de IA", icon: Brain },
   { to: "/ranking-ias", label: "Ranking das IAs", icon: BarChart3 },
+  { to: "/hall-da-fama", label: "Hall da Fama", icon: Crown },
+  { to: "/sobre", label: "Sobre", icon: Info },
+  { to: "/metodologia", label: "Metodologia", icon: FlaskConical },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -28,7 +31,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <div className="font-display font-bold text-sidebar-foreground leading-tight">Copa 2026</div>
-              <div className="text-[10px] uppercase tracking-widest text-gold">Data Hub</div>
+              <div className="text-[10px] uppercase tracking-widest text-gold">Intelligence</div>
             </div>
           </Link>
         </div>
@@ -70,7 +73,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
               <span className="font-display font-bold">Copa 2026</span>
             </Link>
-            <span className="text-[10px] uppercase tracking-widest text-gold">Data Hub</span>
+            <span className="text-[10px] uppercase tracking-widest text-gold">Intelligence</span>
           </div>
           <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none">
             {items.map((it) => {
@@ -95,7 +98,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1">{children}</main>
 
         <footer className="border-t border-border px-6 py-4 text-xs text-muted-foreground text-center">
-          Copa 2026 Data Hub · Dados simulados para protótipo · Não oficial
+          Copa 2026 Intelligence · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
       <PreviewStatus />

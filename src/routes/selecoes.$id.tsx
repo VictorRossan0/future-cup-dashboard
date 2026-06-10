@@ -13,7 +13,7 @@ import { TeamFlag } from "@/components/TeamFlag";
 export const Route = createFileRoute("/selecoes/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Seleção ${params.id} · Copa 2026 Data Hub` },
+      { title: `Seleção ${params.id} · Copa 2026 Intelligence` },
       { name: "description", content: `Elenco, técnico e estatísticas da seleção.` },
     ],
   }),
