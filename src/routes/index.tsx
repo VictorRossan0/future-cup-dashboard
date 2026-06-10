@@ -11,7 +11,7 @@ import { Trophy, Users, CalendarDays, Flag, Layers, MapPin } from "lucide-react"
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Copa 2026 Data Hub — Dashboard" },
+      { title: "Copa 2026 Intelligence — Dashboard" },
       { name: "description", content: "Dashboard interativo da Copa do Mundo FIFA 2026: 48 seleções, 12 grupos, jogos, regras e elencos." },
     ],
   }),

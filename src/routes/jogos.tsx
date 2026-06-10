@@ -11,7 +11,7 @@ import { t } from "@/lib/i18n";
 export const Route = createFileRoute("/jogos")({
   head: () => ({
     meta: [
-      { title: "Jogos · Copa 2026 Data Hub" },
+      { title: "Jogos · Copa 2026 Intelligence" },
       { name: "description", content: "Calendário completo dos 104 jogos da Copa 2026 com filtros por fase, grupo, seleção, estádio e data." },
     ],
   }),

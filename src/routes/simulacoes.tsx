@@ -26,7 +26,7 @@ import type {
 export const Route = createFileRoute("/simulacoes")({
   head: () => ({
     meta: [
-      { title: "Simulações com IA · Copa 2026 Data Hub" },
+      { title: "Simulações com IA · Copa 2026 Intelligence" },
       { name: "description", content: "Comparativo entre ChatGPT, Gemini, Claude, Meta AI, Manus, Perplexity e Grok para a Copa do Mundo FIFA 2026." },
     ],
   }),

@@ -95,7 +95,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1">{children}</main>
 
         <footer className="border-t border-border px-6 py-4 text-xs text-muted-foreground text-center">
-          Copa 2026 Data Hub · Dados simulados para protótipo · Não oficial
+          Copa 2026 Intelligence · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
       <PreviewStatus />

@@ -13,7 +13,7 @@ import type { VAiSimulationsFull } from "@/types/views";
 export const Route = createFileRoute("/ranking-ias")({
   head: () => ({
     meta: [
-      { title: "Ranking das IAs · Copa 2026 Data Hub" },
+      { title: "Ranking das IAs · Copa 2026 Intelligence" },
       { name: "description", content: "Ranking comparativo das previsões de IAs (ChatGPT, Claude, Gemini, Grok, Copilot, Mistral, DeepSeek, EA Sports) para a Copa 2026." },
     ],
   }),

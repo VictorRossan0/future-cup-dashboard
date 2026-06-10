@@ -72,9 +72,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Copa 2026 Data Hub" },
+      { title: "Copa 2026 Intelligence" },
       { name: "description", content: "Dashboard interativo com jogos, grupos, seleções, jogadores, regras e simulações de IA da Copa do Mundo 2026." },
-      { property: "og:title", content: "Copa 2026 Data Hub" },
+      { property: "og:title", content: "Copa 2026 Intelligence" },
       { property: "og:description", content: "Dados, grupos e simulações de IA da Copa do Mundo 2026." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

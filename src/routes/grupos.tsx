@@ -10,7 +10,7 @@ import { Info } from "lucide-react";
 export const Route = createFileRoute("/grupos")({
   head: () => ({
     meta: [
-      { title: "Grupos e Classificação · Copa 2026 Data Hub" },
+      { title: "Grupos e Classificação · Copa 2026 Intelligence" },
       { name: "description", content: "Classificação dos 12 grupos da Copa 2026 com pontos, vitórias, saldo de gols e status de classificação." },
     ],
   }),
