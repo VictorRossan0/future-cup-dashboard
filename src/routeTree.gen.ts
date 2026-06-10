@@ -9,9 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SimulacoesRouteImport } from './routes/simulacoes'
 import { Route as RegrasRouteImport } from './routes/regras'
 import { Route as RankingIasRouteImport } from './routes/ranking-ias'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as MataMataRouteImport } from './routes/mata-mata'
 import { Route as JogosRouteImport } from './routes/jogos'
 import { Route as GruposRouteImport } from './routes/grupos'
@@ -19,6 +21,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
 import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
 
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulacoesRoute = SimulacoesRouteImport.update({
   id: '/simulacoes',
   path: '/simulacoes',
@@ -32,6 +39,11 @@ const RegrasRoute = RegrasRouteImport.update({
 const RankingIasRoute = RankingIasRouteImport.update({
   id: '/ranking-ias',
   path: '/ranking-ias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MataMataRoute = MataMataRouteImport.update({
@@ -70,9 +82,11 @@ export interface FileRoutesByFullPath {
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
@@ -81,9 +95,11 @@ export interface FileRoutesByTo {
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes': typeof SelecoesIndexRoute
 }
@@ -93,9 +109,11 @@ export interface FileRoutesById {
   '/grupos': typeof GruposRoute
   '/jogos': typeof JogosRoute
   '/mata-mata': typeof MataMataRoute
+  '/metodologia': typeof MetodologiaRoute
   '/ranking-ias': typeof RankingIasRoute
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
+  '/sobre': typeof SobreRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
@@ -106,9 +124,11 @@ export interface FileRouteTypes {
     | '/grupos'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesByTo: FileRoutesByTo
@@ -117,9 +137,11 @@ export interface FileRouteTypes {
     | '/grupos'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes'
   id:
@@ -128,9 +150,11 @@ export interface FileRouteTypes {
     | '/grupos'
     | '/jogos'
     | '/mata-mata'
+    | '/metodologia'
     | '/ranking-ias'
     | '/regras'
     | '/simulacoes'
+    | '/sobre'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesById: FileRoutesById
@@ -140,15 +164,24 @@ export interface RootRouteChildren {
   GruposRoute: typeof GruposRoute
   JogosRoute: typeof JogosRoute
   MataMataRoute: typeof MataMataRoute
+  MetodologiaRoute: typeof MetodologiaRoute
   RankingIasRoute: typeof RankingIasRoute
   RegrasRoute: typeof RegrasRoute
   SimulacoesRoute: typeof SimulacoesRoute
+  SobreRoute: typeof SobreRoute
   SelecoesIdRoute: typeof SelecoesIdRoute
   SelecoesIndexRoute: typeof SelecoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulacoes': {
       id: '/simulacoes'
       path: '/simulacoes'
@@ -168,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/ranking-ias'
       fullPath: '/ranking-ias'
       preLoaderRoute: typeof RankingIasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mata-mata': {
@@ -220,12 +260,24 @@ const rootRouteChildren: RootRouteChildren = {
   GruposRoute: GruposRoute,
   JogosRoute: JogosRoute,
   MataMataRoute: MataMataRoute,
+  MetodologiaRoute: MetodologiaRoute,
   RankingIasRoute: RankingIasRoute,
   RegrasRoute: RegrasRoute,
   SimulacoesRoute: SimulacoesRoute,
+  SobreRoute: SobreRoute,
   SelecoesIdRoute: SelecoesIdRoute,
   SelecoesIndexRoute: SelecoesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
