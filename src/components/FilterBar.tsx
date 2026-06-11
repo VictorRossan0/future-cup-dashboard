@@ -14,7 +14,7 @@ export function FilterBar({ children, className }: FilterBarProps) {
     <div
       className={cn(
         "rounded-2xl border border-border bg-card p-4 grid gap-3",
-        className ?? "grid-cols-2 md:grid-cols-4",
+        className ?? "grid-cols-1 sm:grid-cols-2 md:grid-cols-4",
       )}
     >
       {children}
