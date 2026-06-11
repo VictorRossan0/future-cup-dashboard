@@ -7,6 +7,7 @@ import { TeamFlag } from "@/components/TeamFlag";
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
   const isFinished = status === "finished" || status === "completed";
+
   const statusClass =
     {
       scheduled: "bg-secondary text-secondary-foreground",
@@ -18,69 +19,80 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
     }[status] ?? "bg-secondary text-secondary-foreground";
 
   const home = match.home_team_name ?? match.home_display_name ?? "A definir";
+
   const away = match.away_team_name ?? match.away_display_name ?? "A definir";
-  const homePlaceholder = !match.home_team_name && !!match.home_display_name;
-  const awayPlaceholder = !match.away_team_name && !!match.away_display_name;
 
   const time = match.match_time?.slice(0, 5) ?? "Horário a confirmar";
+
   const dateStr = match.match_date
-    ? new Date(match.match_date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+    ? new Date(match.match_date).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+      })
     : "Data a confirmar";
 
+  const location = [match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar";
+
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 hover:border-primary/40 transition-colors w-full overflow-hidden">
-      <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-        <span className="min-w-0 truncate">
+    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 hover:border-primary/40 transition-colors">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 mb-3 text-[9px] uppercase tracking-widest text-muted-foreground overflow-hidden">
+        <span className="truncate flex-1">
           #{match.match_number} · {t.stage(match.stage)}
           {match.group_code ? ` · Grupo ${match.group_code}` : ""}
         </span>
-        <span className={cn("px-2 py-0.5 rounded-full text-[10px]", statusClass)}>{t.status(status)}</span>
+
+        <span className={cn("shrink-0 px-2 py-0.5 rounded-full text-[9px]", statusClass)}>{t.status(status)}</span>
       </div>
-      <div className="flex items-center justify-between gap-2 w-full">
-        <div className="flex-1 min-w-0 flex flex-col items-center text-center gap-1 overflow-hidden">
-          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={24} />
-          <span className="font-display font-semibold text-sm max-w-full truncate" title={home}>
-            {" "}
-            {home}{" "}
+
+      {/* Teams */}
+      <div className="grid grid-cols-[1fr_50px_1fr] items-center gap-1 w-full">
+        <div className="min-w-0 flex flex-col items-center text-center">
+          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={22} />
+
+          <span className="mt-1 text-xs font-semibold truncate w-full" title={home}>
+            {home}
           </span>
-          {match.home_team_code && (
-            <span className="text-[10px] font-mono text-muted-foreground">{match.home_team_code}</span>
-          )}
-          {homePlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
+
+          {match.home_team_code && <span className="text-[9px] text-muted-foreground">{match.home_team_code}</span>}
         </div>
-        <div className="text-center flex-shrink-0 w-[56px] sm:w-[64px]">
+
+        <div className="w-[50px] text-center shrink-0">
           {isFinished && match.home_score != null ? (
-            <div className="font-display text-3xl font-bold tabular-nums">
-              {match.home_score} <span className="text-muted-foreground">·</span> {match.away_score}
+            <div className="font-display text-lg font-bold">
+              {match.home_score}
+              <span className="mx-1 text-muted-foreground">·</span>
+              {match.away_score}
             </div>
           ) : (
-            <div className="font-display text-xl font-bold text-muted-foreground">VS</div>
+            <div className="font-display text-lg font-bold text-muted-foreground">VS</div>
           )}
-          <div className="text-[10px] text-muted-foreground mt-1 tabular-nums">{time}</div>
+
+          <div className="text-[9px] text-muted-foreground">{time}</div>
         </div>
-        <div className="flex-1 min-w-0 flex flex-col items-center text-center gap-1 overflow-hidden">
-          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={24} />
-          <span className="font-display font-semibold text-sm max-w-full truncate" title={away}>
-            {" "}
-            {away}{" "}
+
+        <div className="min-w-0 flex flex-col items-center text-center">
+          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={22} />
+
+          <span className="mt-1 text-xs font-semibold truncate w-full" title={away}>
+            {away}
           </span>
-          {match.away_team_code && (
-            <span className="text-[10px] font-mono text-muted-foreground">{match.away_team_code}</span>
-          )}
-          {awayPlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
+
+          {match.away_team_code && <span className="text-[9px] text-muted-foreground">{match.away_team_code}</span>}
         </div>
       </div>
-      <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <Calendar className="size-3" />
-          {dateStr}
-        </span>
-        <span className="inline-flex items-center gap-1 min-w-0 flex-1 justify-end">
+
+      {/* Footer */}
+      <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-1">
+          <Calendar className="size-3 shrink-0" />
+          <span>{dateStr}</span>
+        </div>
+
+        <div className="flex items-center gap-1 min-w-0">
           <MapPin className="size-3 shrink-0" />
-          <span className="truncate">
-            {[match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar"}
-          </span>
-        </span>
+          <span className="truncate">{location}</span>
+        </div>
       </div>
     </div>
   );
