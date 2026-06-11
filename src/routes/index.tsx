@@ -230,7 +230,7 @@ function Index() {
         <DataQualityPanel />
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 sm:pb-16 overflow-hidden">
+      {/* <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 sm:pb-16 overflow-hidden">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
           <div className="min-w-0">
             <h2 className="font-display text-xl sm:text-2xl font-bold flex items-center gap-2">
@@ -262,7 +262,7 @@ function Index() {
             ))}
           </div>
         )}
-      </section>
+      </section> */}
     </AppLayout>
   );
 }
