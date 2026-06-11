@@ -48,7 +48,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           )}
           {homePlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
         </div>
-        <div className="text-center min-w-[60px]">
+        <div className="text-center shrink-0 w-[64px]">
           {isFinished && match.home_score != null ? (
             <div className="font-display text-3xl font-bold tabular-nums">
               {match.home_score} <span className="text-muted-foreground">·</span> {match.away_score}
