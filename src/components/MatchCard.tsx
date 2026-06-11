@@ -15,9 +15,14 @@ export function MatchCard({ match }: { match: Match }) {
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 hover:border-primary/40 transition-colors">
-      <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+      <div className="flex items-start justify-between gap-2 text-[10px] uppercase tracking-widest text-muted-foreground mb-3 min-w-0">
         <span>Grupo {match.group} · {match.phase}</span>
-        <span className={cn("px-2 py-0.5 rounded-full text-[10px]", statusClass)}>{match.status}</span>
+        <span
+  className={cn(
+    "px-2 py-0.5 rounded-full text-[10px] shrink-0",
+    statusClass
+  )}
+>
       </div>
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 flex flex-col items-center text-center">
