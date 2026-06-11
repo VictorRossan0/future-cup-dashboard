@@ -60,7 +60,10 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
         </div>
         <div className="min-w-0 flex flex-col items-center text-center gap-1">
           <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={32} />
-          <span className="font-display font-semibold text-sm">{away}</span>
+          <span className="font-display font-semibold text-sm max-w-full truncate" title={away}>
+            {" "}
+            {away}{" "}
+          </span>
           {match.away_team_code && (
             <span className="text-[10px] font-mono text-muted-foreground">{match.away_team_code}</span>
           )}
