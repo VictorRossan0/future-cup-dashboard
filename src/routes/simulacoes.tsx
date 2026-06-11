@@ -394,9 +394,9 @@ function ProviderCard({ s }: { s: VAiSimulationsFull }) {
       <CardContent className="space-y-3 pt-4">
         <dl className="grid grid-cols-1 gap-y-1.5 text-sm">
           {rows.map(([k, v]) => (
-            <div key={k} className="grid grid-cols-[130px_1fr] gap-2 items-baseline">
-              <dt className="text-xs uppercase tracking-wider text-muted-foreground">{k}</dt>
-              <dd className="font-medium text-sm">{v}</dd>
+            <div key={k} className="grid grid-cols-[96px_minmax(0,1fr)] sm:grid-cols-[130px_minmax(0,1fr)] gap-2 items-baseline">
+              <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground">{k}</dt>
+              <dd className="font-medium text-sm min-w-0 break-words">{v}</dd>
             </div>
           ))}
         </dl>

@@ -166,7 +166,7 @@ function ConfidencePill({ v }: { v?: number | null }) {
     : value >= 0.5 ? "bg-gold"
     : "bg-destructive";
   return (
-    <div className="flex items-center gap-2 min-w-[100px]">
+    <div className="flex items-center gap-2 min-w-[80px] sm:min-w-[100px]">
       <div className="h-1.5 flex-1 rounded-full bg-secondary overflow-hidden">
         <div className={`h-full ${tone}`} style={{ width: `${width}%` }} />
       </div>
@@ -180,10 +180,10 @@ function MobileCard({ s, index }: { s: VAiSimulationsFull; index: number }) {
     <Card className={index === 0 ? "border-gold/40 shadow-glow" : ""}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base inline-flex items-center gap-2">
-            <RankMedal index={index} /> {s.provider}
+          <CardTitle className="text-base inline-flex items-center gap-2 min-w-0 truncate">
+            <RankMedal index={index} /> <span className="truncate">{s.provider}</span>
           </CardTitle>
-          <Badge variant="outline" className="text-[10px]">{pct(s.confidence)}</Badge>
+          <Badge variant="outline" className="text-[10px] shrink-0">{pct(s.confidence)}</Badge>
         </div>
         {s.model && <CardDescription className="text-xs">{s.model}</CardDescription>}
       </CardHeader>
@@ -200,7 +200,7 @@ function MobileCard({ s, index }: { s: VAiSimulationsFull; index: number }) {
 
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[110px_1fr] gap-2 items-center">
+    <div className="grid grid-cols-[90px_minmax(0,1fr)] sm:grid-cols-[110px_minmax(0,1fr)] gap-2 items-center">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground inline-flex items-center gap-1">{icon}{label}</div>
       <div className="font-medium text-sm min-w-0 truncate">{value}</div>
     </div>
