@@ -119,10 +119,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
 
-      <div className="overflow-hidden">
+      {/* <div className="overflow-hidden">
         {" "}
         <PreviewStatus />{" "}
-      </div>
+      </div> */}
     </div>
   );
 }
