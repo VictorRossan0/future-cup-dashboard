@@ -75,7 +75,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           <Calendar className="size-3" />
           {dateStr}
         </span>
-        <span className="inline-flex items-center gap-1 truncate">
+        <span className="inline-flex items-center gap-1 min-w-0 flex-1 justify-end truncate">
           <MapPin className="size-3" />
           {[match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar"}
         </span>
