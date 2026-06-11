@@ -34,7 +34,6 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
   const location = [match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar";
 
   return (
-    <span>{JSON.stringify(match.match_date)}</span>
     <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 hover:border-primary/40 transition-colors">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-3 overflow-hidden">
