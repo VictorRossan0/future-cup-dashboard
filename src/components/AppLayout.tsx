@@ -34,7 +34,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex overflow-x-hidden max-w-full">
       {/* Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-sidebar-border bg-sidebar shrink-0 sticky top-0 h-screen">
         <div className="px-6 py-6 border-b border-sidebar-border">
@@ -76,9 +76,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden max-w-full">
         {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-40 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
+        <header className="lg:hidden sticky top-0 z-40 bg-sidebar/95 backdrop-blur border-b border-sidebar-border overflow-x-hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <Link to="/" className="flex items-center gap-2">
               <div className="size-8 rounded-lg bg-gradient-green grid place-items-center">
@@ -88,7 +88,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
             <span className="text-[10px] uppercase tracking-widest text-gold">Intelligence</span>
           </div>
-          <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none max-w-full">
+          <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none w-full">
             {items.map((it) => {
               const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
               return (
@@ -108,13 +108,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
         </header>
 
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-x-hidden max-w-full">{children}</main>
 
-        <footer className="border-t border-border px-6 py-4 text-xs text-muted-foreground text-center">
+        <footer className="border-t border-border px-6 py-4 text-xs text-muted-foreground text-center overflow-hidden">
           Copa 2026 Intelligence · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
-      <PreviewStatus />
+      <div className="overflow-hidden">
+        {" "}
+        <PreviewStatus />{" "}
+      </div>
     </div>
   );
 }
