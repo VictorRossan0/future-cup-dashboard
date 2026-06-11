@@ -34,7 +34,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
   const location = [match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar";
 
   return (
-    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 hover:border-primary/40 transition-colors">
+    <div className="w-full max-w-full overflow-hidden rounded-2xl border-4 border-red-500 bg-red-500 p-3 sm:p-4 hover:border-primary/40 transition-colors">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-3 text-[9px] uppercase tracking-widest text-muted-foreground overflow-hidden">
         <span className="truncate flex-1">
