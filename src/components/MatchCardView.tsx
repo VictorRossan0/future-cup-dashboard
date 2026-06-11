@@ -39,7 +39,10 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
       <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
         <div className="min-w-0 flex flex-col items-center text-center gap-1">
           <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={32} />
-          <span className="font-display font-semibold text-sm">{home}</span>
+          <span className="font-display font-semibold text-sm max-w-full truncate" title={home}>
+            {" "}
+            {home}{" "}
+          </span>
           {match.home_team_code && (
             <span className="text-[10px] font-mono text-muted-foreground">{match.home_team_code}</span>
           )}
