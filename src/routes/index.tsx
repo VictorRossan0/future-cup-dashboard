@@ -138,7 +138,7 @@ function Index() {
 
       {/* Favoritos ao Título */}
       {favorites.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 pt-10">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10">
           <div className="flex items-end justify-between mb-4 gap-3 flex-wrap">
             <div>
               <h2 className="font-display text-2xl font-bold flex items-center gap-2">
@@ -199,7 +199,7 @@ function Index() {
       )}
 
       {/* Stat cards */}
-      <section className="max-w-6xl mx-auto px-6 py-10">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         {dash.isLoading ? (
           <LoadingGrid count={5} className="grid-cols-2 lg:grid-cols-5" />
         ) : dash.isError ? (
@@ -226,11 +226,11 @@ function Index() {
         )}
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-6">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
         <DataQualityPanel />
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-16">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
         <div className="flex items-end justify-between mb-4">
           <div>
             <h2 className="font-display text-2xl font-bold flex items-center gap-2">
