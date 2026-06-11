@@ -1,5 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, Trophy, BookOpen, Brain, ListOrdered, Activity, Swords, BarChart3, Info, FlaskConical, Crown } from "lucide-react";
+import {
+  Home,
+  CalendarDays,
+  Trophy,
+  BookOpen,
+  Brain,
+  ListOrdered,
+  Activity,
+  Swords,
+  BarChart3,
+  Info,
+  FlaskConical,
+  Crown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
 
@@ -46,7 +59,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                   active
                     ? "bg-sidebar-accent text-sidebar-accent-foreground border-l-2 border-primary"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                 )}
               >
                 <it.icon className="size-4" />
@@ -75,7 +88,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
             <span className="text-[10px] uppercase tracking-widest text-gold">Intelligence</span>
           </div>
-          <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none">
+          <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none max-w-full">
             {items.map((it) => {
               const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
               return (
@@ -84,7 +97,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   to={it.to}
                   className={cn(
                     "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors",
-                    active ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                    active ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
                   )}
                 >
                   <it.icon className="size-3.5" />

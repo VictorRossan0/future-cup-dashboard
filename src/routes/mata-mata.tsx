@@ -13,7 +13,10 @@ export const Route = createFileRoute("/mata-mata")({
   head: () => ({
     meta: [
       { title: "Mata-mata · Copa 2026 Intelligence" },
-      { name: "description", content: "Chaveamento e jogos do mata-mata da Copa 2026: 32 avos, oitavas, quartas, semifinais e final." },
+      {
+        name: "description",
+        content: "Chaveamento e jogos do mata-mata da Copa 2026: 32 avos, oitavas, quartas, semifinais e final.",
+      },
     ],
   }),
   component: MataMataPage,
@@ -51,7 +54,10 @@ function MataMataPage() {
         ) : q.isError ? (
           <ErrorState />
         ) : !hasAny ? (
-          <EmptyState title="Sem jogos de mata-mata" description="Os confrontos eliminatórios serão exibidos assim que estiverem disponíveis na base." />
+          <EmptyState
+            title="Sem jogos de mata-mata"
+            description="Os confrontos eliminatórios serão exibidos assim que estiverem disponíveis na base."
+          />
         ) : (
           KNOCKOUT_STAGES.map((stage) => {
             const list = byStage.get(stage) ?? [];
@@ -59,8 +65,10 @@ function MataMataPage() {
             return (
               <section key={stage}>
                 <h2 className="font-display text-xl font-bold mb-3">{t.stage(stage)}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {list.map((m) => <MatchCardView key={`${m.match_number}-${m.match_id ?? stage}`} match={m} />)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                  {list.map((m) => (
+                    <MatchCardView key={`${m.match_number}-${m.match_id ?? stage}`} match={m} />
+                  ))}
                 </div>
               </section>
             );

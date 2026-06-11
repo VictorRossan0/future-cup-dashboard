@@ -30,7 +30,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 hover:border-primary/40 transition-colors w-full overflow-hidden">
       <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-        <span>
+        <span className="min-w-0 truncate">
           #{match.match_number} · {t.stage(match.stage)}
           {match.group_code ? ` · Grupo ${match.group_code}` : ""}
         </span>
@@ -75,9 +75,11 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           <Calendar className="size-3" />
           {dateStr}
         </span>
-        <span className="inline-flex items-center gap-1 min-w-0 flex-1 justify-end truncate">
-          <MapPin className="size-3" />
-          {[match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar"}
+        <span className="inline-flex items-center gap-1 min-w-0 flex-1 justify-end">
+          <MapPin className="size-3 shrink-0" />
+          <span className="truncate">
+            {[match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar"}
+          </span>
         </span>
       </div>
     </div>
