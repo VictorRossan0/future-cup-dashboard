@@ -1,24 +1,8 @@
 import type { Competition, Stadium, Confederation } from "@/types";
-
 export const competition: Competition = {
   name: "Copa do Mundo FIFA 2026",
-
-  /**
-   * 🌍 Fonte única da verdade: UTC
-   * 🕒 14:30 em Brasília = 17:30 UTC
-   */
-  startDateUTC: "2026-06-11T17:30:00Z",
-  endDateUTC: "2026-07-19T20:00:00Z",
-
-  /**
-   * 🧭 Metadados de apresentação (opcional, mas profissional)
-   * Serve para UI e leitura humana sem conversão manual
-   */
-  kickoffLocal: {
-    timeZone: "America/Sao_Paulo",
-    label: "14:30 (Horário de Brasília)",
-  },
-
+  startDate: "2026-06-11T17:00:00Z",
+  endDate: "2026-07-19T20:00:00Z",
   hosts: ["Estados Unidos", "Canadá", "México"],
   teams: 48,
   groups: 12,
@@ -26,7 +10,6 @@ export const competition: Competition = {
   stadiums: 16,
   newPhase: "Round of 32 (16 avos)",
 };
-
 export const stadiums: Stadium[] = [
   { name: "MetLife Stadium", city: "Nova York/Nova Jersey", country: "EUA" },
   { name: "SoFi Stadium", city: "Los Angeles", country: "EUA" },
@@ -41,7 +24,5 @@ export const stadiums: Stadium[] = [
   { name: "Hard Rock Stadium", city: "Miami", country: "EUA" },
   { name: "Levi's Stadium", city: "São Francisco", country: "EUA" },
 ];
-
 export const groupLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-
 export const confederations: Confederation[] = ["CONMEBOL", "UEFA", "CONCACAF", "AFC", "CAF", "OFC"];
