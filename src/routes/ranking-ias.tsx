@@ -200,7 +200,7 @@ function MobileCard({ s, index }: { s: VAiSimulationsFull; index: number }) {
 
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[110px_1fr] gap-2 items-center">
+    <div className="grid grid-cols-[90px_minmax(0,1fr)] sm:grid-cols-[110px_minmax(0,1fr)] gap-2 items-center">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground inline-flex items-center gap-1">{icon}{label}</div>
       <div className="font-medium text-sm min-w-0 truncate">{value}</div>
     </div>
