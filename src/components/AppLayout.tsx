@@ -35,7 +35,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex overflow-x-hidden max-w-full">
-      {/* Sidebar */}
+      {/* Sidebar — desktop only */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-sidebar-border bg-sidebar shrink-0 sticky top-0 h-screen">
         <div className="px-6 py-6 border-b border-sidebar-border">
           <Link to="/" className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </Link>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {items.map((it) => {
             const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
             return (
@@ -62,7 +62,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                 )}
               >
-                <it.icon className="size-4" />
+                <it.icon className="size-4 shrink-0" />
                 {it.label}
               </Link>
             );
@@ -78,7 +78,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden max-w-full">
         {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-40 bg-sidebar/95 backdrop-blur border-b border-sidebar-border overflow-x-hidden">
+        <header className="lg:hidden sticky top-0 z-40 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
           <div className="flex items-center justify-between px-4 py-3">
             <Link to="/" className="flex items-center gap-2">
               <div className="size-8 rounded-lg bg-gradient-green grid place-items-center">
@@ -88,7 +88,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
             <span className="text-[10px] uppercase tracking-widest text-gold">Intelligence</span>
           </div>
-          <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-none w-full">
+          {/* Scrollable pill nav — safe overflow */}
+          <nav
+            className="flex overflow-x-auto gap-1.5 px-3 pb-2.5 scrollbar-none"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {items.map((it) => {
               const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
               return (
@@ -96,11 +100,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   key={it.to}
                   to={it.to}
                   className={cn(
-                    "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors",
+                    "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors",
                     active ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
                   )}
                 >
-                  <it.icon className="size-3.5" />
+                  <it.icon className="size-3.5 shrink-0" />
                   {it.label}
                 </Link>
               );
@@ -110,10 +114,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <main className="flex-1 overflow-x-hidden max-w-full">{children}</main>
 
-        <footer className="border-t border-border px-6 py-4 text-xs text-muted-foreground text-center overflow-hidden">
+        <footer className="border-t border-border px-4 py-4 text-xs text-muted-foreground text-center">
           Copa 2026 Intelligence · Dados simulados para protótipo · Não oficial
         </footer>
       </div>
+
       <div className="overflow-hidden">
         {" "}
         <PreviewStatus />{" "}
