@@ -90,7 +90,7 @@ function Index() {
               "radial-gradient(circle at 15% 25%, oklch(0.72 0.17 152 / 0.28), transparent 55%), radial-gradient(circle at 85% 75%, oklch(0.82 0.14 85 / 0.22), transparent 55%)",
           }}
         />
-        <div className="relative max-w-6xl mx-auto px-6 py-14 lg:py-20">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 lg:py-20">
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] uppercase tracking-widest text-gold">
               <Sparkles className="size-3" /> Powered by AI
