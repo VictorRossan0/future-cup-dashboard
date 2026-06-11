@@ -45,56 +45,56 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
       </div>
 
       {/* Teams */}
-      <div className="grid grid-cols-[1fr_44px_1fr] sm:grid-cols-[1fr_56px_1fr] items-center gap-1 w-full">
+      <div className="flex items-center gap-1 w-full">
         {/* Home */}
-        <div className="min-w-0 flex flex-col items-center text-center">
-          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={20} />
-
-          <span className="mt-1 text-[11px] sm:text-xs font-semibold leading-tight w-full break-words" title={home}>
+        <div className="flex-1 min-w-0 flex flex-col items-center text-center px-1">
+          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={28} />
+          <span
+            className="mt-1.5 text-[10px] sm:text-[11px] font-semibold leading-tight w-full line-clamp-2 break-words hyphens-auto"
+            title={home}
+          >
             {home}
           </span>
-
           {match.home_team_code && (
-            <span className="text-[9px] text-muted-foreground truncate w-full">{match.home_team_code}</span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">{match.home_team_code}</span>
           )}
         </div>
 
         {/* Center */}
-        <div className="w-[44px] sm:w-[56px] text-center shrink-0">
+        <div className="w-10 sm:w-14 text-center shrink-0 flex flex-col items-center">
           {isFinished && match.home_score != null ? (
-            <div className="font-display text-base sm:text-lg font-bold">
+            <div className="font-display text-base sm:text-lg font-bold whitespace-nowrap">
               {match.home_score}
-              <span className="mx-1 text-muted-foreground">·</span>
+              <span className="mx-0.5 text-muted-foreground">·</span>
               {match.away_score}
             </div>
           ) : (
             <div className="font-display text-base sm:text-lg font-bold text-muted-foreground">VS</div>
           )}
-
-          <div className="text-[9px] text-muted-foreground truncate">{time}</div>
+          <div className="text-[9px] text-muted-foreground mt-0.5 whitespace-nowrap">{time}</div>
         </div>
 
         {/* Away */}
-        <div className="min-w-0 flex flex-col items-center text-center">
-          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={20} />
-
-          <span className="mt-1 text-[11px] sm:text-xs font-semibold leading-tight w-full break-words" title={away}>
+        <div className="flex-1 min-w-0 flex flex-col items-center text-center px-1">
+          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={28} />
+          <span
+            className="mt-1.5 text-[10px] sm:text-[11px] font-semibold leading-tight w-full line-clamp-2 break-words hyphens-auto"
+            title={away}
+          >
             {away}
           </span>
-
           {match.away_team_code && (
-            <span className="text-[9px] text-muted-foreground truncate w-full">{match.away_team_code}</span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">{match.away_team_code}</span>
           )}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2 text-[11px] text-muted-foreground min-w-0">
+      <div className="mt-3 pt-3 border-t border-border flex flex-col gap-1.5 text-[11px] text-muted-foreground min-w-0">
         <div className="flex items-center gap-1 min-w-0">
           <Calendar className="size-3 shrink-0" />
           <span className="truncate">{dateStr}</span>
         </div>
-
         <div className="flex items-center gap-1 min-w-0">
           <MapPin className="size-3 shrink-0" />
           <span className="truncate">{location}</span>
