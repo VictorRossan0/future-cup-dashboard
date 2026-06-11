@@ -64,12 +64,12 @@ export function PreviewStatus() {
       className={cn(
         "fixed bottom-3 right-3 z-50 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-elegant backdrop-blur transition-all",
         config.cls,
-        collapsed && status === "ready" && "px-2 py-2"
+        collapsed && status === "ready" && "px-2 py-2",
       )}
     >
       <Icon className={cn("size-3.5", config.spin && "animate-spin")} />
       {!(collapsed && status === "ready") && (
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1.5 truncate">
           {config.label}
           {readyAt && status === "ready" && (
             <span className="opacity-60">
