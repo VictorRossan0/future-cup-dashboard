@@ -230,16 +230,24 @@ function Index() {
         <DataQualityPanel />
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
-        <div className="flex items-end justify-between mb-4">
-          <div>
-            <h2 className="font-display text-2xl font-bold flex items-center gap-2">
-              <MapPin className="size-5 text-primary" /> Próximos jogos
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 sm:pb-16 overflow-hidden">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
+          <div className="min-w-0">
+            <h2 className="font-display text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <MapPin className="size-5 text-primary" />
+              Próximos jogos
             </h2>
+
             <p className="text-sm text-muted-foreground">Calendário oficial da competição.</p>
           </div>
-          {matchesQ.data && <SourceBadge source={matchesQ.data.source} />}
+
+          {matchesQ.data && (
+            <div className="self-start sm:self-auto">
+              <SourceBadge source={matchesQ.data.source} />
+            </div>
+          )}
         </div>
+
         {matchesQ.isLoading ? (
           <LoadingGrid count={6} />
         ) : upcoming.length === 0 ? (
@@ -248,7 +256,7 @@ function Index() {
             description="Os jogos aparecerão aqui assim que a base for populada."
           />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {upcoming.map((m) => (
               <MatchCardView key={`${m.match_number}-${m.match_id ?? m.stage}`} match={m} />
             ))}
