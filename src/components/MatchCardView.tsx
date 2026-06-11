@@ -28,7 +28,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
     : "Data a confirmar";
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 hover:border-primary/40 transition-colors">
+    <div className="rounded-2xl border border-border bg-card p-4 hover:border-primary/40 transition-colors w-full overflow-hidden">
       <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
         <span>
           #{match.match_number} · {t.stage(match.stage)}
