@@ -19,20 +19,21 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
         <h3 className="font-display font-bold">Grupo {letter}</h3>
         <span className="text-[10px] uppercase tracking-widest text-gold">Fase de Grupos</span>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      {/* Horizontal scroll wrapper — prevents table from breaking mobile layout */}
+      <div className="overflow-x-auto -mx-0">
+        <table className="w-full text-sm" style={{ minWidth: "380px" }}>
           <thead className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary/40">
             <tr>
-              <th className="text-left px-3 py-2">#</th>
+              <th className="text-left px-3 py-2 w-8">#</th>
               <th className="text-left px-3 py-2">Seleção</th>
-              <th className="px-2 py-2">J</th>
-              <th className="px-2 py-2">V</th>
-              <th className="px-2 py-2">E</th>
-              <th className="px-2 py-2">D</th>
-              <th className="px-2 py-2">GP</th>
-              <th className="px-2 py-2">GC</th>
-              <th className="px-2 py-2">SG</th>
-              <th className="px-2 py-2 text-gold">Pts</th>
+              <th className="px-2 py-2 text-center w-7">J</th>
+              <th className="px-2 py-2 text-center w-7">V</th>
+              <th className="px-2 py-2 text-center w-7">E</th>
+              <th className="px-2 py-2 text-center w-7">D</th>
+              <th className="px-2 py-2 text-center w-7">GP</th>
+              <th className="px-2 py-2 text-center w-7">GC</th>
+              <th className="px-2 py-2 text-center w-7">SG</th>
+              <th className="px-2 py-2 text-center text-gold w-9">Pts</th>
             </tr>
           </thead>
           <tbody>
@@ -40,32 +41,35 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
               const st = statusStyles[row.qualification_status ?? ""] ?? statusStyles.playing;
               const sg = row.goal_difference ?? 0;
               return (
-                <tr key={`${row.team_id ?? row.team_name}-${i}`} className="border-t border-border hover:bg-secondary/30 transition-colors">
+                <tr
+                  key={`${row.team_id ?? row.team_name}-${i}`}
+                  className="border-t border-border hover:bg-secondary/30 transition-colors"
+                >
                   <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className={cn("size-2 rounded-full", st.dot)} title={st.label} />
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("size-2 rounded-full shrink-0", st.dot)} title={st.label} />
                       <span className="text-muted-foreground text-xs">{row.position ?? i + 1}</span>
                     </div>
                   </td>
                   <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <TeamFlag teamCode={row.team_code} teamName={row.team_name} size={20} />
+                    <div className="flex items-center gap-2 min-w-0">
+                      <TeamFlag teamCode={row.team_code} teamName={row.team_name} size={18} />
                       <div className="min-w-0">
-                        <div className="font-medium truncate">{row.team_name}</div>
-                        <div className="text-[10px] text-muted-foreground truncate">
+                        <div className="font-medium truncate text-xs sm:text-sm">{row.team_name}</div>
+                        <div className="text-[9px] text-muted-foreground truncate hidden sm:block">
                           {row.team_code ?? ""} {row.coach_name ? `· ${row.coach_name}` : ""} · {t.qualif(row.qualification_status ?? "playing")}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.played ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.wins ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.draws ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.losses ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.goals_for ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{row.goals_against ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums">{sg > 0 ? `+${sg}` : sg}</td>
-                  <td className="px-2 py-2.5 text-center font-bold text-gold tabular-nums">{row.points ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.played ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.wins ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.draws ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.losses ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_for ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_against ?? 0}</td>
+                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{sg > 0 ? `+${sg}` : sg}</td>
+                  <td className="px-2 py-2.5 text-center font-bold text-gold tabular-nums text-xs">{row.points ?? 0}</td>
                 </tr>
               );
             })}
