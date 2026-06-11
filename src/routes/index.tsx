@@ -83,7 +83,6 @@ function Index() {
     <AppLayout>
       {/* HERO */}
       <section className="relative overflow-hidden bg-gradient-hero border-b border-border">
-        <span>{JSON.stringify(match.match_date)}</span>
         <div
           className="absolute inset-0 opacity-40 pointer-events-none"
           style={{
