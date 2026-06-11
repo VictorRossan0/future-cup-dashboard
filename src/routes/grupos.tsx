@@ -33,7 +33,7 @@ function GruposPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
         <PageHeader
           kicker="Fase de Grupos"
           title="Grupos e Classificação"

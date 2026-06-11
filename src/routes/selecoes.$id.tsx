@@ -59,7 +59,7 @@ function TeamDetail() {
   return (
     <AppLayout>
       <section className="bg-gradient-hero border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
           <Link to="/selecoes" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="size-4" /> Voltar
           </Link>
@@ -97,7 +97,7 @@ function TeamDetail() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 py-10 space-y-6">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
         <FilterBar className="grid-cols-1 sm:grid-cols-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
