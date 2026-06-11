@@ -45,47 +45,45 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
       </div>
 
       {/* Teams */}
-      <div className="flex items-center gap-1 w-full">
-        {/* Home */}
-        <div className="flex-1 min-w-0 flex flex-col items-center text-center px-1">
-          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={28} />
+      <div className="flex items-center justify-between gap-2 w-full overflow-hidden">
+        <div className="flex-1 basis-0 min-w-0 flex flex-col items-center text-center">
+          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={22} />
+
           <span
-            className="mt-1.5 text-[10px] sm:text-[11px] font-semibold leading-tight w-full line-clamp-2 break-words hyphens-auto"
+            className="mt-1 text-xs font-semibold w-full overflow-hidden text-ellipsis whitespace-nowrap"
             title={home}
           >
             {home}
           </span>
-          {match.home_team_code && (
-            <span className="text-[9px] text-muted-foreground mt-0.5">{match.home_team_code}</span>
-          )}
+
+          {match.home_team_code && <span className="text-[9px] text-muted-foreground">{match.home_team_code}</span>}
         </div>
 
-        {/* Center */}
-        <div className="w-10 sm:w-14 text-center shrink-0 flex flex-col items-center">
+        <div className="w-[50px] shrink-0 text-center">
           {isFinished && match.home_score != null ? (
-            <div className="font-display text-base sm:text-lg font-bold whitespace-nowrap">
+            <div className="font-display text-lg font-bold">
               {match.home_score}
-              <span className="mx-0.5 text-muted-foreground">·</span>
+              <span className="mx-1 text-muted-foreground">·</span>
               {match.away_score}
             </div>
           ) : (
-            <div className="font-display text-base sm:text-lg font-bold text-muted-foreground">VS</div>
+            <div className="font-display text-lg font-bold text-muted-foreground">VS</div>
           )}
-          <div className="text-[9px] text-muted-foreground mt-0.5 whitespace-nowrap">{time}</div>
+
+          <div className="text-[9px] text-muted-foreground">{time}</div>
         </div>
 
-        {/* Away */}
-        <div className="flex-1 min-w-0 flex flex-col items-center text-center px-1">
-          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={28} />
+        <div className="flex-1 basis-0 min-w-0 flex flex-col items-center text-center">
+          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={22} />
+
           <span
-            className="mt-1.5 text-[10px] sm:text-[11px] font-semibold leading-tight w-full line-clamp-2 break-words hyphens-auto"
+            className="mt-1 text-xs font-semibold w-full overflow-hidden text-ellipsis whitespace-nowrap"
             title={away}
           >
             {away}
           </span>
-          {match.away_team_code && (
-            <span className="text-[9px] text-muted-foreground mt-0.5">{match.away_team_code}</span>
-          )}
+
+          {match.away_team_code && <span className="text-[9px] text-muted-foreground">{match.away_team_code}</span>}
         </div>
       </div>
 
