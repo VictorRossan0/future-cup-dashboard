@@ -36,9 +36,9 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
         </span>
         <span className={cn("px-2 py-0.5 rounded-full text-[10px]", statusClass)}>{t.status(status)}</span>
       </div>
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
-        <div className="min-w-0 flex flex-col items-center text-center gap-1">
-          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={32} />
+      <div className="flex items-center justify-between gap-2 w-full">
+        <div className="flex-1 min-w-0 flex flex-col items-center text-center gap-1 overflow-hidden">
+          <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={24} />
           <span className="font-display font-semibold text-sm max-w-full truncate" title={home}>
             {" "}
             {home}{" "}
@@ -48,7 +48,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           )}
           {homePlaceholder && <span className="text-[9px] text-muted-foreground italic">placeholder</span>}
         </div>
-        <div className="text-center shrink-0 w-[64px]">
+        <div className="text-center flex-shrink-0 w-[56px] sm:w-[64px]">
           {isFinished && match.home_score != null ? (
             <div className="font-display text-3xl font-bold tabular-nums">
               {match.home_score} <span className="text-muted-foreground">·</span> {match.away_score}
@@ -58,8 +58,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           )}
           <div className="text-[10px] text-muted-foreground mt-1 tabular-nums">{time}</div>
         </div>
-        <div className="min-w-0 flex flex-col items-center text-center gap-1">
-          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={32} />
+        <div className="flex-1 min-w-0 flex flex-col items-center text-center gap-1 overflow-hidden">
+          <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={24} />
           <span className="font-display font-semibold text-sm max-w-full truncate" title={away}>
             {" "}
             {away}{" "}
