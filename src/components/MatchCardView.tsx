@@ -24,10 +24,11 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
   const time = match.match_time?.slice(0, 5) ?? "Horário a confirmar";
 
   const dateStr = match.match_date
-    ? new Date(match.match_date).toLocaleDateString("pt-BR", {
+    ? new Intl.DateTimeFormat("pt-BR", {
         day: "2-digit",
         month: "short",
-      })
+        timeZone: "America/Sao_Paulo",
+      }).format(new Date(`${match.match_date}T12:00:00`))
     : "Data a confirmar";
 
   const location = [match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar";
