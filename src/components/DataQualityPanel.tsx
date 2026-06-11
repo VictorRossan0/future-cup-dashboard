@@ -11,8 +11,8 @@ const EXPECTED: Record<string, number> = {
   players: 1248,
   standings: 48,
   matches: 104,
-  rules: 10,
-  data_sources: 1,
+  rules: 16,
+  data_sources: 3,
   ai_simulations: 0,
 };
 
