@@ -18,6 +18,7 @@ import { Route as MataMataRouteImport } from './routes/mata-mata'
 import { Route as JogosRouteImport } from './routes/jogos'
 import { Route as HallDaFamaRouteImport } from './routes/hall-da-fama'
 import { Route as GruposRouteImport } from './routes/grupos'
+import { Route as ConsensoRouteImport } from './routes/consenso'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
 import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
@@ -67,6 +68,11 @@ const GruposRoute = GruposRouteImport.update({
   path: '/grupos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsensoRoute = ConsensoRouteImport.update({
+  id: '/consenso',
+  path: '/consenso',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -85,6 +91,7 @@ const SelecoesIdRoute = SelecoesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/consenso': typeof ConsensoRoute
   '/grupos': typeof GruposRoute
   '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/consenso': typeof ConsensoRoute
   '/grupos': typeof GruposRoute
   '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/consenso': typeof ConsensoRoute
   '/grupos': typeof GruposRoute
   '/hall-da-fama': typeof HallDaFamaRoute
   '/jogos': typeof JogosRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/consenso'
     | '/grupos'
     | '/hall-da-fama'
     | '/jogos'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/consenso'
     | '/grupos'
     | '/hall-da-fama'
     | '/jogos'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/consenso'
     | '/grupos'
     | '/hall-da-fama'
     | '/jogos'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConsensoRoute: typeof ConsensoRoute
   GruposRoute: typeof GruposRoute
   HallDaFamaRoute: typeof HallDaFamaRoute
   JogosRoute: typeof JogosRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GruposRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consenso': {
+      id: '/consenso'
+      path: '/consenso'
+      fullPath: '/consenso'
+      preLoaderRoute: typeof ConsensoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -277,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConsensoRoute: ConsensoRoute,
   GruposRoute: GruposRoute,
   HallDaFamaRoute: HallDaFamaRoute,
   JogosRoute: JogosRoute,

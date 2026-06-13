@@ -12,6 +12,7 @@ import {
   Info,
   FlaskConical,
   Crown,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
@@ -24,6 +25,7 @@ const items = [
   { to: "/selecoes", label: "Seleções", icon: Trophy },
   { to: "/regras", label: "Regras", icon: BookOpen },
   { to: "/simulacoes", label: "Simulações de IA", icon: Brain },
+  { to: "/consenso", label: "Consenso", icon: Users },
   { to: "/ranking-ias", label: "Ranking das IAs", icon: BarChart3 },
   { to: "/hall-da-fama", label: "Hall da Fama", icon: Crown },
   { to: "/sobre", label: "Sobre", icon: Info },
