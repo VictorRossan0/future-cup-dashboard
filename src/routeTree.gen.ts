@@ -257,13 +257,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HallDaFamaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/consenso': {
-      id: '/consenso'
-      path: '/consenso'
-      fullPath: '/consenso'
-      preLoaderRoute: typeof ConsensoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/grupos': {
       id: '/grupos'
       path: '/grupos'
