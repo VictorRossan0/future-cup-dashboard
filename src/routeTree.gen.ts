@@ -23,6 +23,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
 import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
 
+const ConsensoRoute = ConsensoRouteImport.update({
+  id: '/consenso',
+  path: '/consenso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+import { Route as ConsensoRouteImport } from './routes/consenso'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
+import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
+
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
