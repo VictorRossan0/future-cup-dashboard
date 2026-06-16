@@ -5,6 +5,7 @@ import { Countdown } from "@/components/Countdown";
 import { MatchCardView } from "@/components/MatchCardView";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
 import { DataQualityPanel } from "@/components/DataQualityPanel";
+import { LastUpdateBadge } from "@/components/LastUpdateBadge";
 import { TeamFlag } from "@/components/TeamFlag";
 import {
   useCompetitionDashboard,
@@ -134,6 +135,11 @@ function Index() {
             </div>
           )}
         </div>
+      </section>
+
+      {/* Última atualização */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+        <LastUpdateBadge />
       </section>
 
       {/* Favoritos ao Título */}
