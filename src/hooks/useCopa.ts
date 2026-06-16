@@ -3,8 +3,17 @@ import {
   getCompetitionDashboard, getGroupsStandings, getMatches,
   getTeams, getPlayers, getRules, getAiSimulationContext,
   getDataQualitySummary, getAiSimulationsFull, getAiSimulationConsensus,
+  getMatchLineups,
   type PlayersFilter,
 } from "@/services/copaService";
+
+export const useMatchLineups = (matchId: string | undefined) =>
+  useQuery({
+    queryKey: ["match_lineups", matchId],
+    queryFn: () => getMatchLineups(matchId!),
+    enabled: Boolean(matchId),
+    staleTime: 5 * 60 * 1000,
+  });
 
 const FIVE_MIN = 5 * 60 * 1000;
 

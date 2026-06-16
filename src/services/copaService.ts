@@ -226,3 +226,45 @@ export async function getAiSimulationConsensus() {
   );
   return { ...res, data: res.data[0] ?? null };
 }
+
+// Match Lineups -------------------------------------------------------------
+// Consumes a Supabase view if available. Returns empty when no official
+// lineup has been published yet — UI shows an "awaiting data" state.
+export interface VMatchLineup {
+  match_id?: string | null;
+  team_id?: string | null;
+  team_code?: string | null;
+  team_name?: string | null;
+  side?: "home" | "away" | string | null;
+  formation?: string | null;
+  coach_name?: string | null;
+  captain_player_id?: string | null;
+  captain_name?: string | null;
+  player_id?: string | null;
+  player_name?: string | null;
+  jersey_number?: number | null;
+  position?: string | null;
+  is_starter?: boolean | null;
+  is_captain?: boolean | null;
+  grid_row?: number | null;
+  grid_col?: number | null;
+  [k: string]: unknown;
+}
+
+const LINEUP_VIEW_CANDIDATES = ["v_match_lineups", "v_lineups_full", "v_match_lineup"];
+
+export async function getMatchLineups(matchId: string) {
+  if (!isSupabaseConfigured || !matchId) {
+    return { data: [] as VMatchLineup[], source: "mock" as const };
+  }
+  for (const view of LINEUP_VIEW_CANDIDATES) {
+    try {
+      const { data, error } = await supabase.from(view).select("*").eq("match_id", matchId);
+      if (error) continue;
+      return { data: (data ?? []) as VMatchLineup[], source: "supabase" as const };
+    } catch {
+      continue;
+    }
+  }
+  return { data: [] as VMatchLineup[], source: "supabase" as const };
+}
