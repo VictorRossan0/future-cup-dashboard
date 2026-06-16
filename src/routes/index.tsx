@@ -120,7 +120,7 @@ function Index() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/simulacoes" className="gap-2">
+              <Link to="/consenso" className="gap-2">
                 <Sparkles className="size-4" /> Ver Consenso <ArrowRight className="size-4" />
               </Link>
             </Button>
