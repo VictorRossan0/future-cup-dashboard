@@ -153,7 +153,7 @@ function Index() {
               <p className="text-sm text-muted-foreground">Consenso das IAs analisadas ({totalSims} simulações).</p>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link to="/simulacoes" className="gap-1">
+              <Link to="/consenso" className="gap-1">
                 Ver consenso completo <ArrowRight className="size-3.5" />
               </Link>
             </Button>
