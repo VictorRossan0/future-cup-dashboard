@@ -13,6 +13,7 @@ import {
   FlaskConical,
   Crown,
   Users,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
@@ -23,6 +24,7 @@ const items = [
   { to: "/jogos", label: "Jogos", icon: CalendarDays },
   { to: "/mata-mata", label: "Mata-mata", icon: Swords },
   { to: "/selecoes", label: "Seleções", icon: Trophy },
+  { to: "/escalacoes", label: "Escalações", icon: ClipboardList },
   { to: "/regras", label: "Regras", icon: BookOpen },
   { to: "/simulacoes", label: "Simulações de IA", icon: Brain },
   { to: "/consenso", label: "Consenso", icon: Users },
