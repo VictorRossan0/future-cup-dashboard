@@ -102,6 +102,24 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           <span className="truncate">{location}</span>
         </div>
       </div>
-    </div>
+    </>
   );
+
+  const cardClass =
+    "block w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 hover:border-primary/40 transition-colors";
+
+  if (match.match_id) {
+    return (
+      <Link
+        to="/match/$id"
+        params={{ id: match.match_id }}
+        className={cn(cardClass, "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/40")}
+      >
+        {cardInner}
+      </Link>
+    );
+  }
+
+  return <div className={cardClass}>{cardInner}</div>;
 }
+
