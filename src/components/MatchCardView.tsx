@@ -3,6 +3,9 @@ import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { TeamFlag } from "@/components/TeamFlag";
+import { Link } from "@tanstack/react-router";
+
+
 
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
@@ -33,8 +36,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
 
   const location = [match.stadium, match.city, match.country].filter(Boolean).join(", ") || "Local a confirmar";
 
-  return (
-    <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card p-3 sm:p-4 hover:border-primary/40 transition-colors">
+  const cardInner = (
+    <>
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-3 overflow-hidden">
         <span className="flex-1 min-w-0 truncate text-[9px] uppercase tracking-widest text-muted-foreground">
