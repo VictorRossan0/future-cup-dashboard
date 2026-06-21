@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useMatches, useMatchLineups } from "@/hooks/useCopa";
 import { type VMatchLineup } from "@/services/copaService";
 import type { VMatchesFull } from "@/types/views";
-import { Crown, ShieldCheck, UserRound, ClipboardList, Users, ChevronRight } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Crown, ShieldCheck, UserRound, ClipboardList, Users, ChevronRight, BarChart3, Trophy, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 
@@ -86,38 +87,71 @@ function EscalacoesPage() {
           <div className="space-y-6 min-w-0">
             {selected && <MatchHeader match={selected} />}
 
-            {lineupsQ.isLoading && (
-              <Card className="p-6">
-                <p className="text-sm text-muted-foreground">Carregando escalações…</p>
-              </Card>
-            )}
+            {selected && (
+              <Tabs defaultValue="lineups" className="w-full">
+                <TabsList className="grid w-full grid-cols-3 h-auto bg-secondary/50 p-1">
+                  <TabsTrigger value="result" className="data-[state=active]:bg-card data-[state=active]:shadow-sm gap-1.5 py-2">
+                    <Trophy className="size-3.5" /> <span className="text-xs sm:text-sm">Resultado</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="lineups" className="data-[state=active]:bg-card data-[state=active]:shadow-sm gap-1.5 py-2">
+                    <ClipboardList className="size-3.5" /> <span className="text-xs sm:text-sm">Escalações</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="stats" className="data-[state=active]:bg-card data-[state=active]:shadow-sm gap-1.5 py-2">
+                    <BarChart3 className="size-3.5" /> <span className="text-xs sm:text-sm">Estatísticas</span>
+                  </TabsTrigger>
+                </TabsList>
 
-            {!lineupsQ.isLoading && rows.length === 0 && (
-              <Card className="p-8 text-center border-dashed">
-                <ClipboardList className="size-8 mx-auto text-muted-foreground mb-2" />
-                <h2 className="font-display text-xl font-bold">Aguardando escalações oficiais</h2>
-                <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
-                  As escalações desta partida serão publicadas automaticamente assim que forem
-                  divulgadas oficialmente pelas seleções.
-                </p>
-              </Card>
-            )}
+                <TabsContent value="result" className="mt-4">
+                  <ResultPanel match={selected} />
+                </TabsContent>
 
-            {!lineupsQ.isLoading && rows.length > 0 && (
-              <div className="grid xl:grid-cols-2 gap-6">
-                <LineupColumn
-                  rows={homeRows}
-                  fallbackTeamCode={selected?.home_team_code ?? undefined}
-                  fallbackTeamName={selected?.home_team_name ?? undefined}
-                  tone="home"
-                />
-                <LineupColumn
-                  rows={awayRows}
-                  fallbackTeamCode={selected?.away_team_code ?? undefined}
-                  fallbackTeamName={selected?.away_team_name ?? undefined}
-                  tone="away"
-                />
-              </div>
+                <TabsContent value="lineups" className="mt-4 space-y-6">
+                  {lineupsQ.isLoading && (
+                    <Card className="p-6">
+                      <p className="text-sm text-muted-foreground">Carregando escalações…</p>
+                    </Card>
+                  )}
+
+                  {!lineupsQ.isLoading && rows.length === 0 && (
+                    <Card className="p-8 text-center border-dashed">
+                      <ClipboardList className="size-8 mx-auto text-muted-foreground mb-2" />
+                      <h2 className="font-display text-xl font-bold">Escalação oficial ainda não divulgada</h2>
+                      <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
+                        As escalações desta partida serão publicadas automaticamente assim que forem
+                        divulgadas oficialmente pelas seleções.
+                      </p>
+                    </Card>
+                  )}
+
+                  {!lineupsQ.isLoading && rows.length > 0 && (
+                    <div className="grid xl:grid-cols-2 gap-6">
+                      <LineupColumn
+                        rows={homeRows}
+                        fallbackTeamCode={selected?.home_team_code ?? undefined}
+                        fallbackTeamName={selected?.home_team_name ?? undefined}
+                        tone="home"
+                      />
+                      <LineupColumn
+                        rows={awayRows}
+                        fallbackTeamCode={selected?.away_team_code ?? undefined}
+                        fallbackTeamName={selected?.away_team_name ?? undefined}
+                        tone="away"
+                      />
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="stats" className="mt-4">
+                  <Card className="p-8 text-center border-dashed">
+                    <BarChart3 className="size-8 mx-auto text-muted-foreground mb-2" />
+                    <h2 className="font-display text-xl font-bold">Estatísticas em breve</h2>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
+                      Posse de bola, finalizações, faltas e cartões serão exibidos aqui assim que a
+                      partida for disputada.
+                    </p>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             )}
           </div>
         </div>
@@ -125,6 +159,44 @@ function EscalacoesPage() {
     </AppLayout>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Result panel
+
+function ResultPanel({ match }: { match: VMatchesFull }) {
+  const hasScore = match.home_score != null && match.away_score != null;
+  return (
+    <Card className="p-6 sm:p-8">
+      {hasScore ? (
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
+          <div className="text-center">
+            <TeamFlag teamCode={match.home_team_code} teamName={match.home_team_name} size={56} />
+            <div className="mt-2 font-display font-bold truncate">{match.home_team_name}</div>
+          </div>
+          <div className="font-display text-5xl sm:text-6xl font-black tabular-nums text-center">
+            <span>{match.home_score}</span>
+            <span className="text-muted-foreground mx-2">×</span>
+            <span>{match.away_score}</span>
+          </div>
+          <div className="text-center">
+            <TeamFlag teamCode={match.away_team_code} teamName={match.away_team_name} size={56} />
+            <div className="mt-2 font-display font-bold truncate">{match.away_team_name}</div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center">
+          <Trophy className="size-8 mx-auto text-muted-foreground mb-2" />
+          <h3 className="font-display text-xl font-bold">Partida ainda não disputada</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {formatDate(match.match_date)}
+            {match.match_time && ` · ${match.match_time.slice(0, 5)}`}
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 
 // ---------------------------------------------------------------------------
 // Match list row
@@ -275,19 +347,17 @@ function LineupColumn({
       {/* Header */}
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <TeamFlag teamCode={teamCode} teamName={teamName} size={36} />
+          <TeamFlag teamCode={teamCode} teamName={teamName} size={40} />
           <div className="min-w-0">
             <div className="font-display text-lg font-bold truncate">{teamName}</div>
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-              {formation && (
-                <Badge variant="outline" className="border-primary/40 text-primary font-mono">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-1">
+              <span className="uppercase tracking-widest text-[9px]">Formação</span>
+              {formation ? (
+                <Badge variant="outline" className="border-primary/40 text-primary font-mono text-xs">
                   {formation}
                 </Badge>
-              )}
-              {coach && (
-                <span className="inline-flex items-center gap-1 truncate">
-                  <ShieldCheck className="size-3" /> {coach}
-                </span>
+              ) : (
+                <span className="italic text-muted-foreground/80">Aguardando confirmação oficial</span>
               )}
             </div>
           </div>
@@ -303,8 +373,65 @@ function LineupColumn({
         </Badge>
       </div>
 
+      {/* Coach card */}
+      {coach && (
+        <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-gradient-to-br from-secondary/40 to-secondary/10 px-3 py-2.5">
+          <div className="grid place-items-center size-9 rounded-full bg-primary/15 text-primary border border-primary/30 shrink-0">
+            <ShieldCheck className="size-4" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[9px] uppercase tracking-widest text-muted-foreground">Comissão Técnica</div>
+            <div className="text-sm font-bold truncate">{coach}</div>
+          </div>
+        </div>
+      )}
+
       {/* Field */}
       <Field formation={formation} starters={starters} captainId={captain?.player_id ?? null} />
+
+      {/* Starters list */}
+      <div>
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold mb-2">
+          <Crown className="size-3.5" /> Titulares
+          <span className="text-foreground/80">· {starters.length}</span>
+        </div>
+        {starters.length === 0 ? (
+          <p className="text-xs text-muted-foreground">Sem titulares divulgados.</p>
+        ) : (
+          <ul className="grid sm:grid-cols-2 gap-1.5">
+            {[...starters]
+              .sort((a, b) => {
+                if (isGK(a.position) !== isGK(b.position)) return isGK(a.position) ? -1 : 1;
+                return (a.jersey_number ?? 99) - (b.jersey_number ?? 99);
+              })
+              .map((p, i) => {
+                const isCap = (captain?.player_id ?? null) && p.player_id === captain?.player_id;
+                return (
+                  <li
+                    key={`s-${p.player_id ?? p.player_name}-${i}`}
+                    className={cn(
+                      "flex items-center gap-2 rounded-md border px-2 py-1.5 text-xs",
+                      isCap
+                        ? "border-gold/50 bg-gold/5"
+                        : "border-border/60 bg-card hover:bg-secondary/30",
+                    )}
+                  >
+                    <span className="grid place-items-center size-6 rounded-full bg-primary/10 border border-primary/30 text-[10px] font-mono font-bold text-primary shrink-0">
+                      <Hash className="size-2.5 -mr-0.5" />{p.jersey_number ?? "—"}
+                    </span>
+                    <span className="flex-1 truncate font-medium">{p.player_name ?? "—"}</span>
+                    {isCap && (
+                      <span className="grid place-items-center size-4 rounded-full bg-gold text-[8px] font-black text-slate-900 shrink-0" title="Capitão">C</span>
+                    )}
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 font-mono shrink-0">
+                      {shortPos(p.position)}
+                    </Badge>
+                  </li>
+                );
+              })}
+          </ul>
+        )}
+      </div>
 
       {/* Bench */}
       <div>
@@ -316,11 +443,11 @@ function LineupColumn({
           <p className="text-xs text-muted-foreground">Sem reservas divulgados.</p>
         ) : (
           <ul className="grid sm:grid-cols-2 gap-1.5">
-            {bench
+            {[...bench]
               .sort((a, b) => (a.jersey_number ?? 99) - (b.jersey_number ?? 99))
               .map((p, i) => (
                 <li
-                  key={`${p.player_id ?? p.player_name}-${i}`}
+                  key={`b-${p.player_id ?? p.player_name}-${i}`}
                   className="flex items-center gap-2 rounded-md border border-border/60 bg-secondary/30 px-2 py-1.5 text-xs"
                 >
                   <span className="grid place-items-center size-6 rounded-full bg-background border border-border text-[10px] font-mono font-bold shrink-0">
@@ -513,4 +640,3 @@ function formatDate(d?: string | null) {
 
 // Avoid unused imports
 void Link;
-void Crown;
