@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useMatches, useMatchLineups } from "@/hooks/useCopa";
 import { type VMatchLineup } from "@/services/copaService";
 import type { VMatchesFull } from "@/types/views";
-import { Crown, ShieldCheck, UserRound, ClipboardList, Users, ChevronRight } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Crown, ShieldCheck, UserRound, ClipboardList, Users, ChevronRight, BarChart3, Trophy, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 
