@@ -199,7 +199,7 @@ export function MatchLineupView({
                         </span>
                       )}
                       <Badge variant="outline" className="text-[9px] px-1.5 py-0 font-mono shrink-0">
-                        {shortPos(p.position_abbreviation ?? p.position)}
+                        {shortPos((p.position_abbreviation as string | undefined) ?? p.position)}
                       </Badge>
                     </button>
                   </li>
@@ -407,7 +407,7 @@ function PlayerDialog({
             <span className="truncate">{player?.player_name ?? "—"}</span>
           </DialogTitle>
           <DialogDescription>
-            {player?.position_name ?? player?.position ?? "Posição não informada"}
+            {((player?.position_name as string | undefined) ?? player?.position ?? "Posição não informada") as string}
             {player?.is_captain ? " · Capitão" : ""}
             {player?.is_starter === false ? " · Reserva" : ""}
           </DialogDescription>
