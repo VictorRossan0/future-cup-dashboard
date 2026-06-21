@@ -23,6 +23,7 @@ import { Route as ConsensoRouteImport } from './routes/consenso'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelecoesIndexRouteImport } from './routes/selecoes.index'
 import { Route as SelecoesIdRouteImport } from './routes/selecoes.$id'
+import { Route as MatchIdRouteImport } from './routes/match.$id'
 
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
@@ -94,6 +95,11 @@ const SelecoesIdRoute = SelecoesIdRouteImport.update({
   path: '/selecoes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchIdRoute = MatchIdRouteImport.update({
+  id: '/match/$id',
+  path: '/match/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/sobre': typeof SobreRoute
+  '/match/$id': typeof MatchIdRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/sobre': typeof SobreRoute
+  '/match/$id': typeof MatchIdRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes': typeof SelecoesIndexRoute
 }
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/regras': typeof RegrasRoute
   '/simulacoes': typeof SimulacoesRoute
   '/sobre': typeof SobreRoute
+  '/match/$id': typeof MatchIdRoute
   '/selecoes/$id': typeof SelecoesIdRoute
   '/selecoes/': typeof SelecoesIndexRoute
 }
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/regras'
     | '/simulacoes'
     | '/sobre'
+    | '/match/$id'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesByTo: FileRoutesByTo
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/regras'
     | '/simulacoes'
     | '/sobre'
+    | '/match/$id'
     | '/selecoes/$id'
     | '/selecoes'
   id:
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/regras'
     | '/simulacoes'
     | '/sobre'
+    | '/match/$id'
     | '/selecoes/$id'
     | '/selecoes/'
   fileRoutesById: FileRoutesById
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   RegrasRoute: typeof RegrasRoute
   SimulacoesRoute: typeof SimulacoesRoute
   SobreRoute: typeof SobreRoute
+  MatchIdRoute: typeof MatchIdRoute
   SelecoesIdRoute: typeof SelecoesIdRoute
   SelecoesIndexRoute: typeof SelecoesIndexRoute
 }
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SelecoesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/match/$id': {
+      id: '/match/$id'
+      path: '/match/$id'
+      fullPath: '/match/$id'
+      preLoaderRoute: typeof MatchIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -328,6 +348,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegrasRoute: RegrasRoute,
   SimulacoesRoute: SimulacoesRoute,
   SobreRoute: SobreRoute,
+  MatchIdRoute: MatchIdRoute,
   SelecoesIdRoute: SelecoesIdRoute,
   SelecoesIndexRoute: SelecoesIndexRoute,
 }
