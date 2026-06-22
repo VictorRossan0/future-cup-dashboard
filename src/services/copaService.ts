@@ -251,7 +251,7 @@ export interface VMatchLineup {
   [k: string]: unknown;
 }
 
-const LINEUP_VIEW_CANDIDATES = ["v_match_lineups", "v_lineups_full", "v_match_lineup"];
+const LINEUP_VIEW_CANDIDATES = ["vw_match_lineups", "v_match_lineups", "v_lineups_full", "v_match_lineup"];
 
 export async function getMatchLineups(matchId: string) {
   if (!isSupabaseConfigured || !matchId) {
