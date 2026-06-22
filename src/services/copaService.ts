@@ -251,20 +251,96 @@ export interface VMatchLineup {
   [k: string]: unknown;
 }
 
-const LINEUP_VIEW_CANDIDATES = ["vw_match_lineups", "v_match_lineups", "v_lineups_full", "v_match_lineup"];
-
+// vw_match_lineups exposes ONE row per team with formation/coach (no players).
+// match_lineup_players holds player rows linked via lineup_id -> match_lineups.id.
+// We fan-out: fetch the per-team header, then fetch the player rows joined to
+// players + match_lineups, and emit one VMatchLineup per player carrying team header info.
 export async function getMatchLineups(matchId: string) {
   if (!isSupabaseConfigured || !matchId) {
     return { data: [] as VMatchLineup[], source: "mock" as const };
   }
-  for (const view of LINEUP_VIEW_CANDIDATES) {
-    try {
-      const { data, error } = await supabase.from(view).select("*").eq("match_id", matchId);
-      if (error) continue;
-      return { data: (data ?? []) as VMatchLineup[], source: "supabase" as const };
-    } catch {
-      continue;
-    }
+
+  type HeaderRow = {
+    match_id: string;
+    team_id: string;
+    team_code?: string | null;
+    team_name?: string | null;
+    formation?: string | null;
+    coach_name?: string | null;
+  };
+
+  const [headerRes, playersRes, teamRes] = await Promise.all([
+    supabase.from("vw_match_lineups").select("*").eq("match_id", matchId),
+    supabase
+      .from("match_lineup_players")
+      .select(
+        "id,lineup_id,player_id,is_starter,position_order,position_name,position_abbreviation," +
+          "players(name,shirt_number,position,is_captain)," +
+          "match_lineups!inner(match_id,team_id,formation,coach_id)"
+      )
+      .eq("match_lineups.match_id", matchId),
+    supabase.from("teams").select("id,name,code").eq("id", matchId === "" ? "" : matchId).limit(0),
+  ]);
+
+  // Fetch all teams referenced to enrich code/name when missing.
+  const headers = (headerRes.data ?? []) as HeaderRow[];
+  const teamIds = Array.from(new Set(headers.map((h) => h.team_id).filter(Boolean)));
+  let teamMap = new Map<string, { code?: string | null; name?: string | null }>();
+  if (teamIds.length) {
+    const { data: teamsData } = await supabase
+      .from("teams")
+      .select("id,name,code")
+      .in("id", teamIds);
+    (teamsData ?? []).forEach((t: any) => teamMap.set(t.id, { code: t.code, name: t.name }));
   }
-  return { data: [] as VMatchLineup[], source: "supabase" as const };
+  void teamRes;
+
+  const headerByTeam = new Map<string, HeaderRow>();
+  headers.forEach((h) => headerByTeam.set(h.team_id, h));
+
+  const players = (playersRes.data ?? []) as any[];
+  const rows: VMatchLineup[] = players.map((p) => {
+    const ml = p.match_lineups ?? {};
+    const teamId = ml.team_id as string;
+    const header = headerByTeam.get(teamId);
+    const team = teamMap.get(teamId) ?? {};
+    const pl = p.players ?? {};
+    return {
+      match_id: matchId,
+      team_id: teamId,
+      team_code: team.code ?? null,
+      team_name: header?.team_name ?? team.name ?? null,
+      formation: header?.formation ?? ml.formation ?? null,
+      coach_name: header?.coach_name ?? null,
+      player_id: p.player_id,
+      player_name: pl.name ?? null,
+      jersey_number: pl.shirt_number ?? null,
+      position: pl.position ?? null,
+      position_name: p.position_name ?? null,
+      position_abbreviation: p.position_abbreviation ?? null,
+      is_starter: p.is_starter,
+      is_captain: !!pl.is_captain,
+    } as VMatchLineup;
+  });
+
+  // If we have headers but no players, still surface header rows so the UI
+  // can render team/formation/coach.
+  if (rows.length === 0 && headers.length) {
+    return {
+      data: headers.map((h) => {
+        const team = teamMap.get(h.team_id) ?? {};
+        return {
+          match_id: h.match_id,
+          team_id: h.team_id,
+          team_code: team.code ?? null,
+          team_name: h.team_name ?? team.name ?? null,
+          formation: h.formation ?? null,
+          coach_name: h.coach_name ?? null,
+        } as VMatchLineup;
+      }),
+      source: "supabase" as const,
+    };
+  }
+
+  return { data: rows, source: "supabase" as const };
 }
