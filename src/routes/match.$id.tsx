@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { TeamFlag } from "@/components/TeamFlag";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MatchLineupView } from "@/components/MatchLineupView";
+import { MatchAIPanel } from "@/components/MatchAIPanel";
 import { useMatches, useMatchLineups } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 import {
@@ -118,8 +119,7 @@ function MatchDetailPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="ia"
-                  disabled
-                  className="data-[state=active]:bg-card data-[state=active]:shadow-sm gap-1.5 py-2 opacity-60"
+                  className="data-[state=active]:bg-card data-[state=active]:shadow-sm gap-1.5 py-2"
                 >
                   <Sparkles className="size-3.5" />
                   <span className="text-xs sm:text-sm">IA</span>
@@ -138,6 +138,10 @@ function MatchDetailPage() {
                   awayRows={awayRows}
                   match={match}
                 />
+              </TabsContent>
+
+              <TabsContent value="ia" className="mt-4 space-y-4">
+                <MatchAIPanel match={match} />
               </TabsContent>
             </Tabs>
           </>
