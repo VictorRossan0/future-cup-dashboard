@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { TeamFlag } from "@/components/TeamFlag";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MatchLineupView } from "@/components/MatchLineupView";
+import { MatchAIPanel } from "@/components/MatchAIPanel";
 import { useMatches, useMatchLineups } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 import {
