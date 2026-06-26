@@ -14,6 +14,8 @@
 
 A **Copa 2026 Intelligence** é uma plataforma web completa para acompanhar, analisar e projetar resultados da Copa do Mundo FIFA 2026. O projeto combina dados oficiais da competição (48 seleções, 12 grupos, 104 jogos, 1.248 jogadores) com previsões geradas por múltiplos modelos de Inteligência Artificial, oferecendo um consenso inteligente entre provedores como ChatGPT, Gemini, Claude e outros.
 
+A plataforma agora possui previsões por partida utilizando múltiplas Inteligências Artificiais, consenso automático por confronto, ranking histórico das IAs e Hall da Fama baseado em desempenho real durante a Copa do Mundo. O projeto compara as previsões das IAs com os resultados reais da competição, atualizando o ranking automaticamente após o encerramento de cada jogo.
+
 A aplicação foi construída com foco em **performance**, **acessibilidade** e **experiência mobile**, utilizando uma arquitetura moderna de SSR/SSG com dados reativos e cache inteligente.
 
 ---
@@ -34,11 +36,16 @@ A aplicação foi construída com foco em **performance**, **acessibilidade** e 
 - **Consenso** — Ranking visual ampliado com pódio de favoritos, nível de concordância entre IAs e metodologia de cálculo.
 - **Ranking das IAs** — Classificação dos modelos com badges de confiança e análise de performance histórica.
 - **Análise por Partida** — Favoritismo, percentual de vitória e nível de consenso derivado das simulações cruzadas para cada confronto.
+- **Previsões por Partida** — Cada partida pode possuir previsões independentes feitas por diferentes modelos de IA, gerando uma análise exclusiva por confronto.
+- **Consenso por Partida** — Consolidação automática das previsões das IAs para cada jogo, exibindo o placar mais votado e o nível de concordância entre os modelos.
+- **Avaliação Automática das IAs** — Após o encerramento do jogo, as previsões são avaliadas automaticamente e o ranking das IAs é atualizado em tempo real.
+- **Hall da Fama das IAs** — Reconhecimento do desempenho real das Inteligências Artificiais ao longo da competição.
 
 ### Qualidade e Monitoramento
 - **Painel de Qualidade de Dados** — Indicadores de cobertura (jogadores, jogos, seleções, estádios, fontes) com metas esperadas.
 - **Indicador de Última Atualização** — Badge com coloração semântica (verde/amarelo/vermelho) baseada no tempo desde o último fetch.
 - **Fallback Inteligente** — Se o Supabase estiver indisponível, a aplicação carrega mocks locais automaticamente sem quebrar a UI.
+- A plataforma monitora automaticamente a sincronização dos resultados, a sincronização das escalações e a avaliação das previsões das IAs.
 
 ---
 
@@ -57,6 +64,12 @@ A aplicação foi construída com foco em **performance**, **acessibilidade** e 
 | Ícones | Lucide React |
 | Build | Vite 7 |
 | Lint | ESLint + Prettier |
+
+### Backend Intelligence
+- PostgreSQL Views
+- PostgreSQL RPC
+- Supabase Edge Functions
+- pg_cron
 
 ---
 
@@ -90,7 +103,8 @@ src/
 │   ├── LastUpdateBadge.tsx # Indicador de freshness
 │   └── ...
 ├── services/
-│   └── copaService.ts      # Central de dados (Supabase views + fallback)
+│   ├── copaService.ts      # Central de dados (Supabase views + fallback)
+│   └── matchPredictionsService.ts # Busca previsões das IAs, consenso e calcula indicadores utilizados pelo frontend
 ├── hooks/
 │   └── useCopa.ts          # Hooks TanStack Query para cada view
 ├── types/
@@ -126,6 +140,62 @@ A aplicação consome exclusivamente **views públicas** do Supabase, garantindo
 | `v_data_quality_summary` | Métricas de cobertura e qualidade dos dados |
 | `vw_match_lineups` | Cabeçalho das escalações (formação, técnico) |
 | `match_lineup_players` | Jogadores titulares e reservas por partida |
+| `vw_match_predictions_consensus` | Consolida automaticamente as previsões das IAs por partida. Responsável por: percentual de consenso, placar mais votado, vencedor mais votado e nível de consenso |
+| `vw_ai_prediction_ranking` | Ranking estatístico das IAs. Inclui: partidas avaliadas, acertos de vencedor, acertos exatos, pontuação e posição geral |
+| `vw_hall_of_fame` | View pública utilizada pela página Hall da Fama. Exibe apenas os indicadores finais do ranking |
+
+---
+
+## Automação
+
+O projeto utiliza **Edge Functions**, **pg_cron**, **RPCs** e **Views Materializadas** (quando necessário) para manter os dados sempre atualizados.
+
+Jobs atualmente existentes:
+
+- **Atualização automática dos resultados** — Atualiza placares oficiais da Copa.
+- **Sincronização das escalações** — Busca formações, titulares, reservas e técnicos.
+- **Avaliação automática das previsões** — Após o encerramento das partidas, compara previsões das IAs com o resultado oficial. O processo ocorre totalmente de forma automática.
+
+---
+
+## Arquitetura da Inteligência Artificial
+
+```text
+IA Providers
+(ChatGPT, Gemini, Claude...)
+
+        │
+        ▼
+
+match_predictions
+
+        │
+        ▼
+
+vw_match_predictions_consensus
+
+        │
+        ▼
+
+evaluate_match_predictions()
+
+        │
+        ▼
+
+vw_ai_prediction_ranking
+
+        │
+        ▼
+
+vw_hall_of_fame
+
+        │
+        ▼
+
+Frontend
+```
+
+Fluxo resumido: os provedores de IA geram previsões individuais por partida que são armazenadas em `match_predictions`. A view `vw_match_predictions_consensus` consolida essas previsões em indicadores de consenso. Após o encerramento da partida, a função `evaluate_match_predictions()` avalia cada previsão contra o resultado real, alimentando o ranking estatístico em `vw_ai_prediction_ranking`. Os indicadores finais são expostos pela `vw_hall_of_fame` para consumo do frontend.
 
 ---
 
@@ -204,6 +274,10 @@ bun run build
 - [x] Rebranding profissional e identidade visual
 - [x] Responsividade completa (360px+)
 - [x] Páginas institucionais (Sobre, Metodologia, Hall da Fama)
+- [~] Hall da Fama das IAs (estrutura pronta, aguardando dados da competição)
+- [~] Previsões por Partida (frontend habilitado, consolidação em andamento)
+- [~] Avaliação Automática (pipeline configurado, aguardando início da Copa)
+- [~] Consenso por Partida (view de consenso implementada, em validação)
 - [ ] Integração com API de odds ao vivo
 - [ ] Notificações push para gols e resultados
 - [ ] Modo claro (light mode)
