@@ -1,172 +1,224 @@
 # Copa 2026 Intelligence
 
-Plataforma de análise da Copa do Mundo FIFA 2026 com jogos, grupos, mata-mata, estatísticas e previsões geradas por Inteligência Artificial.
+> A maior central de análise e previsões da Copa do Mundo FIFA 2026 baseada em Inteligência Artificial.
 
-![React](https://img.shields.io/badge/React-19-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-green)
-![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38BDF8)
-![Lovable](https://img.shields.io/badge/Lovable-Published-purple)
-
-## Demo Online
-
-🌎 https://copa-2026-intelligence.lovable.app
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![TanStack Start](https://img.shields.io/badge/TanStack%20Start-v1-FF4154?logo=react)](https://tanstack.com/start)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com)
 
 ---
 
 ## Visão Geral
 
-O Copa 2026 Intelligence foi desenvolvido para centralizar informações da Copa do Mundo FIFA 2026 em uma única plataforma moderna, responsiva e orientada por dados.
+A **Copa 2026 Intelligence** é uma plataforma web completa para acompanhar, analisar e projetar resultados da Copa do Mundo FIFA 2026. O projeto combina dados oficiais da competição (48 seleções, 12 grupos, 104 jogos, 1.248 jogadores) com previsões geradas por múltiplos modelos de Inteligência Artificial, oferecendo um consenso inteligente entre provedores como ChatGPT, Gemini, Claude e outros.
 
-Além das informações tradicionais da competição, o projeto apresenta simulações realizadas por Inteligência Artificial, consenso entre modelos e rankings comparativos de previsões.
+A aplicação foi construída com foco em **performance**, **acessibilidade** e **experiência mobile**, utilizando uma arquitetura moderna de SSR/SSG com dados reativos e cache inteligente.
 
 ---
 
 ## Funcionalidades
 
-### Competição
-
-* Calendário completo dos jogos
-* Fases da competição
-* Grupos
-* Mata-mata
-* Informações das seleções
-
-### Estatísticas
-
-* Dados gerais da competição
-* Indicadores consolidados
-* Painel de qualidade dos dados
+### Experiência do Torcedor
+- **Dashboard** — Visão geral da competição com contagem regressiva, estatísticas rápidas, próximos jogos e favoritos ao título baseados no consenso de IA.
+- **Grupos** — Tabelas de classificação em tempo real com indicadores de classificação, saldo de gols e estatísticas de desempenho.
+- **Jogos** — Calendário completo com filtros por grupo, data e status (agendado, ao vivo, encerrado).
+- **Mata-mata** — Chaves eliminatórias da fase final com atualização dinâmica dos confrontos.
+- **Seleções** — Ficha técnica de cada uma das 48 seleções com elenco completo, técnico, confederação e estatísticas do plantel.
+- **Escalações** — Visualização tática em campo com formação, titulares, reservas, capitão e técnico.
+- **Detalhes da Partida** — Página inspirada em Sofascore/Flashscore com abas de Resumo, Escalações e Análise de IA por jogo.
 
 ### Inteligência Artificial
+- **Simulações de IA** — Cards comparativos por provedor com previsões de campeão, vice, semifinalistas, zebra, decepção, artilheiro e melhor jogador.
+- **Consenso** — Ranking visual ampliado com pódio de favoritos, nível de concordância entre IAs e metodologia de cálculo.
+- **Ranking das IAs** — Classificação dos modelos com badges de confiança e análise de performance histórica.
+- **Análise por Partida** — Favoritismo, percentual de vitória e nível de consenso derivado das simulações cruzadas para cada confronto.
 
-* Simulações da Copa do Mundo
-* Consenso entre modelos
-* Ranking das IAs participantes
-* Comparação de previsões
-
-### Experiência do Usuário
-
-* Interface responsiva
-* Compatibilidade com Desktop
-* Compatibilidade com Tablet
-* Compatibilidade com Mobile
-* Navegação otimizada
+### Qualidade e Monitoramento
+- **Painel de Qualidade de Dados** — Indicadores de cobertura (jogadores, jogos, seleções, estádios, fontes) com metas esperadas.
+- **Indicador de Última Atualização** — Badge com coloração semântica (verde/amarelo/vermelho) baseada no tempo desde o último fetch.
+- **Fallback Inteligente** — Se o Supabase estiver indisponível, a aplicação carrega mocks locais automaticamente sem quebrar a UI.
 
 ---
 
-## Diferenciais
+## Stack Tecnológica
 
-* Aplicação publicada e acessível ao público
-* Interface totalmente responsiva
-* Integração com backend em Supabase
-* Automação de atualização de dados via Manus
-* Simulações baseadas em Inteligência Artificial
-* Consenso entre múltiplos modelos
-* Arquitetura moderna utilizando React e TypeScript
-
----
-
-## Stack Técnica
-
-### Frontend
-
-* React
-* TypeScript
-* Tailwind CSS
-* TanStack Router
-* TanStack Query
-* Lucide Icons
-
-### Backend
-
-* Supabase
-
-  * Banco de dados
-  * APIs
-  * Persistência de dados
-
-### Automação
-
-* Manus
-
-  * Automação dos processos de atualização
-  * Processamento de dados da competição
-  * Organização dos dados
-
-### Plataforma
-
-* Lovable
-
-  * Desenvolvimento
-  * Publicação
-  * Hospedagem
+| Camada | Tecnologia |
+|--------|------------|
+| Framework | [TanStack Start v1](https://tanstack.com/start) (SSR/SSG, React 19) |
+| UI | React 19 + TypeScript (strict) |
+| Estilos | Tailwind CSS v4 + CSS custom properties (temas semânticos) |
+| Componentes | Radix UI + shadcn/ui |
+| Roteamento | TanStack Router (file-based, type-safe) |
+| Estado / Cache | TanStack Query (React Query) |
+| Banco de Dados | Supabase (PostgreSQL + Row Level Security) |
+| Cliente DB | @supabase/supabase-js |
+| Ícones | Lucide React |
+| Build | Vite 7 |
+| Lint | ESLint + Prettier |
 
 ---
 
 ## Arquitetura
 
 ```text
-Frontend (React + TypeScript)
-            │
-            ▼
-      Supabase
-(Banco de Dados + APIs)
-            │
-            ▼
-        Manus
-(Automação de Dados)
-            │
-            ▼
-Dados exibidos na aplicação
+src/
+├── routes/                 # Rotas file-based (TanStack Router)
+│   ├── index.tsx           # Dashboard
+│   ├── grupos.tsx          # Tabelas de grupos
+│   ├── jogos.tsx           # Calendário de jogos
+│   ├── mata-mata.tsx       # Fase eliminatória
+│   ├── selecoes.*.tsx      # Lista e detalhe de seleções
+│   ├── match.$id.tsx       # Detalhes da partida (Resumo / Escalações / IA)
+│   ├── escalacoes.tsx      # Módulo de escalações oficiais
+│   ├── simulacoes.tsx      # Simulações individuais por IA
+│   ├── consenso.tsx        # Consenso cruzado entre IAs
+│   ├── ranking-ias.tsx     # Ranking dos modelos
+│   ├── regras.tsx          # Formato e regras da Copa 2026
+│   ├── hall-da-fama.tsx    # Hall da Fama
+│   ├── sobre.tsx           # Sobre o projeto
+│   └── metodologia.tsx     # Metodologia de análise
+├── components/             # Componentes reutilizáveis
+│   ├── ui/                 # shadcn/ui (Button, Card, Tabs, etc.)
+│   ├── AppLayout.tsx       # Layout com sidebar e navegação mobile
+│   ├── MatchCardView.tsx   # Card de jogo com bandeiras
+│   ├── TeamFlag.tsx        # Componente de bandeira (Circle Flags CDN)
+│   ├── MatchAIPanel.tsx    # Painel de IA na página de partida
+│   ├── MatchLineupView.tsx # Visualização tática em campo
+│   ├── DataQualityPanel.tsx# Monitoramento de dados
+│   ├── LastUpdateBadge.tsx # Indicador de freshness
+│   └── ...
+├── services/
+│   └── copaService.ts      # Central de dados (Supabase views + fallback)
+├── hooks/
+│   └── useCopa.ts          # Hooks TanStack Query para cada view
+├── types/
+│   └── views.ts            # Tipagens TypeScript das views do Supabase
+├── integrations/
+│   └── supabase/
+│       └── client.ts       # Cliente Supabase com env vars
+├── lib/
+│   ├── flags.ts            # Mapeamento de códigos FIFA → bandeiras SVG
+│   └── i18n.ts             # Traduções de status e labels
+├── data/                   # Mocks locais (fallback offline)
+├── styles.css              # Design tokens, tema dark e utilitários
+└── router.tsx              # Configuração do TanStack Router
 ```
 
 ---
 
-## Objetivo
+## Views do Banco de Dados (Supabase)
 
-Explorar conceitos de desenvolvimento Full Stack moderno, experiência do usuário, visualização de dados esportivos e utilização de Inteligência Artificial aplicada a previsões esportivas.
+A aplicação consome exclusivamente **views públicas** do Supabase, garantindo segurança via RLS e separação entre dados brutos e dados apresentados:
+
+| View | Propósito |
+|------|-----------|
+| `v_competition_dashboard` | Resumo da competição (datas, sedes, totais) |
+| `v_groups_standings` | Classificação dos grupos com estatísticas |
+| `v_matches_full` | Jogos completos (data, estádio, placar, status) |
+| `v_teams_full` | Seleções com elenco, técnico e contadores por posição |
+| `v_players_full` | Jogadores com time, posição, idade, clube e número |
+| `v_rules_ordered` | Regras e regulamento ordenados por categoria |
+| `v_ai_simulations_full` | Previsões completas por provedor de IA |
+| `v_ai_simulation_consensus` | Consenso agregado entre todas as simulações |
+| `v_ai_simulation_context` | Contexto de cada seleção para análise de IA |
+| `v_data_quality_summary` | Métricas de cobertura e qualidade dos dados |
+| `vw_match_lineups` | Cabeçalho das escalações (formação, técnico) |
+| `match_lineup_players` | Jogadores titulares e reservas por partida |
 
 ---
 
-## Screenshots
+## Como Executar Localmente
 
-Adicionar imagens:
+### Pré-requisitos
+- [Bun](https://bun.sh) (recomendado) ou Node.js 20+
+- Conta no [Supabase](https://supabase.com) com as views acima configuradas
 
-* Dashboard
-* Simulações
-* Jogos
-* Mobile
+### 1. Clone o repositório
+
+```bash
+git clone <url-do-repositorio>
+cd copa-2026-intelligence
+```
+
+### 2. Configure as variáveis de ambiente
+
+```bash
+cp .env .env.local
+```
+
+Edite `.env.local` com suas credenciais do Supabase:
+
+```env
+VITE_SUPABASE_URL=https://<seu-projeto>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<sua-anon-key>
+```
+
+> **Nota:** O projeto utiliza a chave `anon` (pública) do Supabase. Dados sensíveis nunca trafegam pelo cliente.
+
+### 3. Instale as dependências
+
+```bash
+bun install
+```
+
+### 4. Execute o servidor de desenvolvimento
+
+```bash
+bun run dev
+```
+
+A aplicação estará disponível em `http://localhost:8080`.
+
+### 5. Build de produção
+
+```bash
+bun run build
+```
+
+---
+
+## Design e UX
+
+- **Tema Dark Esportivo:** paleta escura com verde gramado (`--primary`) e dourado campeão (`--gold`), projetada para longas sessões de leitura.
+- **Mobile-First:** navegação via pills no mobile e sidebar colapsada no desktop. Testado em viewports a partir de 360px.
+- **Responsividade:** tabelas se transformam em cards, grades se adaptam a 1-5 colunas e não há scroll horizontal em nenhuma rota.
+- **Bandeiras:** carregadas sob demanda (lazy loading) do [Circle Flags](https://github.com/HatScripts/circle-flags) com fallback grácil para círculo com código FIFA.
+- **SSR/SSG:** meta tags dinâmicas por rota (Open Graph, Twitter Cards) para compartilhamento otimizado.
 
 ---
 
 ## Roadmap
 
-* [x] Dashboard principal
-* [x] Jogos e calendário
-* [x] Grupos
-* [x] Mata-mata
-* [x] Simulações por IA
-* [x] Ranking das IAs
-* [x] Responsividade Mobile
-* [ ] Domínio personalizado
-* [ ] Histórico de edições das simulações
-* [ ] Comparativo avançado entre modelos
-
----
-
-## Autor
-
-Victor Rossano
-
-LinkedIn:
-https://www.linkedin.com/in/victor-rossano-couto-do-amaral-009b4556
-
-GitHub:
-https://github.com/VictorRossan0
+- [x] Dashboard com estatísticas e contagem regressiva
+- [x] Grupos, jogos e mata-mata com dados reais do Supabase
+- [x] Ficha técnica de seleções e elencos completos
+- [x] Escalações oficiais com campo tático visual
+- [x] Página de detalhes da partida (Sofascore-like)
+- [x] Módulo de Simulações de IA por provedor
+- [x] Consenso cruzado entre IAs com pódio visual
+- [x] Ranking das IAs com badges de confiança
+- [x] Painel de qualidade de dados em tempo real
+- [x] Indicador de última atualização
+- [x] Rebranding profissional e identidade visual
+- [x] Responsividade completa (360px+)
+- [x] Páginas institucionais (Sobre, Metodologia, Hall da Fama)
+- [ ] Integração com API de odds ao vivo
+- [ ] Notificações push para gols e resultados
+- [ ] Modo claro (light mode)
+- [ ] Internacionalização (i18n) — EN/ES
 
 ---
 
 ## Licença
 
-Projeto desenvolvido para fins educacionais, experimentação tecnológica e portfólio profissional.
+Este projeto é de código aberto sob a licença [MIT](LICENSE).
+
+> **Aviso:** Os dados exibidos são simulados para fins de protótipo e análise. Não constituem informações oficiais da FIFA. A plataforma é um projeto independente de inteligência esportiva.
+
+---
+
+<p align="center">
+  <strong>Copa 2026 Intelligence</strong> · Construído com React, TanStack Start e Supabase · 2025
+</p>
