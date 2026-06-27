@@ -48,7 +48,11 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           {match.group_code ? ` · Grupo ${match.group_code}` : ""}
         </span>
 
-        <span className={cn("shrink-0 px-2 py-0.5 rounded-full text-[9px]", statusClass)}>{t.status(status)}</span>
+        {isLive ? (
+          <LiveBadge clock={match.live_clock} compact />
+        ) : (
+          <span className={cn("shrink-0 px-2 py-0.5 rounded-full text-[9px]", statusClass)}>{t.status(status)}</span>
+        )}
       </div>
 
       {/* Teams */}
