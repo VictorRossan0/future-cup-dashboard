@@ -3,6 +3,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { TeamFlag } from "@/components/TeamFlag";
+import { LiveBadge } from "@/components/LiveBadge";
 import { Link } from "@tanstack/react-router";
 
 
@@ -10,6 +11,7 @@ import { Link } from "@tanstack/react-router";
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
   const isFinished = status === "finished" || status === "completed";
+  const isLive = status === "in_progress" || status === "current";
 
   const statusClass =
     {
@@ -19,6 +21,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
       finished: "bg-muted text-muted-foreground",
       completed: "bg-muted text-muted-foreground",
       current: "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
+      in_progress: "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
     }[status] ?? "bg-secondary text-secondary-foreground";
 
   const home = match.home_team_name ?? match.home_display_name ?? "A definir";
