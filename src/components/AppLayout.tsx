@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
+import { useLiveMatches } from "@/hooks/useLiveMatches";
 
 const items = [
   { to: "/", label: "Dashboard", icon: Home },
