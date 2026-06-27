@@ -67,11 +67,13 @@ function MatchDetailPage() {
             <ArrowLeft className="size-3.5" />
             Voltar para Jogos
           </Link>
-          {match?.status && (
+          {match?.status === "in_progress" || match?.status === "current" ? (
+            <LiveBadge clock={match.live_clock} />
+          ) : match?.status ? (
             <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
               {t.status(match.status)}
             </Badge>
-          )}
+          ) : null}
         </div>
 
         {matchesQ.isLoading && (
