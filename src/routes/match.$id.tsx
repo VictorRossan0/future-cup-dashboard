@@ -158,12 +158,16 @@ function MatchDetailPage() {
 
 function Hero({ match }: { match: VMatchesFull }) {
   const isFinished = match.status === "finished" || match.status === "completed";
+  const isLive = match.status === "in_progress" || match.status === "current";
   const hasScore = match.home_score != null && match.away_score != null;
   return (
     <Card className="p-5 sm:p-7 bg-gradient-to-br from-card via-card to-secondary/30 border-primary/20 shadow-elegant">
-      <div className="text-center text-[10px] uppercase tracking-widest text-gold mb-4">
-        {match.stage ? t.stage(match.stage) : "Partida"}
-        {match.group_code ? ` · Grupo ${match.group_code}` : ""}
+      <div className="text-center text-[10px] uppercase tracking-widest text-gold mb-4 flex items-center justify-center gap-2">
+        <span>
+          {match.stage ? t.stage(match.stage) : "Partida"}
+          {match.group_code ? ` · Grupo ${match.group_code}` : ""}
+        </span>
+        {isLive && <LiveBadge clock={match.live_clock} />}
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-6">
         <TeamSide
@@ -173,7 +177,7 @@ function Hero({ match }: { match: VMatchesFull }) {
         />
         <div className="text-center min-w-[90px]">
           {hasScore ? (
-            <div className="font-display text-4xl sm:text-6xl font-black tabular-nums">
+            <div className={cn("font-display text-4xl sm:text-6xl font-black tabular-nums", isLive && "text-destructive")}>
               <span>{match.home_score}</span>
               <span className="text-muted-foreground/60 mx-2">×</span>
               <span>{match.away_score}</span>
@@ -184,7 +188,11 @@ function Hero({ match }: { match: VMatchesFull }) {
             </div>
           )}
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">
-            {isFinished ? "Encerrado" : match.match_time ? match.match_time.slice(0, 5) : "A definir"}
+            {isLive
+              ? (match.live_clock ?? "Ao vivo")
+              : isFinished
+                ? "Encerrado"
+                : match.match_time ? match.match_time.slice(0, 5) : "A definir"}
           </div>
         </div>
         <TeamSide
