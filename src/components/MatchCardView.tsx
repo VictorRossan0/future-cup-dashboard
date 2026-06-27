@@ -71,8 +71,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
         </div>
 
         <div className="w-[50px] shrink-0 text-center">
-          {isFinished && match.home_score != null ? (
-            <div className="font-display text-lg font-bold">
+          {(isFinished || isLive) && match.home_score != null ? (
+            <div className={cn("font-display text-lg font-bold", isLive && "text-destructive")}>
               {match.home_score}
               <span className="mx-1 text-muted-foreground">·</span>
               {match.away_score}
@@ -81,7 +81,9 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
             <div className="font-display text-lg font-bold text-muted-foreground">VS</div>
           )}
 
-          <div className="text-[9px] text-muted-foreground">{time}</div>
+          <div className="text-[9px] text-muted-foreground">
+            {isLive ? (match.live_clock ?? "Ao vivo") : time}
+          </div>
         </div>
 
         <div className="flex-1 basis-0 min-w-0 flex flex-col items-center text-center">
