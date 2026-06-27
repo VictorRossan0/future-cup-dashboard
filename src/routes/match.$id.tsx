@@ -10,6 +10,7 @@ import { MatchAIPanel } from "@/components/MatchAIPanel";
 import { LiveBadge } from "@/components/LiveBadge";
 import { useMatches, useMatchLineups } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Calendar,
