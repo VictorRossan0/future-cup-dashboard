@@ -37,6 +37,7 @@ const items = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useLiveMatches();
 
   return (
     <div className="min-h-screen bg-background flex overflow-x-hidden max-w-full">
