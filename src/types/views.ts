@@ -60,6 +60,10 @@ export interface VMatchesFull {
   home_score?: number | null;
   away_score?: number | null;
   source?: string | null;
+  // Live updates (status === 'in_progress')
+  live_clock?: string | null;
+  live_period?: number | null;
+  live_updated_at?: string | null;
 }
 
 export interface VTeamsFull {

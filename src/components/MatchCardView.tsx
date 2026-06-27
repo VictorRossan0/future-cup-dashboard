@@ -3,6 +3,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { TeamFlag } from "@/components/TeamFlag";
+import { LiveBadge } from "@/components/LiveBadge";
 import { Link } from "@tanstack/react-router";
 
 
@@ -10,6 +11,7 @@ import { Link } from "@tanstack/react-router";
 export function MatchCardView({ match }: { match: VMatchesFull }) {
   const status = match.status ?? "scheduled";
   const isFinished = status === "finished" || status === "completed";
+  const isLive = status === "in_progress" || status === "current";
 
   const statusClass =
     {
@@ -19,6 +21,7 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
       finished: "bg-muted text-muted-foreground",
       completed: "bg-muted text-muted-foreground",
       current: "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
+      in_progress: "bg-destructive/20 text-destructive border border-destructive/40 animate-pulse",
     }[status] ?? "bg-secondary text-secondary-foreground";
 
   const home = match.home_team_name ?? match.home_display_name ?? "A definir";
@@ -45,7 +48,11 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           {match.group_code ? ` · Grupo ${match.group_code}` : ""}
         </span>
 
-        <span className={cn("shrink-0 px-2 py-0.5 rounded-full text-[9px]", statusClass)}>{t.status(status)}</span>
+        {isLive ? (
+          <LiveBadge clock={match.live_clock} compact />
+        ) : (
+          <span className={cn("shrink-0 px-2 py-0.5 rounded-full text-[9px]", statusClass)}>{t.status(status)}</span>
+        )}
       </div>
 
       {/* Teams */}
@@ -64,8 +71,8 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
         </div>
 
         <div className="w-[50px] shrink-0 text-center">
-          {isFinished && match.home_score != null ? (
-            <div className="font-display text-lg font-bold">
+          {(isFinished || isLive) && match.home_score != null ? (
+            <div className={cn("font-display text-lg font-bold", isLive && "text-destructive")}>
               {match.home_score}
               <span className="mx-1 text-muted-foreground">·</span>
               {match.away_score}
@@ -74,7 +81,9 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
             <div className="font-display text-lg font-bold text-muted-foreground">VS</div>
           )}
 
-          <div className="text-[9px] text-muted-foreground">{time}</div>
+          <div className="text-[9px] text-muted-foreground">
+            {isLive ? (match.live_clock ?? "Ao vivo") : time}
+          </div>
         </div>
 
         <div className="flex-1 basis-0 min-w-0 flex flex-col items-center text-center">

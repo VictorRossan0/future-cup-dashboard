@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PreviewStatus } from "@/components/PreviewStatus";
+import { useLiveMatches } from "@/hooks/useLiveMatches";
 
 const items = [
   { to: "/", label: "Dashboard", icon: Home },
@@ -36,6 +37,7 @@ const items = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useLiveMatches();
 
   return (
     <div className="min-h-screen bg-background flex overflow-x-hidden max-w-full">
