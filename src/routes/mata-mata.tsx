@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { MatchCardView } from "@/components/MatchCardView";
 import { PageHeader } from "@/components/PageHeader";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { ThirdPlaceRanking } from "@/components/ThirdPlaceRanking";
 import { useMatches } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 
@@ -48,6 +49,8 @@ function MataMataPage() {
           description="Fases eliminatórias da Copa 2026, do Round of 32 até a Final."
           right={q.data && <SourceBadge source={q.data.source} />}
         />
+
+        <ThirdPlaceRanking />
 
         {q.isLoading ? (
           <LoadingGrid count={6} />
