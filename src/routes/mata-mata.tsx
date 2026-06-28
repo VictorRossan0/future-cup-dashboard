@@ -50,6 +50,8 @@ function MataMataPage() {
           right={q.data && <SourceBadge source={q.data.source} />}
         />
 
+        <ThirdPlaceRanking />
+
         {q.isLoading ? (
           <LoadingGrid count={6} />
         ) : q.isError ? (
