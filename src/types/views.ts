@@ -34,6 +34,11 @@ export interface VGroupsStandings {
   goal_difference?: number | null;
   points?: number | null;
   qualification_status?: string | null;
+  fair_play_points?: number | null;
+  yellow_cards?: number | null;
+  direct_red_cards?: number | null;
+  indirect_red_cards?: number | null;
+  yellow_red_cards?: number | null;
 }
 
 export interface VMatchesFull {
