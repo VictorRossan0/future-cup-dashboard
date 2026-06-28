@@ -117,7 +117,7 @@ function JogosPage() {
           <EmptyState title="Nenhum jogo encontrado" description="Ajuste os filtros ou aguarde a base ser populada." />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-            {filtered.map((m) => (
+            {sorted.map((m) => (
               <MatchCardView key={`${m.match_number}-${m.match_id ?? ""}`} match={m} />
             ))}
           </div>
