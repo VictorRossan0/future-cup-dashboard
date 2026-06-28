@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { MatchCardView } from "@/components/MatchCardView";
 import { PageHeader } from "@/components/PageHeader";
 import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/DataState";
+import { ThirdPlaceRanking } from "@/components/ThirdPlaceRanking";
 import { useMatches } from "@/hooks/useCopa";
 import { t } from "@/lib/i18n";
 
