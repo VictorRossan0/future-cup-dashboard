@@ -31,9 +31,13 @@ function JogosPage() {
   const [stadium, setStadium] = useState("all");
   const [date, setDate] = useState("");
 
+  // -----------------------------
+  // OPTIONS (filtros)
+  // -----------------------------
   const opts = useMemo(() => {
     const stages = Array.from(new Set(all.map((m) => m.stage).filter(Boolean)));
     const groups = Array.from(new Set(all.map((m) => m.group_code).filter(Boolean))) as string[];
+
     const teams = Array.from(
       new Map(
         all
@@ -44,10 +48,15 @@ function JogosPage() {
           .filter(Boolean) as [string, string][],
       ).entries(),
     ).sort((a, b) => a[1].localeCompare(b[1]));
+
     const stadiums = Array.from(new Set(all.map((m) => m.stadium).filter(Boolean))) as string[];
+
     return { stages, groups, teams, stadiums };
   }, [all]);
 
+  // -----------------------------
+  // FILTER
+  // -----------------------------
   const filtered = useMemo(
     () =>
       all.filter((m) => {
@@ -60,6 +69,18 @@ function JogosPage() {
       }),
     [all, stage, group, team, stadium, date],
   );
+
+  // -----------------------------
+  // SORT (DATA + HORA)
+  // -----------------------------
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      const aTime = new Date(`${a.match_date}T${a.match_time ?? "00:00"}`).getTime();
+      const bTime = new Date(`${b.match_date}T${b.match_time ?? "00:00"}`).getTime();
+
+      return aTime - bTime;
+    });
+  }, [filtered]);
 
   return (
     <AppLayout>
@@ -80,6 +101,7 @@ function JogosPage() {
               </option>
             ))}
           </select>
+
           <select className={filterInputClass} value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="all">Todos os grupos</option>
             {opts.groups.map((g) => (
@@ -88,6 +110,7 @@ function JogosPage() {
               </option>
             ))}
           </select>
+
           <select className={filterInputClass} value={team} onChange={(e) => setTeam(e.target.value)}>
             <option value="all">Todas as seleções</option>
             {opts.teams.map(([id, name]) => (
@@ -96,6 +119,7 @@ function JogosPage() {
               </option>
             ))}
           </select>
+
           <select className={filterInputClass} value={stadium} onChange={(e) => setStadium(e.target.value)}>
             <option value="all">Todos os estádios</option>
             {opts.stadiums.map((s) => (
@@ -104,6 +128,7 @@ function JogosPage() {
               </option>
             ))}
           </select>
+
           <input type="date" className={filterInputClass} value={date} onChange={(e) => setDate(e.target.value)} />
         </FilterBar>
 
@@ -113,7 +138,7 @@ function JogosPage() {
           <LoadingGrid count={9} />
         ) : q.isError ? (
           <ErrorState />
-        ) : filtered.length === 0 ? (
+        ) : sorted.length === 0 ? (
           <EmptyState title="Nenhum jogo encontrado" description="Ajuste os filtros ou aguarde a base ser populada." />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
