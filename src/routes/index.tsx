@@ -7,6 +7,7 @@ import { LoadingGrid, ErrorState, SourceBadge, EmptyState } from "@/components/D
 import { DataQualityPanel } from "@/components/DataQualityPanel";
 import { LastUpdateBadge } from "@/components/LastUpdateBadge";
 import { TeamFlag } from "@/components/TeamFlag";
+import { useMemo } from "react";
 import {
   useCompetitionDashboard,
   useMatches,
@@ -71,9 +72,22 @@ function Index() {
       ? (comp!.host_countries as string).split(",").map((s) => s.trim())
       : [];
 
-  const upcoming = (matchesQ.data?.data ?? [])
-    .filter((m) => m.status !== "finished" && m.status !== "completed")
-    .slice(0, 6);
+  const upcoming = useMemo(() => {
+    return [...(matchesQ.data?.data ?? [])]
+      .filter((m) => m.status !== "finished" && m.status !== "completed")
+      .sort((a, b) => {
+        const aTimestamp = new Date(`${a.match_date}T${a.match_time ?? "00:00"}`).getTime();
+
+        const bTimestamp = new Date(`${b.match_date}T${b.match_time ?? "00:00"}`).getTime();
+
+        if (aTimestamp !== bTimestamp) {
+          return aTimestamp - bTimestamp;
+        }
+
+        return (a.match_number ?? 0) - (b.match_number ?? 0);
+      })
+      .slice(0, 6);
+  }, [matchesQ.data]);
 
   const sims = simsQ.data?.data ?? [];
   const consensus = consQ.data?.data ?? null;
