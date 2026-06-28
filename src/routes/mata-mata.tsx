@@ -29,12 +29,30 @@ function MataMataPage() {
 
   const byStage = useMemo(() => {
     const map = new Map<string, typeof all>();
-    for (const s of KNOCKOUT_STAGES) map.set(s, []);
-    for (const m of all) {
-      if (KNOCKOUT_STAGES.includes(m.stage as (typeof KNOCKOUT_STAGES)[number])) {
-        map.get(m.stage)!.push(m);
+
+    for (const stage of KNOCKOUT_STAGES) {
+      map.set(stage, []);
+    }
+
+    for (const match of all) {
+      if (KNOCKOUT_STAGES.includes(match.stage as (typeof KNOCKOUT_STAGES)[number])) {
+        map.get(match.stage)!.push(match);
       }
     }
+
+    for (const stage of KNOCKOUT_STAGES) {
+      const matches = map.get(stage);
+      if (!matches) continue;
+
+      matches.sort((a, b) => {
+        const aTimestamp = new Date(`${a.match_date}T${a.match_time ?? "00:00"}`).getTime();
+        const bTimestamp = new Date(`${b.match_date}T${b.match_time ?? "00:00"}`).getTime();
+
+        if (aTimestamp !== bTimestamp) return aTimestamp - bTimestamp;
+        return (a.match_number ?? 0) - (b.match_number ?? 0);
+      });
+    }
+
     return map;
   }, [all]);
 
@@ -65,9 +83,11 @@ function MataMataPage() {
           KNOCKOUT_STAGES.map((stage) => {
             const list = byStage.get(stage) ?? [];
             if (list.length === 0) return null;
+
             return (
               <section key={stage}>
                 <h2 className="font-display text-xl font-bold mb-3">{t.stage(stage)}</h2>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                   {list.map((m) => (
                     <MatchCardView key={`${m.match_number}-${m.match_id ?? stage}`} match={m} />
