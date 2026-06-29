@@ -9,9 +9,15 @@
  * Uso:
  *   COPA_SERVICE_ROLE_KEY=xxx node scripts/importSimulation.mjs <arquivo.json> [arquivo2.json ...]
  *
- * Mapeamento JSON -> DB:
- *   - JSON.match_number N  →  DB matches.match_number (N + 72)   (round_of_32 começa em 73)
- *   - Nome da seleção      →  teams.id (lookup por name/code, com normalização de acentos)
+ * Mapeamento JSON -> DB (cobre TODO o mata-mata da Copa 2026):
+ *   JSON match_number 1..32  →  DB matches.match_number 73..104  (offset fixo = +72)
+ *     - Round of 32     : JSON  1..16  → DB  73..88
+ *     - Round of 16     : JSON 17..24  → DB  89..96
+ *     - Quarterfinals   : JSON 25..28  → DB  97..100
+ *     - Semifinals      : JSON 29..30  → DB 101..102
+ *     - Third Place     : JSON 31      → DB 103
+ *     - Final           : JSON 32      → DB 104
+ *   - Nome da seleção  →  teams.id (lookup por name/code, com normalização de acentos)
  *
  * Idempotência:
  *   - Pula ai_simulations duplicadas por (provider, generated_at).
