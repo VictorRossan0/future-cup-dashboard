@@ -37,7 +37,18 @@ if (!SERVICE_KEY) {
   process.exit(1);
 }
 
-const STAGE_OFFSET = 72; // JSON match_number 1 == DB match_number 73 (round_of_32 #1)
+const STAGE_OFFSET = 72; // JSON 1..32 == DB 73..104 (cobre R32, R16, QF, SF, 3rd, Final)
+
+// Rotula a fase a partir do match_number relativo (1..32) do JSON.
+function phaseLabel(n) {
+  if (n >= 1  && n <= 16) return "round_of_32";
+  if (n >= 17 && n <= 24) return "round_of_16";
+  if (n >= 25 && n <= 28) return "quarterfinal";
+  if (n >= 29 && n <= 30) return "semifinal";
+  if (n === 31)           return "third_place";
+  if (n === 32)           return "final";
+  return null;
+}
 
 const headers = {
   apikey: SERVICE_KEY,
