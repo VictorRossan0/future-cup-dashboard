@@ -177,10 +177,17 @@ async function importFile(filePath) {
   // -- 2) match_predictions -------------------------------------------------
   let ok = 0, skipped = 0;
   for (const mp of j.matches) {
-    const dbNum = (mp.match_number ?? 0) + STAGE_OFFSET;
+    const jsonNum = mp.match_number ?? 0;
+    const phase = phaseLabel(jsonNum);
+    if (!phase) {
+      console.warn(`  ⚠ JSON#${jsonNum} fora do intervalo 1..32, pulando`);
+      skipped++;
+      continue;
+    }
+    const dbNum = jsonNum + STAGE_OFFSET;
     const matchId = matchMap.get(dbNum);
     if (!matchId) {
-      console.warn(`  ⚠ match JSON#${mp.match_number} (DB#${dbNum}) não encontrado, pulando`);
+      console.warn(`  ⚠ match JSON#${jsonNum} [${phase}] (DB#${dbNum}) não encontrado, pulando`);
       skipped++;
       continue;
     }
