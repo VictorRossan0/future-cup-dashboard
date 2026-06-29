@@ -9,9 +9,15 @@
  * Uso:
  *   COPA_SERVICE_ROLE_KEY=xxx node scripts/importSimulation.mjs <arquivo.json> [arquivo2.json ...]
  *
- * Mapeamento JSON -> DB:
- *   - JSON.match_number N  →  DB matches.match_number (N + 72)   (round_of_32 começa em 73)
- *   - Nome da seleção      →  teams.id (lookup por name/code, com normalização de acentos)
+ * Mapeamento JSON -> DB (cobre TODO o mata-mata da Copa 2026):
+ *   JSON match_number 1..32  →  DB matches.match_number 73..104  (offset fixo = +72)
+ *     - Round of 32     : JSON  1..16  → DB  73..88
+ *     - Round of 16     : JSON 17..24  → DB  89..96
+ *     - Quarterfinals   : JSON 25..28  → DB  97..100
+ *     - Semifinals      : JSON 29..30  → DB 101..102
+ *     - Third Place     : JSON 31      → DB 103
+ *     - Final           : JSON 32      → DB 104
+ *   - Nome da seleção  →  teams.id (lookup por name/code, com normalização de acentos)
  *
  * Idempotência:
  *   - Pula ai_simulations duplicadas por (provider, generated_at).
@@ -31,7 +37,18 @@ if (!SERVICE_KEY) {
   process.exit(1);
 }
 
-const STAGE_OFFSET = 72; // JSON match_number 1 == DB match_number 73 (round_of_32 #1)
+const STAGE_OFFSET = 72; // JSON 1..32 == DB 73..104 (cobre R32, R16, QF, SF, 3rd, Final)
+
+// Rotula a fase a partir do match_number relativo (1..32) do JSON.
+function phaseLabel(n) {
+  if (n >= 1  && n <= 16) return "round_of_32";
+  if (n >= 17 && n <= 24) return "round_of_16";
+  if (n >= 25 && n <= 28) return "quarterfinal";
+  if (n >= 29 && n <= 30) return "semifinal";
+  if (n === 31)           return "third_place";
+  if (n === 32)           return "final";
+  return null;
+}
 
 const headers = {
   apikey: SERVICE_KEY,
@@ -160,10 +177,17 @@ async function importFile(filePath) {
   // -- 2) match_predictions -------------------------------------------------
   let ok = 0, skipped = 0;
   for (const mp of j.matches) {
-    const dbNum = (mp.match_number ?? 0) + STAGE_OFFSET;
+    const jsonNum = mp.match_number ?? 0;
+    const phase = phaseLabel(jsonNum);
+    if (!phase) {
+      console.warn(`  ⚠ JSON#${jsonNum} fora do intervalo 1..32, pulando`);
+      skipped++;
+      continue;
+    }
+    const dbNum = jsonNum + STAGE_OFFSET;
     const matchId = matchMap.get(dbNum);
     if (!matchId) {
-      console.warn(`  ⚠ match JSON#${mp.match_number} (DB#${dbNum}) não encontrado, pulando`);
+      console.warn(`  ⚠ match JSON#${jsonNum} [${phase}] (DB#${dbNum}) não encontrado, pulando`);
       skipped++;
       continue;
     }
