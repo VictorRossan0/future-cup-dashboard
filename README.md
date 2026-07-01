@@ -14,9 +14,9 @@
 
 A **Copa 2026 Intelligence** é uma plataforma web completa para acompanhar, analisar e projetar resultados da Copa do Mundo FIFA 2026. O projeto combina dados oficiais da competição (48 seleções, 12 grupos, 104 jogos, 1.248 jogadores) com previsões geradas por múltiplos modelos de Inteligência Artificial, oferecendo um consenso inteligente entre provedores como ChatGPT, Gemini, Claude e outros.
 
-A plataforma agora possui previsões por partida utilizando múltiplas Inteligências Artificiais, consenso automático por confronto, ranking histórico das IAs e Hall da Fama baseado em desempenho real durante a Copa do Mundo. O projeto compara as previsões das IAs com os resultados reais da competição, atualizando o ranking automaticamente após o encerramento de cada jogo.
+A plataforma possui previsões por partida utilizando múltiplas Inteligências Artificiais, consenso automático por confronto, ranking histórico das IAs e Hall da Fama baseado em desempenho real durante a Copa do Mundo. O projeto compara as previsões das IAs com os resultados reais da competição, atualizando o ranking automaticamente após o encerramento de cada jogo.
 
-A aplicação foi construída com foco em **performance**, **acessibilidade** e **experiência mobile**, utilizando uma arquitetura moderna de SSR/SSG com dados reativos e cache inteligente.
+A aplicação foi construída com foco em **performance**, **acessibilidade** e **experiência mobile**, utilizando uma arquitetura moderna de SSR/SSG com dados reativos, cache inteligente e atualizações em tempo real.
 
 ---
 
@@ -24,9 +24,9 @@ A aplicação foi construída com foco em **performance**, **acessibilidade** e 
 
 ### Experiência do Torcedor
 - **Dashboard** — Visão geral da competição com contagem regressiva, estatísticas rápidas, próximos jogos e favoritos ao título baseados no consenso de IA.
-- **Grupos** — Tabelas de classificação em tempo real com indicadores de classificação, saldo de gols e estatísticas de desempenho.
+- **Grupos** — Tabelas de classificação em tempo real com indicadores de classificação, saldo de gols, estatísticas de desempenho e Fair Play.
 - **Jogos** — Calendário completo com filtros por grupo, data e status (agendado, ao vivo, encerrado).
-- **Mata-mata** — Chaves eliminatórias da fase final com atualização dinâmica dos confrontos.
+- **Mata-mata** — Chaves eliminatórias da fase final com atualização dinâmica dos confrontos e ranking dos 8 melhores terceiros colocados.
 - **Seleções** — Ficha técnica de cada uma das 48 seleções com elenco completo, técnico, confederação e estatísticas do plantel.
 - **Escalações** — Visualização tática em campo com formação, titulares, reservas, capitão e técnico.
 - **Detalhes da Partida** — Página inspirada em Sofascore/Flashscore com abas de Resumo, Escalações e Análise de IA por jogo.
@@ -44,6 +44,7 @@ A aplicação foi construída com foco em **performance**, **acessibilidade** e 
 ### Qualidade e Monitoramento
 - **Painel de Qualidade de Dados** — Indicadores de cobertura (jogadores, jogos, seleções, estádios, fontes) com metas esperadas.
 - **Indicador de Última Atualização** — Badge com coloração semântica (verde/amarelo/vermelho) baseada no tempo desde o último fetch.
+- **Atualização em Tempo Real** — Supabase Realtime mantém placar e cronômetro atualizados automaticamente durante jogos ao vivo, sem necessidade de refresh.
 - **Fallback Inteligente** — Se o Supabase estiver indisponível, a aplicação carrega mocks locais automaticamente sem quebrar a UI.
 - A plataforma monitora automaticamente a sincronização dos resultados, a sincronização das escalações e a avaliação das previsões das IAs.
 
@@ -61,15 +62,15 @@ A aplicação foi construída com foco em **performance**, **acessibilidade** e 
 | Estado / Cache | TanStack Query (React Query) |
 | Banco de Dados | Supabase (PostgreSQL + Row Level Security) |
 | Cliente DB | @supabase/supabase-js |
+| Realtime | Supabase Realtime (WebSocket + polling safety net) |
 | Ícones | Lucide React |
 | Build | Vite 7 |
 | Lint | ESLint + Prettier |
 
 ### Backend Intelligence
-- PostgreSQL Views
-- PostgreSQL RPC
+- PostgreSQL Views e RPCs
 - Supabase Edge Functions
-- pg_cron
+- pg_cron (jobs agendados)
 
 ---
 
@@ -91,7 +92,8 @@ src/
 │   ├── regras.tsx          # Formato e regras da Copa 2026
 │   ├── hall-da-fama.tsx    # Hall da Fama
 │   ├── sobre.tsx           # Sobre o projeto
-│   └── metodologia.tsx     # Metodologia de análise
+│   ├── metodologia.tsx     # Metodologia de análise
+│   └── __root.tsx          # Layout raiz (head, providers, Outlet)
 ├── components/             # Componentes reutilizáveis
 │   ├── ui/                 # shadcn/ui (Button, Card, Tabs, etc.)
 │   ├── AppLayout.tsx       # Layout com sidebar e navegação mobile
@@ -101,12 +103,17 @@ src/
 │   ├── MatchLineupView.tsx # Visualização tática em campo
 │   ├── DataQualityPanel.tsx# Monitoramento de dados
 │   ├── LastUpdateBadge.tsx # Indicador de freshness
+│   ├── LiveBadge.tsx       # Badge pulsante de jogo ao vivo
+│   ├── ThirdPlaceRanking.tsx# Ranking dos 8 melhores 3º colocados
+│   ├── GroupTableView.tsx  # Tabela de classificação de grupo
+│   ├── TeamCardView.tsx    # Card de seleção
+│   ├── PlayerCardView.tsx  # Card de jogador
 │   └── ...
 ├── services/
-│   ├── copaService.ts      # Central de dados (Supabase views + fallback)
-│   └── matchPredictionsService.ts # Busca previsões das IAs, consenso e calcula indicadores utilizados pelo frontend
+│   └── copaService.ts      # Central de dados (Supabase views + fallback)
 ├── hooks/
-│   └── useCopa.ts          # Hooks TanStack Query para cada view
+│   ├── useCopa.ts          # Hooks TanStack Query para cada view
+│   └── useLiveMatches.ts   # Subscrição Realtime + polling safety net
 ├── types/
 │   └── views.ts            # Tipagens TypeScript das views do Supabase
 ├── integrations/
@@ -114,10 +121,14 @@ src/
 │       └── client.ts       # Cliente Supabase com env vars
 ├── lib/
 │   ├── flags.ts            # Mapeamento de códigos FIFA → bandeiras SVG
-│   └── i18n.ts             # Traduções de status e labels
+│   ├── i18n.ts             # Traduções de status e labels
+│   └── thirdPlace.ts       # Algoritmo de desempate FIFA para 3º colocados
 ├── data/                   # Mocks locais (fallback offline)
 ├── styles.css              # Design tokens, tema dark e utilitários
 └── router.tsx              # Configuração do TanStack Router
+
+scripts/
+└── importSimulation.mjs  # Importador definitivo de previsões de IA
 ```
 
 ---
@@ -129,8 +140,8 @@ A aplicação consome exclusivamente **views públicas** do Supabase, garantindo
 | View | Propósito |
 |------|-----------|
 | `v_competition_dashboard` | Resumo da competição (datas, sedes, totais) |
-| `v_groups_standings` | Classificação dos grupos com estatísticas |
-| `v_matches_full` | Jogos completos (data, estádio, placar, status) |
+| `v_groups_standings` | Classificação dos grupos com estatísticas e Fair Play |
+| `v_matches_full` | Jogos completos (data, estádio, placar, status, campos live) |
 | `v_teams_full` | Seleções com elenco, técnico e contadores por posição |
 | `v_players_full` | Jogadores com time, posição, idade, clube e número |
 | `v_rules_ordered` | Regras e regulamento ordenados por categoria |
@@ -152,9 +163,10 @@ O projeto utiliza **Edge Functions**, **pg_cron**, **RPCs** e **Views Materializ
 
 Jobs atualmente existentes:
 
-- **Atualização automática dos resultados** — Atualiza placares oficiais da Copa.
-- **Sincronização das escalações** — Busca formações, titulares, reservas e técnicos.
+- **Atualização automática dos resultados** — Atualiza placares e status dos jogos em tempo real via integração com fontes externas (ESPN).
+- **Sincronização das escalações** — Busca formações, titulares, reservas e técnicos oficiais.
 - **Avaliação automática das previsões** — Após o encerramento das partidas, compara previsões das IAs com o resultado oficial. O processo ocorre totalmente de forma automática.
+- **Cálculo de classificação** — `recalculate_group_standings(p_group_id)` computa a tabela final de cada grupo aplicando critérios de desempate da FIFA (pontos, saldo de gols, gols pró, Fair Play, sorteio).
 
 ---
 
@@ -196,6 +208,38 @@ Frontend
 ```
 
 Fluxo resumido: os provedores de IA geram previsões individuais por partida que são armazenadas em `match_predictions`. A view `vw_match_predictions_consensus` consolida essas previsões em indicadores de consenso. Após o encerramento da partida, a função `evaluate_match_predictions()` avalia cada previsão contra o resultado real, alimentando o ranking estatístico em `vw_ai_prediction_ranking`. Os indicadores finais são expostos pela `vw_hall_of_fame` para consumo do frontend.
+
+---
+
+## Importador de Simulações
+
+O projeto inclui um importador Node.js definitivo para ingestão das previsões das IAs:
+
+**Arquivo:** `scripts/importSimulation.mjs`
+
+- **Mapeamento inteligente:** converte numeração relativa das IAs (1–32) para `match_number` oficial do banco (73–104), cobrindo todas as 6 fases da Copa:
+  - Round of 32 (1–16 → 73–88)
+  - Round of 16 (17–24 → 89–96)
+  - Quartas (25–28 → 97–100)
+  - Semifinais (29–30 → 101–102)
+  - Disputa 3º lugar (31 → 103)
+  - Final (32 → 104)
+- **Lookup de seleções:** normalização de nomes com aliases (ex: "EUA" → "Estados Unidos").
+- **Idempotência:** chave determinística `(provider, generated_at)` para `ai_simulations` e `(provider, model, match_id, generated_at)` para `match_predictions`.
+- **Modo dry-run:** `node scripts/importSimulation.mjs --dry-run arquivo.json` simula a importação sem gravar no banco.
+- **Validação completa:** campos obrigatórios, 32 partidas, fases corretas, match_number únicos, sem duplicatas.
+- **Resiliência:** falhas pontuais são logadas sem interromper o processamento do arquivo.
+- **Resultado:** cada JSON produz 1 registro em `ai_simulations` + até 32 registros em `match_predictions`.
+
+---
+
+## Atualização em Tempo Real (Realtime)
+
+A plataforma utiliza **Supabase Realtime** para manter placares e cronômetros atualizados automaticamente durante jogos ao vivo:
+
+- **Camada 1 (Backend):** Edge Function `sync-live-matches` executada por pg_cron a cada 1 minuto, buscando dados oficiais da ESPN e atualizando a tabela `matches`.
+- **Camada 2 (Frontend):** Hook `useLiveMatches` se inscreve no canal `matches-live` e aplica patches cirúrgicos no cache do TanStack Query, atualizando apenas os campos `status`, `home_score`, `away_score`, `live_clock`, `live_period` e `live_updated_at`.
+- **Safety net:** Polling de 30 segundos ativo apenas enquanto houver jogos em andamento, garantindo sincronização mesmo em quedas de WebSocket.
 
 ---
 
@@ -274,6 +318,9 @@ bun run build
 - [x] Rebranding profissional e identidade visual
 - [x] Responsividade completa (360px+)
 - [x] Páginas institucionais (Sobre, Metodologia, Hall da Fama)
+- [x] Atualização em tempo real (placar + cronômetro)
+- [x] Importador definitivo de previsões de IA
+- [x] Lógica dos 8 melhores terceiros colocados (critérios FIFA)
 - [~] Hall da Fama das IAs (estrutura pronta, aguardando dados da competição)
 - [~] Previsões por Partida (frontend habilitado, consolidação em andamento)
 - [~] Avaliação Automática (pipeline configurado, aguardando início da Copa)
