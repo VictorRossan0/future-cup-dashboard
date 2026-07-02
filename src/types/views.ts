@@ -270,3 +270,33 @@ export interface VAiSimulationConsensus {
   provider_predictions?: AiProviderPrediction[] | null;
   avg_confidence?: number | null;
 }
+
+// AI Prediction Ranking (per provider) -------------------------------------
+export interface VwAiPredictionRanking {
+  provider: string;
+  matches_predicted: number;
+  winner_hits: number;
+  winner_accuracy: number;
+  exact_score_hits: number;
+  avg_score_error: number | null;
+  total_points: number;
+}
+
+// Match prediction row joined with match stage/status for phase breakdown.
+export interface MatchPredictionEvaluated {
+  id: string;
+  match_id: string;
+  provider: string;
+  model?: string | null;
+  predicted_home_score?: number | null;
+  predicted_away_score?: number | null;
+  confidence?: number | null;
+  generated_at?: string | null;
+  evaluated_at?: string | null;
+  was_correct_winner: boolean | null;
+  was_correct_score: boolean | null;
+  is_exact_score: boolean | null;
+  score_diff_error: number | null;
+  stage?: string | null;
+  match_status?: string | null;
+}
