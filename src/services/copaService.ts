@@ -7,6 +7,7 @@ import type {
   VTeamsFull, VPlayersFull, VRulesOrdered,
   VAiSimulationContext, VDataQualitySummary,
   VAiSimulationsFull, VAiSimulationConsensus,
+  VwAiPredictionRanking, MatchPredictionEvaluated,
 } from "@/types/views";
 
 // Mocks (fallback only) -----------------------------------------------------
