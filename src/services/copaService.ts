@@ -7,6 +7,7 @@ import type {
   VTeamsFull, VPlayersFull, VRulesOrdered,
   VAiSimulationContext, VDataQualitySummary,
   VAiSimulationsFull, VAiSimulationConsensus,
+  VwAiPredictionRanking, MatchPredictionEvaluated,
 } from "@/types/views";
 
 // Mocks (fallback only) -----------------------------------------------------
@@ -343,4 +344,57 @@ export async function getMatchLineups(matchId: string) {
   }
 
   return { data: rows, source: "supabase" as const };
+}
+
+// Hall da Fama --------------------------------------------------------------
+// Per-provider aggregated ranking (winner accuracy, exact scores, points).
+export async function getAiPredictionRanking() {
+  const fallback: VwAiPredictionRanking[] = [];
+  return safeFetch<VwAiPredictionRanking>(
+    () =>
+      supabase
+        .from("vw_ai_prediction_ranking")
+        .select("*")
+        .order("total_points", { ascending: false }),
+    fallback,
+  );
+}
+
+// Individual predictions joined with match stage for per-phase breakdown.
+export async function getEvaluatedMatchPredictions() {
+  if (!isSupabaseConfigured) {
+    return { data: [] as MatchPredictionEvaluated[], source: "mock" as const };
+  }
+  try {
+    const { data, error } = await supabase
+      .from("match_predictions")
+      .select(
+        "id,match_id,provider,model,predicted_home_score,predicted_away_score,confidence," +
+          "generated_at,evaluated_at,was_correct_winner,was_correct_score,is_exact_score,score_diff_error," +
+          "matches!inner(stage,status)"
+      )
+      .not("evaluated_at", "is", null);
+    if (error) throw error;
+    const rows: MatchPredictionEvaluated[] = (data ?? []).map((p: any) => ({
+      id: p.id,
+      match_id: p.match_id,
+      provider: p.provider,
+      model: p.model,
+      predicted_home_score: p.predicted_home_score,
+      predicted_away_score: p.predicted_away_score,
+      confidence: p.confidence,
+      generated_at: p.generated_at,
+      evaluated_at: p.evaluated_at,
+      was_correct_winner: p.was_correct_winner,
+      was_correct_score: p.was_correct_score,
+      is_exact_score: p.is_exact_score,
+      score_diff_error: p.score_diff_error,
+      stage: p.matches?.stage ?? null,
+      match_status: p.matches?.status ?? null,
+    }));
+    return { data: rows, source: "supabase" as const };
+  } catch (err) {
+    console.error("[copaService] getEvaluatedMatchPredictions failed", err);
+    return { data: [] as MatchPredictionEvaluated[], source: "mock" as const, error: String(err) };
+  }
 }
