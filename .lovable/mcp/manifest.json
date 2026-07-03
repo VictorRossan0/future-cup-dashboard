@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "copa-2026-intelligence-mcp",
+      "version": "0.1.0",
+      "title": "Copa 2026 Intelligence"
+    },
+    "tools": [
+      {
+        "name": "get_competition_dashboard",
+        "title": "Competition dashboard",
+        "description": "Get the World Cup 2026 competition overview: name, dates, host countries, total teams, groups, matches, stadiums and players.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_groups_standings",
+        "title": "Group standings",
+        "description": "Get current group-stage standings for the World Cup 2026. Optionally filter by a single group code (A–L).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "group_code": {
+              "description": "Group letter A–L. Omit to return all groups.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1,
+              "pattern": "^[A-L]$"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_matches",
+        "title": "List matches",
+        "description": "List World Cup 2026 matches. Optional filters by stage, status, group code, or team code (home or away).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "stage": {
+              "description": "e.g. group_stage, round_of_32, round_of_16, quarter_finals, semi_finals, third_place, final",
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "scheduled",
+                "current",
+                "finished"
+              ]
+            },
+            "group_code": {
+              "type": "string"
+            },
+            "team_code": {
+              "description": "3-letter team code; matches home or away.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_teams",
+        "title": "List teams",
+        "description": "List World Cup 2026 teams with coach info and squad composition counts. Optional group filter.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "group_code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_players",
+        "title": "List players",
+        "description": "List players for the World Cup 2026 with optional filters (team code, group, position, club search).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "team_code": {
+              "type": "string"
+            },
+            "group_code": {
+              "type": "string"
+            },
+            "position": {
+              "type": "string",
+              "enum": [
+                "goalkeeper",
+                "defender",
+                "midfielder",
+                "forward"
+              ]
+            },
+            "club": {
+              "description": "Case-insensitive substring match on club name.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_ai_ranking",
+        "title": "AI prediction ranking",
+        "description": "Get the aggregated ranking of AI providers (ChatGPT, Gemini, Claude, etc.) with winner accuracy, exact scores and total points from evaluated predictions.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_ai_consensus",
+        "title": "AI consensus",
+        "description": "Get the cross-provider AI consensus summary for World Cup 2026 predictions (agreement rates, favorite champions, dark horses).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
