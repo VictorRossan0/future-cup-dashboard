@@ -64,6 +64,9 @@ export interface VMatchesFull {
   away_display_name?: string | null;
   home_score?: number | null;
   away_score?: number | null;
+  // Penalty shootout (mata-mata decided on penalties)
+  home_penalty_score?: number | null;
+  away_penalty_score?: number | null;
   source?: string | null;
   // Live updates (status === 'in_progress')
   live_clock?: string | null;
