@@ -252,10 +252,10 @@ export interface VMatchLineup {
   [k: string]: unknown;
 }
 
-// vw_match_lineups exposes ONE row per team with formation/coach (no players).
-// match_lineup_players holds player rows linked via lineup_id -> match_lineups.id.
-// We fan-out: fetch the per-team header, then fetch the player rows joined to
-// players + match_lineups, and emit one VMatchLineup per player carrying team header info.
+// vw_match_lineups now returns ONE row per team per match with formation,
+// coach and a `players` jsonb array. We fan it out into one VMatchLineup
+// row per player so the existing UI keeps working. If `players` is missing
+// (older view), we gracefully fall back to querying match_lineup_players.
 export async function getMatchLineups(matchId: string) {
   if (!isSupabaseConfigured || !matchId) {
     return { data: [] as VMatchLineup[], source: "mock" as const };
@@ -266,27 +266,40 @@ export async function getMatchLineups(matchId: string) {
     team_id: string;
     team_code?: string | null;
     team_name?: string | null;
+    side?: "home" | "away" | string | null;
     formation?: string | null;
     coach_name?: string | null;
+    captain_player_id?: string | null;
+    captain_name?: string | null;
+    players?: Array<{
+      player_id?: string | null;
+      name?: string | null;
+      shirt_number?: number | null;
+      is_starter?: boolean | null;
+      position_order?: number | null;
+      position_name?: string | null;
+      position_abbreviation?: string | null;
+    }> | null;
   };
 
-  const [headerRes, playersRes, teamRes] = await Promise.all([
-    supabase.from("vw_match_lineups").select("*").eq("match_id", matchId),
-    supabase
-      .from("match_lineup_players")
-      .select(
-        "id,lineup_id,player_id,is_starter,position_order,position_name,position_abbreviation," +
-          "players(name,shirt_number,position,is_captain)," +
-          "match_lineups!inner(match_id,team_id,formation,coach_id)"
-      )
-      .eq("match_lineups.match_id", matchId),
-    supabase.from("teams").select("id,name,code").eq("id", matchId === "" ? "" : matchId).limit(0),
-  ]);
+  const { data: headerData, error: headerErr } = await supabase
+    .from("vw_match_lineups")
+    .select("*")
+    .eq("match_id", matchId);
 
-  // Fetch all teams referenced to enrich code/name when missing.
-  const headers = (headerRes.data ?? []) as HeaderRow[];
+  if (headerErr) {
+    console.error("[copaService] getMatchLineups vw_match_lineups error", headerErr);
+    return { data: [] as VMatchLineup[], source: "supabase" as const, error: String(headerErr) };
+  }
+
+  const headers = (headerData ?? []) as HeaderRow[];
+  if (headers.length === 0) {
+    return { data: [] as VMatchLineup[], source: "supabase" as const };
+  }
+
+  // Enrich missing team code/name from `teams` table when needed.
   const teamIds = Array.from(new Set(headers.map((h) => h.team_id).filter(Boolean)));
-  let teamMap = new Map<string, { code?: string | null; name?: string | null }>();
+  const teamMap = new Map<string, { code?: string | null; name?: string | null }>();
   if (teamIds.length) {
     const { data: teamsData } = await supabase
       .from("teams")
@@ -294,57 +307,109 @@ export async function getMatchLineups(matchId: string) {
       .in("id", teamIds);
     (teamsData ?? []).forEach((t: any) => teamMap.set(t.id, { code: t.code, name: t.name }));
   }
-  void teamRes;
 
-  const headerByTeam = new Map<string, HeaderRow>();
-  headers.forEach((h) => headerByTeam.set(h.team_id, h));
+  const rows: VMatchLineup[] = [];
+  const headersWithoutPlayers: HeaderRow[] = [];
 
-  const players = (playersRes.data ?? []) as any[];
-  const rows: VMatchLineup[] = players.map((p) => {
-    const ml = p.match_lineups ?? {};
-    const teamId = ml.team_id as string;
-    const header = headerByTeam.get(teamId);
-    const team = teamMap.get(teamId) ?? {};
-    const pl = p.players ?? {};
-    return {
-      match_id: matchId,
-      team_id: teamId,
-      team_code: team.code ?? null,
-      team_name: header?.team_name ?? team.name ?? null,
-      formation: header?.formation ?? ml.formation ?? null,
-      coach_name: header?.coach_name ?? null,
-      player_id: p.player_id,
-      player_name: pl.name ?? null,
-      jersey_number: pl.shirt_number ?? null,
-      position: pl.position ?? null,
-      position_name: p.position_name ?? null,
-      position_abbreviation: p.position_abbreviation ?? null,
-      is_starter: p.is_starter,
-      is_captain: !!pl.is_captain,
-    } as VMatchLineup;
-  });
+  for (const h of headers) {
+    const team = teamMap.get(h.team_id) ?? {};
+    const teamCode = h.team_code ?? team.code ?? null;
+    const teamName = h.team_name ?? team.name ?? null;
+    const players = Array.isArray(h.players) ? h.players : null;
 
-  // If we have headers but no players, still surface header rows so the UI
-  // can render team/formation/coach.
-  if (rows.length === 0 && headers.length) {
-    return {
-      data: headers.map((h) => {
-        const team = teamMap.get(h.team_id) ?? {};
-        return {
+    if (!players || players.length === 0) {
+      headersWithoutPlayers.push(h);
+      continue;
+    }
+
+    for (const p of players) {
+      rows.push({
+        match_id: h.match_id,
+        team_id: h.team_id,
+        team_code: teamCode,
+        team_name: teamName,
+        side: h.side ?? null,
+        formation: h.formation ?? null,
+        coach_name: h.coach_name ?? null,
+        captain_player_id: h.captain_player_id ?? null,
+        captain_name: h.captain_name ?? null,
+        player_id: p.player_id ?? null,
+        player_name: p.name ?? null,
+        jersey_number: p.shirt_number ?? null,
+        position: p.position_abbreviation ?? p.position_name ?? null,
+        position_name: p.position_name ?? null,
+        position_abbreviation: p.position_abbreviation ?? null,
+        is_starter: p.is_starter ?? null,
+        is_captain: h.captain_player_id != null && p.player_id === h.captain_player_id,
+      } as VMatchLineup);
+    }
+  }
+
+  // Fallback for headers missing the jsonb `players` array — query the
+  // relational tables so partial data still renders.
+  if (headersWithoutPlayers.length > 0) {
+    const { data: playersData } = await supabase
+      .from("match_lineup_players")
+      .select(
+        "player_id,is_starter,position_order,position_name,position_abbreviation," +
+          "players(name,shirt_number,position,is_captain)," +
+          "match_lineups!inner(match_id,team_id)"
+      )
+      .eq("match_lineups.match_id", matchId);
+
+    const byTeam = new Map<string, any[]>();
+    (playersData ?? []).forEach((p: any) => {
+      const tid = p.match_lineups?.team_id;
+      if (!tid) return;
+      if (!byTeam.has(tid)) byTeam.set(tid, []);
+      byTeam.get(tid)!.push(p);
+    });
+
+    for (const h of headersWithoutPlayers) {
+      const team = teamMap.get(h.team_id) ?? {};
+      const teamCode = h.team_code ?? team.code ?? null;
+      const teamName = h.team_name ?? team.name ?? null;
+      const list = byTeam.get(h.team_id) ?? [];
+      if (list.length === 0) {
+        // No players at all — emit a header-only row so the UI can still
+        // render team/formation/coach.
+        rows.push({
           match_id: h.match_id,
           team_id: h.team_id,
-          team_code: team.code ?? null,
-          team_name: h.team_name ?? team.name ?? null,
+          team_code: teamCode,
+          team_name: teamName,
+          side: h.side ?? null,
           formation: h.formation ?? null,
           coach_name: h.coach_name ?? null,
-        } as VMatchLineup;
-      }),
-      source: "supabase" as const,
-    };
+        } as VMatchLineup);
+        continue;
+      }
+      for (const p of list) {
+        const pl = p.players ?? {};
+        rows.push({
+          match_id: h.match_id,
+          team_id: h.team_id,
+          team_code: teamCode,
+          team_name: teamName,
+          side: h.side ?? null,
+          formation: h.formation ?? null,
+          coach_name: h.coach_name ?? null,
+          player_id: p.player_id,
+          player_name: pl.name ?? null,
+          jersey_number: pl.shirt_number ?? null,
+          position: p.position_abbreviation ?? pl.position ?? null,
+          position_name: p.position_name ?? null,
+          position_abbreviation: p.position_abbreviation ?? null,
+          is_starter: p.is_starter,
+          is_captain: !!pl.is_captain,
+        } as VMatchLineup);
+      }
+    }
   }
 
   return { data: rows, source: "supabase" as const };
 }
+
 
 // Hall da Fama --------------------------------------------------------------
 // Per-provider aggregated ranking (winner accuracy, exact scores, points).
