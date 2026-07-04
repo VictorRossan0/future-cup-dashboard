@@ -25,6 +25,8 @@ const LIVE_FIELDS = [
   "status",
   "home_score",
   "away_score",
+  "home_penalty_score",
+  "away_penalty_score",
   "live_clock",
   "live_period",
   "live_updated_at",

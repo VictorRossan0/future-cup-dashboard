@@ -70,13 +70,20 @@ export function MatchCardView({ match }: { match: VMatchesFull }) {
           {match.home_team_code && <span className="text-[9px] text-muted-foreground">{match.home_team_code}</span>}
         </div>
 
-        <div className="w-[50px] shrink-0 text-center">
+        <div className="w-[60px] shrink-0 text-center">
           {(isFinished || isLive) && match.home_score != null ? (
-            <div className={cn("font-display text-lg font-bold", isLive && "text-destructive")}>
-              {match.home_score}
-              <span className="mx-1 text-muted-foreground">·</span>
-              {match.away_score}
-            </div>
+            <>
+              <div className={cn("font-display text-lg font-bold", isLive && "text-destructive")}>
+                {match.home_score}
+                <span className="mx-1 text-muted-foreground">·</span>
+                {match.away_score}
+              </div>
+              {match.home_penalty_score != null && match.away_penalty_score != null && (
+                <div className="text-[9px] font-semibold text-gold tabular-nums leading-tight">
+                  ({match.home_penalty_score}-{match.away_penalty_score} pên.)
+                </div>
+              )}
+            </>
           ) : (
             <div className="font-display text-lg font-bold text-muted-foreground">VS</div>
           )}
