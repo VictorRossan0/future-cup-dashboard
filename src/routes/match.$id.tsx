@@ -178,11 +178,18 @@ function Hero({ match }: { match: VMatchesFull }) {
         />
         <div className="text-center min-w-[90px]">
           {hasScore ? (
-            <div className={cn("font-display text-4xl sm:text-6xl font-black tabular-nums", isLive && "text-destructive")}>
-              <span>{match.home_score}</span>
-              <span className="text-muted-foreground/60 mx-2">×</span>
-              <span>{match.away_score}</span>
-            </div>
+            <>
+              <div className={cn("font-display text-4xl sm:text-6xl font-black tabular-nums", isLive && "text-destructive")}>
+                <span>{match.home_score}</span>
+                <span className="text-muted-foreground/60 mx-2">×</span>
+                <span>{match.away_score}</span>
+              </div>
+              {match.home_penalty_score != null && match.away_penalty_score != null && (
+                <div className="mt-1 text-xs sm:text-sm font-semibold text-gold tabular-nums">
+                  ({match.home_penalty_score}-{match.away_penalty_score} pên.)
+                </div>
+              )}
+            </>
           ) : (
             <div className="font-display text-3xl sm:text-5xl font-black text-muted-foreground/70">
               VS
