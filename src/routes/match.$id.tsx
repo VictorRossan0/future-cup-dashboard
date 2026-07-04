@@ -306,7 +306,14 @@ function SummaryPanel({ match }: { match: VMatchesFull }) {
               <span className="text-muted-foreground/60 mx-2">×</span>
               <span>{match.away_score}</span>
             </div>
-            <div className="text-xs text-muted-foreground mt-2">Placar final</div>
+            {match.home_penalty_score != null && match.away_penalty_score != null && (
+              <div className="mt-1 text-sm font-semibold text-gold tabular-nums">
+                Pênaltis: {match.home_penalty_score} × {match.away_penalty_score}
+              </div>
+            )}
+            <div className="text-xs text-muted-foreground mt-2">
+              {match.home_penalty_score != null ? "Decidido nos pênaltis" : "Placar final"}
+            </div>
           </>
         ) : (
           <>
