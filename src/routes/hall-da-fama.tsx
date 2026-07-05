@@ -125,9 +125,9 @@ function HallDaFamaPage() {
             }
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:items-end">
-            <PodiumCard rank={2} stats={podium[1]} height="md:h-56" tone="from-zinc-300/30 to-zinc-300/5" icon="🥈" />
-            <PodiumCard rank={1} stats={podium[0]} height="md:h-72" tone="from-gold/40 to-gold/5" icon="🥇" featured />
-            <PodiumCard rank={3} stats={podium[2]} height="md:h-48" tone="from-amber-700/30 to-amber-700/5" icon="🥉" />
+            <PodiumCard rank={2} stats={podium[1]} height="md:h-56" tone="from-zinc-300/30 to-zinc-300/5" Icon={Medal} iconClass="text-zinc-300" />
+            <PodiumCard rank={1} stats={podium[0]} height="md:h-72" tone="from-gold/40 to-gold/5" Icon={Crown} iconClass="text-gold" featured />
+            <PodiumCard rank={3} stats={podium[2]} height="md:h-48" tone="from-amber-700/30 to-amber-700/5" Icon={Award} iconClass="text-amber-600" />
           </div>
         </section>
 
