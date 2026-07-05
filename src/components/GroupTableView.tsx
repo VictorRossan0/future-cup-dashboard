@@ -45,13 +45,13 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
                   key={`${row.team_id ?? row.team_name}-${i}`}
                   className="border-t border-border hover:bg-secondary/30 transition-colors"
                 >
-                  <td className="px-3 py-2.5">
+                  <td className="px-2 sm:px-3 py-2.5">
                     <div className="flex items-center gap-1.5">
                       <span className={cn("size-2 rounded-full shrink-0", st.dot)} title={st.label} />
                       <span className="text-muted-foreground text-xs">{row.position ?? i + 1}</span>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-1 sm:px-3 py-2.5">
                     <div className="flex items-center gap-2 min-w-0">
                       <TeamFlag teamCode={row.team_code} teamName={row.team_name} size={18} />
                       <div className="min-w-0">
@@ -62,14 +62,14 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
                       </div>
                     </div>
                   </td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.played ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.wins ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.draws ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.losses ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_for ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_against ?? 0}</td>
-                  <td className="px-2 py-2.5 text-center tabular-nums text-xs">{sg > 0 ? `+${sg}` : sg}</td>
-                  <td className="px-2 py-2.5 text-center font-bold text-gold tabular-nums text-xs">{row.points ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.played ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.wins ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.draws ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.losses ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_for ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{row.goals_against ?? 0}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center tabular-nums text-xs">{sg > 0 ? `+${sg}` : sg}</td>
+                  <td className="px-1 sm:px-2 py-2.5 text-center font-bold text-gold tabular-nums text-xs">{row.points ?? 0}</td>
                 </tr>
               );
             })}
