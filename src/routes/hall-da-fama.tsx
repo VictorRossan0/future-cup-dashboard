@@ -125,9 +125,9 @@ function HallDaFamaPage() {
             }
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:items-end">
-            <PodiumCard rank={2} stats={podium[1]} height="md:h-56" tone="from-zinc-300/30 to-zinc-300/5" icon="🥈" />
-            <PodiumCard rank={1} stats={podium[0]} height="md:h-72" tone="from-gold/40 to-gold/5" icon="🥇" featured />
-            <PodiumCard rank={3} stats={podium[2]} height="md:h-48" tone="from-amber-700/30 to-amber-700/5" icon="🥉" />
+            <PodiumCard rank={2} stats={podium[1]} height="md:h-56" tone="from-zinc-300/30 to-zinc-300/5" Icon={Medal} iconClass="text-zinc-300" />
+            <PodiumCard rank={1} stats={podium[0]} height="md:h-72" tone="from-gold/40 to-gold/5" Icon={Crown} iconClass="text-gold" featured />
+            <PodiumCard rank={3} stats={podium[2]} height="md:h-48" tone="from-amber-700/30 to-amber-700/5" Icon={Award} iconClass="text-amber-600" />
           </div>
         </section>
 
@@ -405,20 +405,21 @@ function StatusCard({
 }
 
 function PodiumCard({
-  rank, stats, height, tone, icon, featured,
+  rank, stats, height, tone, Icon, iconClass, featured,
 }: {
   rank: number;
   stats: ProviderStats | undefined;
   height: string;
   tone: string;
-  icon: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  iconClass?: string;
   featured?: boolean;
 }) {
   return (
     <Card className={`relative overflow-hidden border ${featured ? "border-gold/60 shadow-elegant" : "border-border"}`}>
       <div className={`absolute inset-0 bg-gradient-to-br ${tone} pointer-events-none`} />
       <CardContent className={`relative p-6 flex flex-col items-center justify-end text-center gap-2 ${height} min-h-44`}>
-        <div className="text-5xl sm:text-6xl leading-none">{icon}</div>
+        <Icon className={`size-12 sm:size-14 ${iconClass ?? ""}`} aria-label={`Posição ${rank}`} />
         {stats ? (
           <>
             <div className="font-display text-xl font-bold">{stats.provider}</div>
