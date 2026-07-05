@@ -21,19 +21,19 @@ export function GroupTableView({ letter, rows }: { letter: string; rows: VGroups
       </div>
       {/* Horizontal scroll wrapper — prevents table from breaking mobile layout */}
       <div className="overflow-x-auto -mx-0">
-        <table className="w-full text-sm" style={{ minWidth: "380px" }}>
+        <table className="w-full text-sm" style={{ minWidth: "340px" }}>
           <thead className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary/40">
             <tr>
-              <th className="text-left px-3 py-2 w-8">#</th>
-              <th className="text-left px-3 py-2">Seleção</th>
-              <th className="px-2 py-2 text-center w-7">J</th>
-              <th className="px-2 py-2 text-center w-7">V</th>
-              <th className="px-2 py-2 text-center w-7">E</th>
-              <th className="px-2 py-2 text-center w-7">D</th>
-              <th className="px-2 py-2 text-center w-7">GP</th>
-              <th className="px-2 py-2 text-center w-7">GC</th>
-              <th className="px-2 py-2 text-center w-7">SG</th>
-              <th className="px-2 py-2 text-center text-gold w-9">Pts</th>
+              <th className="text-left px-2 sm:px-3 py-2 w-6">#</th>
+              <th className="text-left px-1 sm:px-3 py-2">Seleção</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-6">J</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-6">V</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-6">E</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-6">D</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-7">GP</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-7">GC</th>
+              <th className="px-1 sm:px-2 py-2 text-center w-8">SG</th>
+              <th className="px-1 sm:px-2 py-2 text-center text-gold w-8">Pts</th>
             </tr>
           </thead>
           <tbody>
