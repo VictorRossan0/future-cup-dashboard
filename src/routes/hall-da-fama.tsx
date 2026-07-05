@@ -405,20 +405,21 @@ function StatusCard({
 }
 
 function PodiumCard({
-  rank, stats, height, tone, icon, featured,
+  rank, stats, height, tone, Icon, iconClass, featured,
 }: {
   rank: number;
   stats: ProviderStats | undefined;
   height: string;
   tone: string;
-  icon: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  iconClass?: string;
   featured?: boolean;
 }) {
   return (
     <Card className={`relative overflow-hidden border ${featured ? "border-gold/60 shadow-elegant" : "border-border"}`}>
       <div className={`absolute inset-0 bg-gradient-to-br ${tone} pointer-events-none`} />
       <CardContent className={`relative p-6 flex flex-col items-center justify-end text-center gap-2 ${height} min-h-44`}>
-        <div className="text-5xl sm:text-6xl leading-none">{icon}</div>
+        <Icon className={`size-12 sm:size-14 ${iconClass ?? ""}`} aria-label={`Posição ${rank}`} />
         {stats ? (
           <>
             <div className="font-display text-xl font-bold">{stats.provider}</div>
