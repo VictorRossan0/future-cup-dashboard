@@ -62,6 +62,73 @@ function sideOf(p: VMatchLineup): Side {
   return "C";
 }
 
+// Collapse/expand a list of row-buckets to exactly `target` rows.
+// - If we have more buckets than rows, merge adjacent buckets that are
+//   closest together (prefer merging the smallest neighbours).
+// - If we have fewer buckets than rows, split the largest bucket.
+function collapseRows<T>(rows: T[][], target: number): T[][] {
+  const out = rows.map((r) => [...r]);
+  while (out.length > target) {
+    // Find the pair of adjacent rows with the smallest combined size and merge.
+    let bestIdx = 0;
+    let bestSize = Infinity;
+    for (let i = 0; i < out.length - 1; i++) {
+      const s = out[i].length + out[i + 1].length;
+      if (s < bestSize) {
+        bestSize = s;
+        bestIdx = i;
+      }
+    }
+    out[bestIdx] = [...out[bestIdx], ...out[bestIdx + 1]];
+    out.splice(bestIdx + 1, 1);
+  }
+  while (out.length < target && out.some((r) => r.length > 1)) {
+    // Split the largest bucket in half.
+    let bestIdx = 0;
+    let bestSize = -1;
+    for (let i = 0; i < out.length; i++) {
+      if (out[i].length > bestSize) {
+        bestSize = out[i].length;
+        bestIdx = i;
+      }
+    }
+    const bucket = out[bestIdx];
+    const half = Math.ceil(bucket.length / 2);
+    out.splice(bestIdx, 1, bucket.slice(0, half), bucket.slice(half));
+  }
+  return out;
+}
+
+// Shift players between adjacent rows so row sizes approach `sizes`.
+// Keeps ordering roughly stable by moving from the row with the largest
+// surplus toward the neighbour with the largest deficit.
+function balanceToFormation<T>(rows: T[][], sizes: number[]): T[][] {
+  if (rows.length !== sizes.length) return rows;
+  const out = rows.map((r) => [...r]);
+  for (let iter = 0; iter < 6; iter++) {
+    let moved = false;
+    for (let i = 0; i < out.length; i++) {
+      const surplus = out[i].length - sizes[i];
+      if (surplus <= 0) continue;
+      const neighbours = [i - 1, i + 1].filter((j) => j >= 0 && j < out.length);
+      const target = neighbours
+        .map((j) => ({ j, deficit: sizes[j] - out[j].length }))
+        .filter((n) => n.deficit > 0)
+        .sort((a, b) => b.deficit - a.deficit)[0];
+      if (!target) continue;
+      // Move one player from row i to target row.
+      if (target.j > i) {
+        out[target.j].unshift(out[i].pop()!);
+      } else {
+        out[target.j].push(out[i].shift()!);
+      }
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  return out;
+}
+
 function shortPos(p?: string | null) {
   if (!p) return "—";
   return p.toUpperCase().slice(0, 4);
