@@ -17,29 +17,49 @@ import type { VMatchLineup } from "@/services/copaService";
 // ---------------------------------------------------------------------------
 // Position mapping (ESPN abbreviations -> field role)
 
-type Role = "GK" | "DEF" | "WB" | "MID" | "WIDE" | "FWD";
+type Role = "GK" | "DEF" | "WB" | "DM" | "MID" | "AM" | "WIDE" | "FWD";
+type Side = "L" | "C" | "R";
 
 const POS_ROLE: Record<string, Role> = {
   G: "GK", GK: "GK",
-  CD: "DEF", "CD-L": "DEF", "CD-R": "DEF", CB: "DEF", D: "DEF",
-  LB: "WB", RB: "WB", LWB: "WB", RWB: "WB",
-  CM: "MID", "CM-L": "MID", "CM-R": "MID", DM: "MID", AM: "MID", M: "MID",
-  LM: "WIDE", RM: "WIDE",
-  LW: "WIDE", RW: "WIDE",
-  F: "FWD", CF: "FWD", "CF-L": "FWD", "CF-R": "FWD", ST: "FWD", SS: "FWD",
+  CD: "DEF", "CD-L": "DEF", "CD-R": "DEF", "CD-C": "DEF", CB: "DEF", "CB-L": "DEF", "CB-R": "DEF", D: "DEF", SW: "DEF",
+  LB: "WB", RB: "WB", LWB: "WB", RWB: "WB", WB: "WB",
+  DM: "DM", "DM-L": "DM", "DM-R": "DM", "DM-C": "DM", CDM: "DM",
+  CM: "MID", "CM-L": "MID", "CM-R": "MID", "CM-C": "MID", M: "MID",
+  AM: "AM", "AM-L": "AM", "AM-R": "AM", "AM-C": "AM", CAM: "AM",
+  LM: "WIDE", RM: "WIDE", LW: "WIDE", RW: "WIDE",
+  F: "FWD", CF: "FWD", "CF-L": "FWD", "CF-R": "FWD", "CF-C": "FWD", ST: "FWD", SS: "FWD",
+  "F-L": "FWD", "F-R": "FWD", "F-C": "FWD",
 };
 
+function abbrOf(p: VMatchLineup): string {
+  return (p.position_abbreviation ?? p.position ?? "").toString().toUpperCase().trim();
+}
+
 function roleOf(p: VMatchLineup): Role {
-  const abbr = (p.position_abbreviation ?? p.position ?? "").toString().toUpperCase().trim();
+  const abbr = abbrOf(p);
   if (POS_ROLE[abbr]) return POS_ROLE[abbr];
+  const base = abbr.split("-")[0];
+  if (POS_ROLE[base]) return POS_ROLE[base];
+  const name = (p.position_name ?? "").toString().toLowerCase();
   const v = abbr.toLowerCase();
-  if (v.startsWith("g") || v.includes("gole") || v.includes("goal")) return "GK";
-  if (v.includes("zag") || v.startsWith("cb") || v.startsWith("cd")) return "DEF";
-  if (v.includes("lat") || v.startsWith("lb") || v.startsWith("rb")) return "WB";
-  if (v.startsWith("lw") || v.startsWith("rw") || v.startsWith("lm") || v.startsWith("rm")) return "WIDE";
-  if (v.startsWith("m") || v.includes("mei")) return "MID";
-  if (v.startsWith("f") || v.startsWith("a") || v.startsWith("st") || v.includes("ata") || v.includes("forw")) return "FWD";
+  if (v.startsWith("g") || name.includes("goalkeep") || name.includes("gole")) return "GK";
+  if (name.includes("defender") || name.includes("zagueiro") || v.startsWith("cb") || v.startsWith("cd")) return "DEF";
+  if (name.includes("back") || v.startsWith("lb") || v.startsWith("rb")) return "WB";
+  if (name.includes("defensive mid") || v.startsWith("dm")) return "DM";
+  if (name.includes("attacking mid") || v.startsWith("am")) return "AM";
+  if (name.includes("wing") || v.startsWith("lw") || v.startsWith("rw") || v.startsWith("lm") || v.startsWith("rm")) return "WIDE";
+  if (name.includes("midfield") || v.startsWith("cm") || v.startsWith("m")) return "MID";
+  if (name.includes("forward") || name.includes("striker") || name.includes("atac") || v.startsWith("f") || v.startsWith("st") || v.startsWith("cf")) return "FWD";
   return "MID";
+}
+
+function sideOf(p: VMatchLineup): Side {
+  const abbr = abbrOf(p);
+  const name = (p.position_name ?? "").toString().toLowerCase();
+  if (abbr.endsWith("-L") || /^L[BWM]/.test(abbr) || name.includes(" left") || name.startsWith("left")) return "L";
+  if (abbr.endsWith("-R") || /^R[BWM]/.test(abbr) || name.includes(" right") || name.startsWith("right")) return "R";
+  return "C";
 }
 
 function shortPos(p?: string | null) {
