@@ -284,23 +284,62 @@ function Field({
   const lines = parseFormation(formation);
   const totalOutfield = lines.reduce((a, b) => a + b, 0);
 
-  const gk =
-    starters.find((p) => roleOf(p) === "GK") ?? null;
+  const gk = starters.find((p) => roleOf(p) === "GK") ?? null;
+  const outfieldAll = starters.filter((p) => p !== gk);
 
-  const outfield = starters
-    .filter((p) => p !== gk)
-    .sort((a, b) => {
-      // Order: DEF/WB -> MID -> WIDE -> FWD
-      const order: Record<Role, number> = { GK: 0, DEF: 1, WB: 1, MID: 2, WIDE: 3, FWD: 4 };
-      return order[roleOf(a)] - order[roleOf(b)];
-    })
-    .slice(0, totalOutfield);
+  // Role priority (back → front)
+  const bandOrder: Role[] = ["DEF", "WB", "DM", "MID", "AM", "WIDE", "FWD"];
+  const bandRow: Record<Role, number> = {
+    GK: -1, DEF: 0, WB: 0, DM: 1, MID: 2, AM: 3, WIDE: 3, FWD: 4,
+  };
 
-  const grouped: VMatchLineup[][] = [];
-  let cursor = 0;
-  for (const count of lines) {
-    grouped.push(outfield.slice(cursor, cursor + count));
-    cursor += count;
+  // Bucket by row band; try role-based first
+  const hasReliablePositions = outfieldAll.some(
+    (p) => (p.position_abbreviation ?? p.position_name) != null,
+  );
+
+  let grouped: VMatchLineup[][] = [];
+
+  if (hasReliablePositions) {
+    // Collapse to as many rows as the formation, walking from back to front.
+    const buckets: VMatchLineup[][] = Array.from({ length: 5 }, () => []);
+    for (const p of outfieldAll) {
+      const row = bandRow[roleOf(p)];
+      buckets[Math.max(0, Math.min(4, row))].push(p);
+    }
+    const filled = buckets.filter((b) => b.length > 0);
+
+    // Reduce or expand `filled` to match `lines.length` rows.
+    grouped = collapseRows(filled, lines.length);
+
+    // If assignment is unbalanced vs the announced formation, redistribute
+    // adjacent rows toward the target row sizes to match `lines`.
+    grouped = balanceToFormation(grouped, lines);
+
+    // Sort each row by side (L → C → R), then by position_order/jersey
+    grouped = grouped.map((row) =>
+      [...row].sort((a, b) => {
+        const sideRank: Record<Side, number> = { L: 0, C: 1, R: 2 };
+        const sa = sideRank[sideOf(a)];
+        const sb = sideRank[sideOf(b)];
+        if (sa !== sb) return sa - sb;
+        return (a.jersey_number ?? 99) - (b.jersey_number ?? 99);
+      }),
+    );
+  } else {
+    // Fallback: legacy behaviour based on position_order + formation.
+    const outfield = [...outfieldAll]
+      .sort((a, b) => {
+        const oa = bandOrder.indexOf(roleOf(a));
+        const ob = bandOrder.indexOf(roleOf(b));
+        return oa - ob;
+      })
+      .slice(0, totalOutfield);
+    let cursor = 0;
+    for (const count of lines) {
+      grouped.push(outfield.slice(cursor, cursor + count));
+      cursor += count;
+    }
   }
 
   const rowCount = grouped.length;
