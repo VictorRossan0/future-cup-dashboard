@@ -17,29 +17,116 @@ import type { VMatchLineup } from "@/services/copaService";
 // ---------------------------------------------------------------------------
 // Position mapping (ESPN abbreviations -> field role)
 
-type Role = "GK" | "DEF" | "WB" | "MID" | "WIDE" | "FWD";
+type Role = "GK" | "DEF" | "WB" | "DM" | "MID" | "AM" | "WIDE" | "FWD";
+type Side = "L" | "C" | "R";
 
 const POS_ROLE: Record<string, Role> = {
   G: "GK", GK: "GK",
-  CD: "DEF", "CD-L": "DEF", "CD-R": "DEF", CB: "DEF", D: "DEF",
-  LB: "WB", RB: "WB", LWB: "WB", RWB: "WB",
-  CM: "MID", "CM-L": "MID", "CM-R": "MID", DM: "MID", AM: "MID", M: "MID",
-  LM: "WIDE", RM: "WIDE",
-  LW: "WIDE", RW: "WIDE",
-  F: "FWD", CF: "FWD", "CF-L": "FWD", "CF-R": "FWD", ST: "FWD", SS: "FWD",
+  CD: "DEF", "CD-L": "DEF", "CD-R": "DEF", "CD-C": "DEF", CB: "DEF", "CB-L": "DEF", "CB-R": "DEF", D: "DEF", SW: "DEF",
+  LB: "WB", RB: "WB", LWB: "WB", RWB: "WB", WB: "WB",
+  DM: "DM", "DM-L": "DM", "DM-R": "DM", "DM-C": "DM", CDM: "DM",
+  CM: "MID", "CM-L": "MID", "CM-R": "MID", "CM-C": "MID", M: "MID",
+  AM: "AM", "AM-L": "AM", "AM-R": "AM", "AM-C": "AM", CAM: "AM",
+  LM: "WIDE", RM: "WIDE", LW: "WIDE", RW: "WIDE",
+  F: "FWD", CF: "FWD", "CF-L": "FWD", "CF-R": "FWD", "CF-C": "FWD", ST: "FWD", SS: "FWD",
+  "F-L": "FWD", "F-R": "FWD", "F-C": "FWD",
 };
 
+function abbrOf(p: VMatchLineup): string {
+  return (p.position_abbreviation ?? p.position ?? "").toString().toUpperCase().trim();
+}
+
 function roleOf(p: VMatchLineup): Role {
-  const abbr = (p.position_abbreviation ?? p.position ?? "").toString().toUpperCase().trim();
+  const abbr = abbrOf(p);
   if (POS_ROLE[abbr]) return POS_ROLE[abbr];
+  const base = abbr.split("-")[0];
+  if (POS_ROLE[base]) return POS_ROLE[base];
+  const name = (p.position_name ?? "").toString().toLowerCase();
   const v = abbr.toLowerCase();
-  if (v.startsWith("g") || v.includes("gole") || v.includes("goal")) return "GK";
-  if (v.includes("zag") || v.startsWith("cb") || v.startsWith("cd")) return "DEF";
-  if (v.includes("lat") || v.startsWith("lb") || v.startsWith("rb")) return "WB";
-  if (v.startsWith("lw") || v.startsWith("rw") || v.startsWith("lm") || v.startsWith("rm")) return "WIDE";
-  if (v.startsWith("m") || v.includes("mei")) return "MID";
-  if (v.startsWith("f") || v.startsWith("a") || v.startsWith("st") || v.includes("ata") || v.includes("forw")) return "FWD";
+  if (v.startsWith("g") || name.includes("goalkeep") || name.includes("gole")) return "GK";
+  if (name.includes("defender") || name.includes("zagueiro") || v.startsWith("cb") || v.startsWith("cd")) return "DEF";
+  if (name.includes("back") || v.startsWith("lb") || v.startsWith("rb")) return "WB";
+  if (name.includes("defensive mid") || v.startsWith("dm")) return "DM";
+  if (name.includes("attacking mid") || v.startsWith("am")) return "AM";
+  if (name.includes("wing") || v.startsWith("lw") || v.startsWith("rw") || v.startsWith("lm") || v.startsWith("rm")) return "WIDE";
+  if (name.includes("midfield") || v.startsWith("cm") || v.startsWith("m")) return "MID";
+  if (name.includes("forward") || name.includes("striker") || name.includes("atac") || v.startsWith("f") || v.startsWith("st") || v.startsWith("cf")) return "FWD";
   return "MID";
+}
+
+function sideOf(p: VMatchLineup): Side {
+  const abbr = abbrOf(p);
+  const name = (p.position_name ?? "").toString().toLowerCase();
+  if (abbr.endsWith("-L") || /^L[BWM]/.test(abbr) || name.includes(" left") || name.startsWith("left")) return "L";
+  if (abbr.endsWith("-R") || /^R[BWM]/.test(abbr) || name.includes(" right") || name.startsWith("right")) return "R";
+  return "C";
+}
+
+// Collapse/expand a list of row-buckets to exactly `target` rows.
+// - If we have more buckets than rows, merge adjacent buckets that are
+//   closest together (prefer merging the smallest neighbours).
+// - If we have fewer buckets than rows, split the largest bucket.
+function collapseRows<T>(rows: T[][], target: number): T[][] {
+  const out = rows.map((r) => [...r]);
+  while (out.length > target) {
+    // Find the pair of adjacent rows with the smallest combined size and merge.
+    let bestIdx = 0;
+    let bestSize = Infinity;
+    for (let i = 0; i < out.length - 1; i++) {
+      const s = out[i].length + out[i + 1].length;
+      if (s < bestSize) {
+        bestSize = s;
+        bestIdx = i;
+      }
+    }
+    out[bestIdx] = [...out[bestIdx], ...out[bestIdx + 1]];
+    out.splice(bestIdx + 1, 1);
+  }
+  while (out.length < target && out.some((r) => r.length > 1)) {
+    // Split the largest bucket in half.
+    let bestIdx = 0;
+    let bestSize = -1;
+    for (let i = 0; i < out.length; i++) {
+      if (out[i].length > bestSize) {
+        bestSize = out[i].length;
+        bestIdx = i;
+      }
+    }
+    const bucket = out[bestIdx];
+    const half = Math.ceil(bucket.length / 2);
+    out.splice(bestIdx, 1, bucket.slice(0, half), bucket.slice(half));
+  }
+  return out;
+}
+
+// Shift players between adjacent rows so row sizes approach `sizes`.
+// Keeps ordering roughly stable by moving from the row with the largest
+// surplus toward the neighbour with the largest deficit.
+function balanceToFormation<T>(rows: T[][], sizes: number[]): T[][] {
+  if (rows.length !== sizes.length) return rows;
+  const out = rows.map((r) => [...r]);
+  for (let iter = 0; iter < 6; iter++) {
+    let moved = false;
+    for (let i = 0; i < out.length; i++) {
+      const surplus = out[i].length - sizes[i];
+      if (surplus <= 0) continue;
+      const neighbours = [i - 1, i + 1].filter((j) => j >= 0 && j < out.length);
+      const target = neighbours
+        .map((j) => ({ j, deficit: sizes[j] - out[j].length }))
+        .filter((n) => n.deficit > 0)
+        .sort((a, b) => b.deficit - a.deficit)[0];
+      if (!target) continue;
+      // Move one player from row i to target row.
+      if (target.j > i) {
+        out[target.j].unshift(out[i].pop()!);
+      } else {
+        out[target.j].push(out[i].shift()!);
+      }
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  return out;
 }
 
 function shortPos(p?: string | null) {
@@ -264,23 +351,62 @@ function Field({
   const lines = parseFormation(formation);
   const totalOutfield = lines.reduce((a, b) => a + b, 0);
 
-  const gk =
-    starters.find((p) => roleOf(p) === "GK") ?? null;
+  const gk = starters.find((p) => roleOf(p) === "GK") ?? null;
+  const outfieldAll = starters.filter((p) => p !== gk);
 
-  const outfield = starters
-    .filter((p) => p !== gk)
-    .sort((a, b) => {
-      // Order: DEF/WB -> MID -> WIDE -> FWD
-      const order: Record<Role, number> = { GK: 0, DEF: 1, WB: 1, MID: 2, WIDE: 3, FWD: 4 };
-      return order[roleOf(a)] - order[roleOf(b)];
-    })
-    .slice(0, totalOutfield);
+  // Role priority (back → front)
+  const bandOrder: Role[] = ["DEF", "WB", "DM", "MID", "AM", "WIDE", "FWD"];
+  const bandRow: Record<Role, number> = {
+    GK: -1, DEF: 0, WB: 0, DM: 1, MID: 2, AM: 3, WIDE: 3, FWD: 4,
+  };
 
-  const grouped: VMatchLineup[][] = [];
-  let cursor = 0;
-  for (const count of lines) {
-    grouped.push(outfield.slice(cursor, cursor + count));
-    cursor += count;
+  // Bucket by row band; try role-based first
+  const hasReliablePositions = outfieldAll.some(
+    (p) => (p.position_abbreviation ?? p.position_name) != null,
+  );
+
+  let grouped: VMatchLineup[][] = [];
+
+  if (hasReliablePositions) {
+    // Collapse to as many rows as the formation, walking from back to front.
+    const buckets: VMatchLineup[][] = Array.from({ length: 5 }, () => []);
+    for (const p of outfieldAll) {
+      const row = bandRow[roleOf(p)];
+      buckets[Math.max(0, Math.min(4, row))].push(p);
+    }
+    const filled = buckets.filter((b) => b.length > 0);
+
+    // Reduce or expand `filled` to match `lines.length` rows.
+    grouped = collapseRows(filled, lines.length);
+
+    // If assignment is unbalanced vs the announced formation, redistribute
+    // adjacent rows toward the target row sizes to match `lines`.
+    grouped = balanceToFormation(grouped, lines);
+
+    // Sort each row by side (L → C → R), then by position_order/jersey
+    grouped = grouped.map((row) =>
+      [...row].sort((a, b) => {
+        const sideRank: Record<Side, number> = { L: 0, C: 1, R: 2 };
+        const sa = sideRank[sideOf(a)];
+        const sb = sideRank[sideOf(b)];
+        if (sa !== sb) return sa - sb;
+        return (a.jersey_number ?? 99) - (b.jersey_number ?? 99);
+      }),
+    );
+  } else {
+    // Fallback: legacy behaviour based on position_order + formation.
+    const outfield = [...outfieldAll]
+      .sort((a, b) => {
+        const oa = bandOrder.indexOf(roleOf(a));
+        const ob = bandOrder.indexOf(roleOf(b));
+        return oa - ob;
+      })
+      .slice(0, totalOutfield);
+    let cursor = 0;
+    for (const count of lines) {
+      grouped.push(outfield.slice(cursor, cursor + count));
+      cursor += count;
+    }
   }
 
   const rowCount = grouped.length;
