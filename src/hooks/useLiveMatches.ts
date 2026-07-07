@@ -1,16 +1,17 @@
-// Realtime subscription for live match updates.
+// Live-match updater.
 //
-// Subscribes to Postgres UPDATE events on the `matches` table and patches
-// the existing TanStack Query cache for `v_matches_full` in place — no
-// refetch needed for individual updates.
+// Polls the curated `v_matches_full` view (via TanStack Query invalidation)
+// while any match is in progress. We intentionally do NOT subscribe to
+// Postgres `postgres_changes` on the raw `matches` table: that channel
+// broadcasts the full row (all columns) to every subscribed client, which
+// could leak internal columns not exposed by the public view.
 //
-// Adds a lightweight polling safety net (every 30s) WHILE at least one
-// match is `in_progress` in the cache, in case the WebSocket connection
-// drops silently. The polling stops automatically when no match is live.
+// Polling against the view keeps the UI live while ensuring only the
+// columns curated by `v_matches_full` ever reach the client.
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
 import type { VMatchesFull } from "@/types/views";
 
 type MatchesPayload = {
@@ -19,42 +20,8 @@ type MatchesPayload = {
   error?: string;
 };
 
-// Columns we care about for a live update. Anything else is ignored to keep
-// the merge surgical (status/score/clock/period/timestamp).
-const LIVE_FIELDS = [
-  "status",
-  "home_score",
-  "away_score",
-  "home_penalty_score",
-  "away_penalty_score",
-  "live_clock",
-  "live_period",
-  "live_updated_at",
-] as const;
-
-function mergeLive(prev: VMatchesFull, next: Record<string, unknown>): VMatchesFull {
-  const patch: Partial<VMatchesFull> = {};
-  for (const f of LIVE_FIELDS) {
-    if (f in next) (patch as any)[f] = next[f];
-  }
-  return { ...prev, ...patch };
-}
-
-function patchCache(queryClient: ReturnType<typeof useQueryClient>, row: Record<string, unknown>) {
-  const id = (row.id ?? row.match_id) as string | undefined;
-  if (!id) return;
-
-  queryClient.setQueryData<MatchesPayload>(["v_matches_full"], (curr) => {
-    if (!curr) return curr;
-    let changed = false;
-    const data = curr.data.map((m) => {
-      if (m.match_id !== id) return m;
-      changed = true;
-      return mergeLive(m, row);
-    });
-    return changed ? { ...curr, data } : curr;
-  });
-}
+const LIVE_POLL_MS = 15_000;
+const IDLE_POLL_MS = 60_000;
 
 export function useLiveMatches() {
   const queryClient = useQueryClient();
@@ -62,30 +29,21 @@ export function useLiveMatches() {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    const channel = supabase
-      .channel("matches-live")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "matches" },
-        (payload) => {
-          const row = (payload.new ?? {}) as Record<string, unknown>;
-          patchCache(queryClient, row);
-        },
-      )
-      .subscribe();
+    let timer: number | undefined;
 
-    // Polling safety net — only ticks while there is at least one live match.
-    const interval = window.setInterval(() => {
+    const tick = () => {
       const curr = queryClient.getQueryData<MatchesPayload>(["v_matches_full"]);
       const hasLive = curr?.data.some((m) => m.status === "in_progress");
       if (hasLive) {
         queryClient.invalidateQueries({ queryKey: ["v_matches_full"] });
       }
-    }, 30_000);
+      timer = window.setTimeout(tick, hasLive ? LIVE_POLL_MS : IDLE_POLL_MS);
+    };
+
+    timer = window.setTimeout(tick, LIVE_POLL_MS);
 
     return () => {
-      window.clearInterval(interval);
-      supabase.removeChannel(channel);
+      if (timer !== undefined) window.clearTimeout(timer);
     };
   }, [queryClient]);
 }
