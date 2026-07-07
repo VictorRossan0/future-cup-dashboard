@@ -297,28 +297,25 @@ export async function getMatchLineups(matchId: string) {
     return { data: [] as VMatchLineup[], source: "supabase" as const };
   }
 
-  // Enrich missing team code/name from `teams` table when needed.
-  const teamIds = Array.from(new Set(headers.map((h) => h.team_id).filter(Boolean)));
-  const teamMap = new Map<string, { code?: string | null; name?: string | null }>();
-  if (teamIds.length) {
-    const { data: teamsData } = await supabase
-      .from("teams")
-      .select("id,name,code")
-      .in("id", teamIds);
-    (teamsData ?? []).forEach((t: any) => teamMap.set(t.id, { code: t.code, name: t.name }));
-  }
-
   const rows: VMatchLineup[] = [];
-  const headersWithoutPlayers: HeaderRow[] = [];
 
   for (const h of headers) {
-    const team = teamMap.get(h.team_id) ?? {};
-    const teamCode = h.team_code ?? team.code ?? null;
-    const teamName = h.team_name ?? team.name ?? null;
+    const teamCode = h.team_code ?? null;
+    const teamName = h.team_name ?? null;
     const players = Array.isArray(h.players) ? h.players : null;
 
     if (!players || players.length === 0) {
-      headersWithoutPlayers.push(h);
+      // No players yet — emit a header-only row so the UI can still
+      // render team/formation/coach placeholders.
+      rows.push({
+        match_id: h.match_id,
+        team_id: h.team_id,
+        team_code: teamCode,
+        team_name: teamName,
+        side: h.side ?? null,
+        formation: h.formation ?? null,
+        coach_name: h.coach_name ?? null,
+      } as VMatchLineup);
       continue;
     }
 
@@ -345,70 +342,9 @@ export async function getMatchLineups(matchId: string) {
     }
   }
 
-  // Fallback for headers missing the jsonb `players` array — query the
-  // relational tables so partial data still renders.
-  if (headersWithoutPlayers.length > 0) {
-    const { data: playersData } = await supabase
-      .from("match_lineup_players")
-      .select(
-        "player_id,is_starter,position_order,position_name,position_abbreviation," +
-          "players(name,shirt_number,position,is_captain)," +
-          "match_lineups!inner(match_id,team_id)"
-      )
-      .eq("match_lineups.match_id", matchId);
-
-    const byTeam = new Map<string, any[]>();
-    (playersData ?? []).forEach((p: any) => {
-      const tid = p.match_lineups?.team_id;
-      if (!tid) return;
-      if (!byTeam.has(tid)) byTeam.set(tid, []);
-      byTeam.get(tid)!.push(p);
-    });
-
-    for (const h of headersWithoutPlayers) {
-      const team = teamMap.get(h.team_id) ?? {};
-      const teamCode = h.team_code ?? team.code ?? null;
-      const teamName = h.team_name ?? team.name ?? null;
-      const list = byTeam.get(h.team_id) ?? [];
-      if (list.length === 0) {
-        // No players at all — emit a header-only row so the UI can still
-        // render team/formation/coach.
-        rows.push({
-          match_id: h.match_id,
-          team_id: h.team_id,
-          team_code: teamCode,
-          team_name: teamName,
-          side: h.side ?? null,
-          formation: h.formation ?? null,
-          coach_name: h.coach_name ?? null,
-        } as VMatchLineup);
-        continue;
-      }
-      for (const p of list) {
-        const pl = p.players ?? {};
-        rows.push({
-          match_id: h.match_id,
-          team_id: h.team_id,
-          team_code: teamCode,
-          team_name: teamName,
-          side: h.side ?? null,
-          formation: h.formation ?? null,
-          coach_name: h.coach_name ?? null,
-          player_id: p.player_id,
-          player_name: pl.name ?? null,
-          jersey_number: pl.shirt_number ?? null,
-          position: p.position_abbreviation ?? pl.position ?? null,
-          position_name: p.position_name ?? null,
-          position_abbreviation: p.position_abbreviation ?? null,
-          is_starter: p.is_starter,
-          is_captain: !!pl.is_captain,
-        } as VMatchLineup);
-      }
-    }
-  }
-
   return { data: rows, source: "supabase" as const };
 }
+
 
 
 // Hall da Fama --------------------------------------------------------------
